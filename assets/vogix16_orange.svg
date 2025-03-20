@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <!-- Split Background - Orange theme -->
+  <rect x="0" y="0" width="500" height="600" fill="#2a1506"/> <!-- Dark orange-brown -->
+  <rect x="500" y="0" width="500" height="600" fill="#fff2e6"/> <!-- Light cream -->
+  
+  <!-- Title -->
+  <text x="250" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#fff2e6">Orange Dark</text>
+  <text x="750" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2a1506">Orange Light</text>
+  
+  <!-- Dark Theme Content -->
+  <text x="60" y="80" font-family="monospace" font-size="14" fill="#d9915b"># Orange monochromatic scale (dark to light)</text>
+  
+  <rect x="60" y="100" width="20" height="20" rx="2" fill="#2a1506" stroke="#804515" stroke-width="1"/>
+  <text x="90" y="115" font-family="monospace" font-size="14" fill="#d9915b">base00 = "#2a1506" # Espresso</text>
+  
+  <rect x="60" y="130" width="20" height="20" rx="2" fill="#40220c"/>
+  <text x="90" y="145" font-family="monospace" font-size="14" fill="#d9915b">base01 = "#40220c" # Dark cocoa</text>
+  
+  <rect x="60" y="160" width="20" height="20" rx="2" fill="#5c3213"/>
+  <text x="90" y="175" font-family="monospace" font-size="14" fill="#d9915b">base02 = "#5c3213" # Chestnut</text>
+  
+  <rect x="60" y="190" width="20" height="20" rx="2" fill="#804515"/>
+  <text x="90" y="205" font-family="monospace" font-size="14" fill="#d9915b">base03 = "#804515" # Sienna</text>
+  
+  <rect x="60" y="220" width="20" height="20" rx="2" fill="#a65f1a"/>
+  <text x="90" y="235" font-family="monospace" font-size="14" fill="#d9915b">base04 = "#a65f1a" # Ochre</text>
+  
+  <rect x="60" y="250" width="20" height="20" rx="2" fill="#d9915b"/>
+  <text x="90" y="265" font-family="monospace" font-size="14" fill="#d9915b">base05 = "#d9915b" # Light tan</text>
+  
+  <rect x="60" y="280" width="20" height="20" rx="2" fill="#e9b38c"/>
+  <text x="90" y="295" font-family="monospace" font-size="14" fill="#e9b38c">base06 = "#e9b38c" # Peach</text>
+  
+  <rect x="60" y="310" width="20" height="20" rx="2" fill="#fff2e6"/>
+  <text x="90" y="325" font-family="monospace" font-size="14" fill="#fff2e6">base07 = "#fff2e6" # Cream</text>
+  
+  <text x="60" y="360" font-family="monospace" font-size="14" fill="#d9915b"># Functional colors</text>
+  
+  <rect x="60" y="380" width="20" height="20" rx="2" fill="#e55545"/>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#e55545">base08 = "#e55545" # Error - Tomato</text>
+  
+  <rect x="60" y="410" width="20" height="20" rx="2" fill="#e5954f"/>
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#e5954f">base09 = "#e5954f" # Warning - Mandarin</text>
+  
+  <rect x="60" y="440" width="20" height="20" rx="2" fill="#eace60"/>
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#eace60">base0A = "#eace60" # Notice - Amber</text>
+  
+  <rect x="60" y="470" width="20" height="20" rx="2" fill="#75c458"/>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#75c458">base0B = "#75c458" # Success - Apple</text>
+  
+  <rect x="60" y="500" width="20" height="20" rx="2" fill="#64b9c4"/>
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#64b9c4">base0C = "#64b9c4" # Selection - Turquoise</text>
+  
+  <rect x="60" y="530" width="20" height="20" rx="2" fill="#569cd6"/>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#569cd6">base0D = "#569cd6" # Information - Azure</text>
+  
+  <rect x="60" y="560" width="20" height="20" rx="2" fill="#b58cd9"/>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#b58cd9">base0E = "#b58cd9" # Focus - Lavender</text>
+  
+  <!-- Light Theme Content -->
+  <text x="560" y="80" font-family="monospace" font-size="14" fill="#804515"># Orange monochromatic scale (light to dark)</text>
+  
+  <rect x="560" y="100" width="20" height="20" rx="2" fill="#fff2e6" stroke="#e9b38c" stroke-width="1"/>
+  <text x="590" y="115" font-family="monospace" font-size="14" fill="#804515">base00 = "#fff2e6" # Cream</text>
+  
+  <rect x="560" y="130" width="20" height="20" rx="2" fill="#ffe9d4"/>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#804515">base01 = "#ffe9d4" # Bisque</text>
+  
+  <rect x="560" y="160" width="20" height="20" rx="2" fill="#e9b38c"/>
+  <text x="590" y="175" font-family="monospace" font-size="14" fill="#804515">base02 = "#e9b38c" # Peach</text>
+  
+  <rect x="560" y="190" width="20" height="20" rx="2" fill="#d9915b"/>
+  <text x="590" y="205" font-family="monospace" font-size="14" fill="#804515">base03 = "#d9915b" # Light tan</text>
+  
+  <rect x="560" y="220" width="20" height="20" rx="2" fill="#a65f1a"/>
+  <text x="590" y="235" font-family="monospace" font-size="14" fill="#804515">base04 = "#a65f1a" # Ochre</text>
+  
+  <rect x="560" y="250" width="20" height="20" rx="2" fill="#804515"/>
+  <text x="590" y="265" font-family="monospace" font-size="14" fill="#804515">base05 = "#804515" # Sienna</text>
+  
+  <rect x="560" y="280" width="20" height="20" rx="2" fill="#5c3213"/>
+  <text x="590" y="295" font-family="monospace" font-size="14" fill="#5c3213">base06 = "#5c3213" # Chestnut</text>
+  
+  <rect x="560" y="310" width="20" height="20" rx="2" fill="#2a1506"/>
+  <text x="590" y="325" font-family="monospace" font-size="14" fill="#2a1506">base07 = "#2a1506" # Espresso</text>
+  
+  <text x="560" y="360" font-family="monospace" font-size="14" fill="#804515"># Functional colors</text>
+  
+  <rect x="560" y="380" width="20" height="20" rx="2" fill="#cc3e2f"/>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#cc3e2f">base08 = "#cc3e2f" # Error - Brick</text>
+  
+  <rect x="560" y="410" width="20" height="20" rx="2" fill="#cf752a"/>
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#cf752a">base09 = "#cf752a" # Warning - Rust</text>
+  
+  <rect x="560" y="440" width="20" height="20" rx="2" fill="#b89d40"/>
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#b89d40">base0A = "#b89d40" # Notice - Mustard</text>
+  
+  <rect x="560" y="470" width="20" height="20" rx="2" fill="#4d9a32"/>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#4d9a32">base0B = "#4d9a32" # Success - Forest</text>
+  
+  <rect x="560" y="500" width="20" height="20" rx="2" fill="#348a95"/>
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#348a95">base0C = "#348a95" # Selection - Teal</text>
+  
+  <rect x="560" y="530" width="20" height="20" rx="2" fill="#2b74b3"/>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#2b74b3">base0D = "#2b74b3" # Information - Cobalt</text>
+  
+  <rect x="560" y="560" width="20" height="20" rx="2" fill="#8764b4"/>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#8764b4">base0E = "#8764b4" # Focus - Amethyst</text>
+</svg>

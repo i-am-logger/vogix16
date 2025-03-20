@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">
+  <!-- Split Background - Sepia theme -->
+  <rect x="0" y="0" width="500" height="600" fill="#2c2418"/> <!-- Dark sepia -->
+  <rect x="500" y="0" width="500" height="600" fill="#f2e8d9"/> <!-- Light sepia -->
+  
+  <!-- Title -->
+  <text x="250" y="40" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#f2e8d9">Sepia Dark</text>
+  <text x="750" y="40" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2c2418">Sepia Light</text>
+  
+  <!-- Dark Theme Content -->
+  <text x="60" y="80" font-family="monospace" font-size="14" fill="#b8a58c"># Sepia monochromatic scale (dark to light)</text>
+  
+  <rect x="60" y="100" width="20" height="20" rx="2" fill="#2c2418" stroke="#6b5a42" stroke-width="1"/>
+  <text x="90" y="115" font-family="monospace" font-size="14" fill="#b8a58c">base00 = "#2c2418" # Darkest sepia</text>
+  
+  <rect x="60" y="130" width="20" height="20" rx="2" fill="#3b3022"/>
+  <text x="90" y="145" font-family="monospace" font-size="14" fill="#b8a58c">base01 = "#3b3022" # Very dark sepia</text>
+  
+  <rect x="60" y="160" width="20" height="20" rx="2" fill="#4c402e"/>
+  <text x="90" y="175" font-family="monospace" font-size="14" fill="#b8a58c">base02 = "#4c402e" # Dark sepia</text>
+  
+  <rect x="60" y="190" width="20" height="20" rx="2" fill="#6b5a42"/>
+  <text x="90" y="205" font-family="monospace" font-size="14" fill="#b8a58c">base03 = "#6b5a42" # Medium-dark sepia</text>
+  
+  <rect x="60" y="220" width="20" height="20" rx="2" fill="#8a7a62"/>
+  <text x="90" y="235" font-family="monospace" font-size="14" fill="#b8a58c">base04 = "#8a7a62" # Medium sepia</text>
+  
+  <rect x="60" y="250" width="20" height="20" rx="2" fill="#b8a58c"/>
+  <text x="90" y="265" font-family="monospace" font-size="14" fill="#b8a58c">base05 = "#b8a58c" # Medium-light sepia</text>
+  
+  <rect x="60" y="280" width="20" height="20" rx="2" fill="#d5c7b4"/>
+  <text x="90" y="295" font-family="monospace" font-size="14" fill="#d5c7b4">base06 = "#d5c7b4" # Light sepia</text>
+  
+  <rect x="60" y="310" width="20" height="20" rx="2" fill="#f2e8d9"/>
+  <text x="90" y="325" font-family="monospace" font-size="14" fill="#f2e8d9">base07 = "#f2e8d9" # Very light sepia</text>
+  
+  <text x="60" y="360" font-family="monospace" font-size="14" fill="#b8a58c"># Functional colors</text>
+  
+  <rect x="60" y="380" width="20" height="20" rx="2" fill="#de7e73"/>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#de7e73">base08 = "#de7e73" # Error - coral</text>
+  
+  <rect x="60" y="410" width="20" height="20" rx="2" fill="#e8a265"/>
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#e8a265">base09 = "#e8a265" # Warning - tan</text>
+  
+  <rect x="60" y="440" width="20" height="20" rx="2" fill="#d1b050"/>
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#d1b050">base0A = "#d1b050" # Notice - gold</text>
+  
+  <rect x="60" y="470" width="20" height="20" rx="2" fill="#98a84b"/>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#98a84b">base0B = "#98a84b" # Success - sage</text>
+  
+  <rect x="60" y="500" width="20" height="20" rx="2" fill="#6a9e8f"/>
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#6a9e8f">base0C = "#6a9e8f" # Selection - seafoam</text>
+  
+  <rect x="60" y="530" width="20" height="20" rx="2" fill="#7d98ab"/>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#7d98ab">base0D = "#7d98ab" # Information - slate</text>
+  
+  <rect x="60" y="560" width="20" height="20" rx="2" fill="#a28eac"/>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#a28eac">base0E = "#a28eac" # Focus - lavender</text>
+  
+  <!-- Light Theme Content -->
+  <text x="560" y="80" font-family="monospace" font-size="14" fill="#6b5a42"># Sepia monochromatic scale (light to dark)</text>
+  
+  <rect x="560" y="100" width="20" height="20" rx="2" fill="#f2e8d9" stroke="#d5c7b4" stroke-width="1"/>
+  <text x="590" y="115" font-family="monospace" font-size="14" fill="#6b5a42">base00 = "#f2e8d9" # Very light sepia</text>
+  
+  <rect x="560" y="130" width="20" height="20" rx="2" fill="#d5c7b4"/>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#6b5a42">base01 = "#d5c7b4" # Light sepia</text>
+  
+  <rect x="560" y="160" width="20" height="20" rx="2" fill="#b8a58c"/>
+  <text x="590" y="175" font-family="monospace" font-size="14" fill="#6b5a42">base02 = "#b8a58c" # Medium-light sepia</text>
+  
+  <rect x="560" y="190" width="20" height="20" rx="2" fill="#a38e75"/>
+  <text x="590" y="205" font-family="monospace" font-size="14" fill="#6b5a42">base03 = "#a38e75" # Medium sepia</text>
+  
+  <rect x="560" y="220" width="20" height="20" rx="2" fill="#8a7a62"/>
+  <text x="590" y="235" font-family="monospace" font-size="14" fill="#6b5a42">base04 = "#8a7a62" # Medium-dark sepia</text>
+  
+  <rect x="560" y="250" width="20" height="20" rx="2" fill="#6b5a42"/>
+  <text x="590" y="265" font-family="monospace" font-size="14" fill="#6b5a42">base05 = "#6b5a42" # Dark sepia</text>
+  
+  <rect x="560" y="280" width="20" height="20" rx="2" fill="#4c402e"/>
+  <text x="590" y="295" font-family="monospace" font-size="14" fill="#4c402e">base06 = "#4c402e" # Very dark sepia</text>
+  
+  <rect x="560" y="310" width="20" height="20" rx="2" fill="#2c2418"/>
+  <text x="590" y="325" font-family="monospace" font-size="14" fill="#2c2418">base07 = "#2c2418" # Darkest sepia</text>
+  
+  <text x="560" y="360" font-family="monospace" font-size="14" fill="#6b5a42"># Functional colors</text>
+  
+  <rect x="560" y="380" width="20" height="20" rx="2" fill="#af3029"/>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#af3029">base08 = "#af3029" # Error - rust</text>
+  
+  <rect x="560" y="410" width="20" height="20" rx="2" fill="#bc5215"/>
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#bc5215">base09 = "#bc5215" # Warning - terra cotta</text>
+  
+  <rect x="560" y="440" width="20" height="20" rx="2" fill="#a2854e"/>
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#a2854e">base0A = "#a2854e" # Notice - camel</text>
+  
+  <rect x="560" y="470" width="20" height="20" rx="2" fill="#637200"/>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#637200">base0B = "#637200" # Success - moss</text>
+  
+  <rect x="560" y="500" width="20" height="20" rx="2" fill="#006f64"/>
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#006f64">base0C = "#006f64" # Selection - pine</text>
+  
+  <rect x="560" y="530" width="20" height="20" rx="2" fill="#3a6892"/>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#3a6892">base0D = "#3a6892" # Information - navy</text>
+  
+  <rect x="560" y="560" width="20" height="20" rx="2" fill="#7b467a"/>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#7b467a">base0E = "#7b467a" # Focus - plum</text>
+</svg>

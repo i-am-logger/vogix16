@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <!-- Split Background - Futuristic theme -->
+  <rect x="0" y="0" width="500" height="600" fill="#0f111a"/> <!-- Dark space -->
+  <rect x="500" y="0" width="500" height="600" fill="#f7f8fc"/> <!-- Stark white -->
+  
+  <!-- Title -->
+  <text x="250" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#f7f8fc">Cyber Dark</text>
+  <text x="750" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#0f111a">Cyber Light</text>
+  
+  <!-- Dark Theme Content -->
+  <text x="60" y="80" font-family="monospace" font-size="14" fill="#8f93a2"># Futuristic monochromatic scale (dark to light)</text>
+  
+  <rect x="60" y="100" width="20" height="20" rx="2" fill="#0f111a" stroke="#292d3e" stroke-width="1"/>
+  <text x="90" y="115" font-family="monospace" font-size="14" fill="#8f93a2">base00 = "#0f111a" # Deep space</text>
+  
+  <rect x="60" y="130" width="20" height="20" rx="2" fill="#1a1c25"/>
+  <text x="90" y="145" font-family="monospace" font-size="14" fill="#8f93a2">base01 = "#1a1c25" # Midnight</text>
+  
+  <rect x="60" y="160" width="20" height="20" rx="2" fill="#292d3e"/>
+  <text x="90" y="175" font-family="monospace" font-size="14" fill="#8f93a2">base02 = "#292d3e" # Galactic</text>
+  
+  <rect x="60" y="190" width="20" height="20" rx="2" fill="#434759"/>
+  <text x="90" y="205" font-family="monospace" font-size="14" fill="#8f93a2">base03 = "#434759" # Cosmic gray</text>
+  
+  <rect x="60" y="220" width="20" height="20" rx="2" fill="#676e95"/>
+  <text x="90" y="235" font-family="monospace" font-size="14" fill="#8f93a2">base04 = "#676e95" # Nebula</text>
+  
+  <rect x="60" y="250" width="20" height="20" rx="2" fill="#8f93a2"/>
+  <text x="90" y="265" font-family="monospace" font-size="14" fill="#8f93a2">base05 = "#8f93a2" # Stellar</text>
+  
+  <rect x="60" y="280" width="20" height="20" rx="2" fill="#c9ccd8"/>
+  <text x="90" y="295" font-family="monospace" font-size="14" fill="#c9ccd8">base06 = "#c9ccd8" # Moon dust</text>
+  
+  <rect x="60" y="310" width="20" height="20" rx="2" fill="#f7f8fc"/>
+  <text x="90" y="325" font-family="monospace" font-size="14" fill="#f7f8fc">base07 = "#f7f8fc" # Starlight</text>
+  
+  <text x="60" y="360" font-family="monospace" font-size="14" fill="#8f93a2"># Functional colors</text>
+  
+  <rect x="60" y="380" width="20" height="20" rx="2" fill="#ff5370"/>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#ff5370">base08 = "#ff5370" # Error - Neon red</text>
+  
+  <rect x="60" y="410" width="20" height="20" rx="2" fill="#f78c6c"/>
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#f78c6c">base09 = "#f78c6c" # Warning - Plasma orange</text>
+  
+  <rect x="60" y="440" width="20" height="20" rx="2" fill="#ffcb6b"/>
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#ffcb6b">base0A = "#ffcb6b" # Notice - Energized yellow</text>
+  
+  <rect x="60" y="470" width="20" height="20" rx="2" fill="#c3e88d"/>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#c3e88d">base0B = "#c3e88d" # Success - Matrix green</text>
+  
+  <rect x="60" y="500" width="20" height="20" rx="2" fill="#89ddff"/>
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#89ddff">base0C = "#89ddff" # Selection - Electric blue</text>
+  
+  <rect x="60" y="530" width="20" height="20" rx="2" fill="#82aaff"/>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#82aaff">base0D = "#82aaff" # Information - Hologram blue</text>
+  
+  <rect x="60" y="560" width="20" height="20" rx="2" fill="#c792ea"/>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#c792ea">base0E = "#c792ea" # Focus - Quantum purple</text>
+  
+  <!-- Light Theme Content -->
+  <text x="560" y="80" font-family="monospace" font-size="14" fill="#434759"># Futuristic monochromatic scale (light to dark)</text>
+  
+  <rect x="560" y="100" width="20" height="20" rx="2" fill="#f7f8fc" stroke="#c9ccd8" stroke-width="1"/>
+  <text x="590" y="115" font-family="monospace" font-size="14" fill="#434759">base00 = "#f7f8fc" # Starlight</text>
+  
+  <rect x="560" y="130" width="20" height="20" rx="2" fill="#e4e6f1"/>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#434759">base01 = "#e4e6f1" # White dwarf</text>
+  
+  <rect x="560" y="160" width="20" height="20" rx="2" fill="#c9ccd8"/>
+  <text x="590" y="175" font-family="monospace" font-size="14" fill="#434759">base02 = "#c9ccd8" # Moon dust</text>
+  
+  <rect x="560" y="190" width="20" height="20" rx="2" fill="#8f93a2"/>
+  <text x="590" y="205" font-family="monospace" font-size="14" fill="#434759">base03 = "#8f93a2" # Stellar</text>
+  
+  <rect x="560" y="220" width="20" height="20" rx="2" fill="#676e95"/>
+  <text x="590" y="235" font-family="monospace" font-size="14" fill="#434759">base04 = "#676e95" # Nebula</text>
+  
+  <rect x="560" y="250" width="20" height="20" rx="2" fill="#434759"/>
+  <text x="590" y="265" font-family="monospace" font-size="14" fill="#434759">base05 = "#434759" # Cosmic gray</text>
+  
+  <rect x="560" y="280" width="20" height="20" rx="2" fill="#292d3e"/>
+  <text x="590" y="295" font-family="monospace" font-size="14" fill="#292d3e">base06 = "#292d3e" # Galactic</text>
+  
+  <rect x="560" y="310" width="20" height="20" rx="2" fill="#0f111a"/>
+  <text x="590" y="325" font-family="monospace" font-size="14" fill="#0f111a">base07 = "#0f111a" # Deep space</text>
+  
+  <text x="560" y="360" font-family="monospace" font-size="14" fill="#434759"># Functional colors</text>
+  
+  <rect x="560" y="380" width="20" height="20" rx="2" fill="#f0274a"/>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#f0274a">base08 = "#f0274a" # Error - Crimson</text>
+  
+  <rect x="560" y="410" width="20" height="20" rx="2" fill="#e8733a"/>
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#e8733a">base09 = "#e8733a" # Warning - Fusion</text>
+  
+  <rect x="560" y="440" width="20" height="20" rx="2" fill="#e6b455"/>
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#e6b455">base0A = "#e6b455" # Notice - Amber alert</text>
+  
+  <rect x="560" y="470" width="20" height="20" rx="2" fill="#66bb6a"/>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#66bb6a">base0B = "#66bb6a" # Success - Bionic</text>
+  
+  <rect x="560" y="500" width="20" height="20" rx="2" fill="#42a5f5"/>
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#42a5f5">base0C = "#42a5f5" # Selection - Optical</text>
+  
+  <rect x="560" y="530" width="20" height="20" rx="2" fill="#5c7ae9"/>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#5c7ae9">base0D = "#5c7ae9" # Information - Circuit</text>
+  
+  <rect x="560" y="560" width="20" height="20" rx="2" fill="#a258d0"/>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#a258d0">base0E = "#a258d0" # Focus - Ultraviolet</text>
+</svg>

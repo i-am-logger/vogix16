@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <!-- Split Background - Nordic inspired theme -->
+  <rect x="0" y="0" width="500" height="600" fill="#2e3440"/> <!-- Dark slate (Fjord) -->
+  <rect x="500" y="0" width="500" height="600" fill="#eceff4"/> <!-- Snow white (Glacier) -->
+  
+  <!-- Title -->
+  <text x="250" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#eceff4">Nordic Dark</text>
+  <text x="750" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#2e3440">Nordic Light</text>
+  
+  <!-- Dark Theme Content -->
+  <text x="60" y="80" font-family="monospace" font-size="14" fill="#9099a9"># Nordic monochromatic scale (dark to light)</text>
+  
+  <rect x="60" y="100" width="20" height="20" rx="2" fill="#2e3440" stroke="#434c5e" stroke-width="1"/>
+  <text x="90" y="115" font-family="monospace" font-size="14" fill="#9099a9">base00 = "#2e3440" # Fjord (slate)</text>
+  
+  <rect x="60" y="130" width="20" height="20" rx="2" fill="#3b4252"/>
+  <text x="90" y="145" font-family="monospace" font-size="14" fill="#9099a9">base01 = "#3b4252" # Midnight (dark slate)</text>
+  
+  <rect x="60" y="160" width="20" height="20" rx="2" fill="#434c5e"/>
+  <text x="90" y="175" font-family="monospace" font-size="14" fill="#9099a9">base02 = "#434c5e" # Twilight (medium slate)</text>
+  
+  <rect x="60" y="190" width="20" height="20" rx="2" fill="#4c566a"/>
+  <text x="90" y="205" font-family="monospace" font-size="14" fill="#9099a9">base03 = "#4c566a" # Stone (slate gray)</text>
+  
+  <rect x="60" y="220" width="20" height="20" rx="2" fill="#667385"/>
+  <text x="90" y="235" font-family="monospace" font-size="14" fill="#9099a9">base04 = "#667385" # Steel (cool gray)</text>
+  
+  <rect x="60" y="250" width="20" height="20" rx="2" fill="#9099a9"/>
+  <text x="90" y="265" font-family="monospace" font-size="14" fill="#9099a9">base05 = "#9099a9" # Mist (faded blue)</text>
+  
+  <rect x="60" y="280" width="20" height="20" rx="2" fill="#d8dee9"/>
+  <text x="90" y="295" font-family="monospace" font-size="14" fill="#d8dee9">base06 = "#d8dee9" # Frost (pale blue)</text>
+  
+  <rect x="60" y="310" width="20" height="20" rx="2" fill="#eceff4"/>
+  <text x="90" y="325" font-family="monospace" font-size="14" fill="#eceff4">base07 = "#eceff4" # Snow (ice white)</text>
+  
+  <text x="60" y="360" font-family="monospace" font-size="14" fill="#9099a9"># Functional colors </text>
+  
+  <rect x="60" y="380" width="20" height="20" rx="2" fill="#b04c58"/>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#b04c58">base08 = "#b04c58" # Error</text>
+  
+  <rect x="60" y="410" width="20" height="20" rx="2" fill="#c67f53"/>
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#c67f53">base09 = "#c67f53" # Warning</text>
+  
+  <rect x="60" y="440" width="20" height="20" rx="2" fill="#d09464"/>
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#d09464">base0A = "#d09464" # Notice</text>
+  
+  <rect x="60" y="470" width="20" height="20" rx="2" fill="#81a1c1"/>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#81a1c1">base0B = "#81a1c1" # Success</text>
+  
+  <rect x="60" y="500" width="20" height="20" rx="2" fill="#8fbcbb"/>
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#8fbcbb">base0C = "#8fbcbb" # Selection</text>
+  
+  <rect x="60" y="530" width="20" height="20" rx="2" fill="#d8a174"/>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#d8a174">base0D = "#d8a174" # Information</text>
+  
+  <rect x="60" y="560" width="20" height="20" rx="2" fill="#b48ead"/>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#b48ead">base0E = "#b48ead" # Focus</text>
+  
+  <!-- Light Theme Content -->
+  <text x="560" y="80" font-family="monospace" font-size="14" fill="#4c566a"># Nordic monochromatic scale (light to dark)</text>
+  
+  <rect x="560" y="100" width="20" height="20" rx="2" fill="#eceff4" stroke="#d8dee9" stroke-width="1"/>
+  <text x="590" y="115" font-family="monospace" font-size="14" fill="#4c566a">base00 = "#eceff4" # Snow (ice white)</text>
+  
+  <rect x="560" y="130" width="20" height="20" rx="2" fill="#e5e9f0"/>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#4c566a">base01 = "#e5e9f0" # Glacier (white blue)</text>
+  
+  <rect x="560" y="160" width="20" height="20" rx="2" fill="#d8dee9"/>
+  <text x="590" y="175" font-family="monospace" font-size="14" fill="#4c566a">base02 = "#d8dee9" # Frost (pale blue)</text>
+  
+  <rect x="560" y="190" width="20" height="20" rx="2" fill="#9099a9"/>
+  <text x="590" y="205" font-family="monospace" font-size="14" fill="#4c566a">base03 = "#9099a9" # Mist (faded blue)</text>
+  
+  <rect x="560" y="220" width="20" height="20" rx="2" fill="#667385"/>
+  <text x="590" y="235" font-family="monospace" font-size="14" fill="#4c566a">base04 = "#667385" # Steel (cool gray)</text>
+  
+  <rect x="560" y="250" width="20" height="20" rx="2" fill="#4c566a"/>
+  <text x="590" y="265" font-family="monospace" font-size="14" fill="#4c566a">base05 = "#4c566a" # Stone (slate gray)</text>
+  
+  <rect x="560" y="280" width="20" height="20" rx="2" fill="#3b4252"/>
+  <text x="590" y="295" font-family="monospace" font-size="14" fill="#3b4252">base06 = "#3b4252" # Midnight (dark slate)</text>
+  
+  <rect x="560" y="310" width="20" height="20" rx="2" fill="#2e3440"/>
+  <text x="590" y="325" font-family="monospace" font-size="14" fill="#2e3440">base07 = "#2e3440" # Fjord (slate)</text>
+  
+  <text x="560" y="360" font-family="monospace" font-size="14" fill="#4c566a"># Functional colors</text>
+  
+  <rect x="560" y="380" width="20" height="20" rx="2" fill="#9d4149"/>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#9d4149">base08 = "#9d4149" # Error</text>
+  
+  <rect x="560" y="410" width="20" height="20" rx="2" fill="#b46946"/>
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#b46946">base09 = "#b46946" # Warning</text>
+  
+  <rect x="560" y="440" width="20" height="20" rx="2" fill="#c28252"/>
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#c28252">base0A = "#c28252" # Notice</text>
+  
+  <rect x="560" y="470" width="20" height="20" rx="2" fill="#5e81ac"/>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#5e81ac">base0B = "#5e81ac" # Success</text>
+  
+  <rect x="560" y="500" width="20" height="20" rx="2" fill="#70a7a6"/>
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#70a7a6">base0C = "#70a7a6" # Selection</text>
+  
+  <rect x="560" y="530" width="20" height="20" rx="2" fill="#c78452"/>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#c78452">base0D = "#c78452" # Information</text>
+  
+  <rect x="560" y="560" width="20" height="20" rx="2" fill="#a16896"/>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#a16896">base0E = "#a16896" # Focus</text>
+</svg>
+

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#f5f5f5"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle">Vogix16 Color Palettes</text>
+  <text x="400" y="70" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#555">Functional colors for minimalist minds.</text>
+
+  <!-- Grayscale Dark -->
+  <text x="200" y="110" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Grayscale Dark</text>
+  
+  <!-- Base Colors - Grayscale Dark -->
+  <rect x="80" y="130" width="40" height="40" rx="3" fill="#1d1f21"/>
+  <rect x="125" y="130" width="40" height="40" rx="3" fill="#282a2e"/>
+  <rect x="170" y="130" width="40" height="40" rx="3" fill="#373b41"/>
+  <rect x="215" y="130" width="40" height="40" rx="3" fill="#969896"/>
+  <rect x="260" y="130" width="40" height="40" rx="3" fill="#b4b7b4"/>
+  <rect x="305" y="130" width="40" height="40" rx="3" fill="#c5c8c6"/>
+  <rect x="80" y="175" width="40" height="40" rx="3" fill="#e0e0e0"/>
+  <rect x="125" y="175" width="40" height="40" rx="3" fill="#ffffff"/>
+  
+  <!-- Functional Colors - Grayscale Dark -->
+  <rect x="170" y="175" width="40" height="40" rx="3" fill="#cc6666"/>
+  <rect x="215" y="175" width="40" height="40" rx="3" fill="#de935f"/>
+  <rect x="260" y="175" width="40" height="40" rx="3" fill="#f0c674"/>
+  <rect x="305" y="175" width="40" height="40" rx="3" fill="#b5bd68"/>
+  <rect x="80" y="220" width="40" height="40" rx="3" fill="#8abeb7"/>
+  <rect x="125" y="220" width="40" height="40" rx="3" fill="#81a2be"/>
+  <rect x="170" y="220" width="40" height="40" rx="3" fill="#b294bb"/>
+  <rect x="215" y="220" width="40" height="40" rx="3" fill="#a3685a"/>
+  
+  <!-- Grayscale Light -->
+  <text x="600" y="110" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Grayscale Light</text>
+  
+  <!-- Base Colors - Grayscale Light -->
+  <rect x="480" y="130" width="40" height="40" rx="3" fill="#ffffff"/>
+  <rect x="525" y="130" width="40" height="40" rx="3" fill="#e0e0e0"/>
+  <rect x="570" y="130" width="40" height="40" rx="3" fill="#d0d0d0"/>
+  <rect x="615" y="130" width="40" height="40" rx="3" fill="#b0b0b0"/>
+  <rect x="660" y="130" width="40" height="40" rx="3" fill="#808080"/>
+  <rect x="705" y="130" width="40" height="40" rx="3" fill="#505050"/>
+  <rect x="480" y="175" width="40" height="40" rx="3" fill="#303030"/>
+  <rect x="525" y="175" width="40" height="40" rx="3" fill="#1d1f21"/>
+  
+  <!-- Functional Colors - Grayscale Light -->
+  <rect x="570" y="175" width="40" height="40" rx="3" fill="#e45649"/>
+  <rect x="615" y="175" width="40" height="40" rx="3" fill="#dd8844"/>
+  <rect x="660" y="175" width="40" height="40" rx="3" fill="#c18401"/>
+  <rect x="705" y="175" width="40" height="40" rx="3" fill="#50a14f"/>
+  <rect x="480" y="220" width="40" height="40" rx="3" fill="#0184bc"/>
+  <rect x="525" y="220" width="40" height="40" rx="3" fill="#4078f2"/>
+  <rect x="570" y="220" width="40" height="40" rx="3" fill="#a626a4"/>
+  <rect x="615" y="220" width="40" height="40" rx="3" fill="#986801"/>
+  
+  <!-- Bluescale Dark -->
+  <text x="200" y="310" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Bluescale Dark</text>
+  
+  <!-- Base Colors - Bluescale Dark -->
+  <rect x="80" y="330" width="40" height="40" rx="3" fill="#0a1e36"/>
+  <rect x="125" y="330" width="40" height="40" rx="3" fill="#112a46"/>
+  <rect x="170" y="330" width="40" height="40" rx="3" fill="#1e3a64"/>
+  <rect x="215" y="330" width="40" height="40" rx="3" fill="#335a7c"/>
+  <rect x="260" y="330" width="40" height="40" rx="3" fill="#5382a8"/>
+  <rect x="305" y="330" width="40" height="40" rx="3" fill="#7ba9d0"/>
+  <rect x="80" y="375" width="40" height="40" rx="3" fill="#a8cde9"/>
+  <rect x="125" y="375" width="40" height="40" rx="3" fill="#deeef8"/>
+  
+  <!-- Functional Colors - Bluescale Dark -->
+  <rect x="170" y="375" width="40" height="40" rx="3" fill="#e55a5a"/>
+  <rect x="215" y="375" width="40" height="40" rx="3" fill="#e5995a"/>
+  <rect x="260" y="375" width="40" height="40" rx="3" fill="#e5d15a"/>
+  <rect x="305" y="375" width="40" height="40" rx="3" fill="#5ae55a"/>
+  <rect x="80" y="420" width="40" height="40" rx="3" fill="#5ae5e5"/>
+  <rect x="125" y="420" width="40" height="40" rx="3" fill="#5a9de5"/>
+  <rect x="170" y="420" width="40" height="40" rx="3" fill="#a85ae5"/>
+  <rect x="215" y="420" width="40" height="40" rx="3" fill="#e55ab3"/>
+  
+  <!-- Bluescale Light -->
+  <text x="600" y="310" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">Bluescale Light</text>
+  
+  <!-- Base Colors - Bluescale Light -->
+  <rect x="480" y="330" width="40" height="40" rx="3" fill="#f5faff"/>
+  <rect x="525" y="330" width="40" height="40" rx="3" fill="#deeef8"/>
+  <rect x="570" y="330" width="40" height="40" rx="3" fill="#a8cde9"/>
+  <rect x="615" y="330" width="40" height="40" rx="3" fill="#7ba9d0"/>
+  <rect x="660" y="330" width="40" height="40" rx="3" fill="#5382a8"/>
+  <rect x="705" y="330" width="40" height="40" rx="3" fill="#335a7c"/>
+  <rect x="480" y="375" width="40" height="40" rx="3" fill="#1e3a54"/>
+  <rect x="525" y="375" width="40" height="40" rx="3" fill="#0a1721"/>
+  
+  <!-- Functional Colors - Bluescale Light -->
+  <rect x="570" y="375" width="40" height="40" rx="3" fill="#d12f2f"/>
+  <rect x="615" y="375" width="40" height="40" rx="3" fill="#cb7832"/>
+  <rect x="660" y="375" width="40" height="40" rx="3" fill="#b9a431"/>
+  <rect x="705" y="375" width="40" height="40" rx="3" fill="#2a8c2a"/>
+  <rect x="480" y="420" width="40" height="40" rx="3" fill="#2a8c8c"/>
+  <rect x="525" y="420" width="40" height="40" rx="3" fill="#2970b6"/>
+  <rect x="570" y="420" width="40" height="40" rx="3" fill="#7436b6"/>
+  <rect x="615" y="420" width="40" height="40" rx="3" fill="#b6367a"/>
+  
+  <!-- Note at bottom -->
+  <text x="400" y="480" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#555">Base colors invert between dark and light variants while functional colors maintain semantic meaning</text>
+</svg>

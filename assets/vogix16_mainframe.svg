@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <!-- Split Background - Mainframe theme -->
+  <rect x="0" y="0" width="500" height="600" fill="#000000"/> <!-- MainframeBackgroundDark -->
+  <rect x="500" y="0" width="500" height="600" fill="#fff8e6"/> <!-- MainframeBackgroundLight -->
+  
+  <!-- Title -->
+  <text x="250" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#ffb000">Mainframe Dark</text>
+  <text x="750" y="40" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#663300">Mainframe Light</text>
+  
+  <!-- Dark Theme Content -->
+  <text x="60" y="80" font-family="monospace" font-size="14" fill="#ffb000"># Mainframe monochromatic scale (dark to light)</text>
+  
+  <rect x="60" y="100" width="20" height="20" rx="2" fill="#331a00" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="90" y="115" font-family="monospace" font-size="14" fill="#ffb000">base00 = "#331a00" # TerminalDeepest</text>
+  
+  <rect x="60" y="130" width="20" height="20" rx="2" fill="#402000"/>
+  <text x="90" y="145" font-family="monospace" font-size="14" fill="#ffb000">base01 = "#402000" # ConsoleDark</text>
+  
+  <rect x="60" y="160" width="20" height="20" rx="2" fill="#663300"/>
+  <text x="90" y="175" font-family="monospace" font-size="14" fill="#ffb000">base02 = "#663300" # CRTBase</text>
+  
+  <rect x="60" y="190" width="20" height="20" rx="2" fill="#995000"/>
+  <text x="90" y="205" font-family="monospace" font-size="14" fill="#ffb000">base03 = "#995000" # AmberLow</text>
+  
+  <rect x="60" y="220" width="20" height="20" rx="2" fill="#cc7a00"/>
+  <text x="90" y="235" font-family="monospace" font-size="14" fill="#ffb000">base04 = "#cc7a00" # AmberMid</text>
+  
+  <rect x="60" y="250" width="20" height="20" rx="2" fill="#e69500"/>
+  <text x="90" y="265" font-family="monospace" font-size="14" fill="#ffb000">base05 = "#e69500" # VDUMain</text>
+  
+  <rect x="60" y="280" width="20" height="20" rx="2" fill="#ffb000"/>
+  <text x="90" y="295" font-family="monospace" font-size="14" fill="#ffb000">base06 = "#ffb000" # AmberBright</text>
+  
+  <rect x="60" y="310" width="20" height="20" rx="2" fill="#ffc266"/>
+  <text x="90" y="325" font-family="monospace" font-size="14" fill="#ffb000">base07 = "#ffc266" # TerminalHighlight</text>
+  
+  <text x="60" y="360" font-family="monospace" font-size="14" fill="#ffb000"># Functional colors </text>
+  
+  <rect x="60" y="380" width="20" height="20" rx="2" fill="#ff5555"/>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#ffb000">base08 = "#ff5555" # TerminalError</text>
+  
+  <rect x="60" y="410" width="20" height="20" rx="2" fill="#ffaa00"/>
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#ffb000">base09 = "#ffaa00" # ConsoleWarning</text>
+  
+  <rect x="60" y="440" width="20" height="20" rx="2" fill="#ffcc44"/>
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#ffb000">base0A = "#ffcc44" # VDUNotice</text>
+  
+  <rect x="60" y="470" width="20" height="20" rx="2" fill="#ffa04d"/>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#ffb000">base0B = "#ffa04d" # AmberSuccess</text>
+  
+  <rect x="60" y="500" width="20" height="20" rx="2" fill="#ff9933"/>
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#ffb000">base0C = "#ff9933" # CRTSelection</text>
+  
+  <rect x="60" y="530" width="20" height="20" rx="2" fill="#ff8000"/>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#ffb000">base0D = "#ff8000" # TerminalInfo</text>
+  
+  <rect x="60" y="560" width="20" height="20" rx="2" fill="#e67300"/>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#ffb000">base0E = "#e67300" # ConsoleFocus</text>
+  
+  <!-- Light Theme Content -->
+  <text x="560" y="80" font-family="monospace" font-size="14" fill="#663300"># Mainframe monochromatic scale (light to dark)</text>
+  
+  <rect x="560" y="100" width="20" height="20" rx="2" fill="#fff2e6" stroke="#663300" stroke-width="1"/>
+  <text x="590" y="115" font-family="monospace" font-size="14" fill="#663300">base00 = "#fff2e6" # VDUBackground</text>
+  
+  <rect x="560" y="130" width="20" height="20" rx="2" fill="#ffe0b3"/>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#663300">base01 = "#ffe0b3" # CRTBrightest</text>
+  
+  <rect x="560" y="160" width="20" height="20" rx="2" fill="#ffcc80"/>
+  <text x="590" y="175" font-family="monospace" font-size="14" fill="#663300">base02 = "#ffcc80" # TerminalLight</text>
+  
+  <rect x="560" y="190" width="20" height="20" rx="2" fill="#ffb000"/>
+  <text x="590" y="205" font-family="monospace" font-size="14" fill="#663300">base03 = "#ffb000" # ConsoleAmber</text>
+  
+  <rect x="560" y="220" width="20" height="20" rx="2" fill="#e69500"/>
+  <text x="590" y="235" font-family="monospace" font-size="14" fill="#663300">base04 = "#e69500" # VDUAmber</text>
+  
+  <rect x="560" y="250" width="20" height="20" rx="2" fill="#cc7a00"/>
+  <text x="590" y="265" font-family="monospace" font-size="14" fill="#663300">base05 = "#cc7a00" # ConsoleMid</text>
+  
+  <rect x="560" y="280" width="20" height="20" rx="2" fill="#996300"/>
+  <text x="590" y="295" font-family="monospace" font-size="14" fill="#663300">base06 = "#996300" # TerminalText</text>
+  
+  <rect x="560" y="310" width="20" height="20" rx="2" fill="#663300"/>
+  <text x="590" y="325" font-family="monospace" font-size="14" fill="#663300">base07 = "#663300" # CRTDeepest</text>
+  
+  <text x="560" y="360" font-family="monospace" font-size="14" fill="#663300"># Functional colors</text>
+  
+  <rect x="560" y="380" width="20" height="20" rx="2" fill="#cc3300"/>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#663300">base08 = "#cc3300" # TerminalError</text>
+  
+  <rect x="560" y="410" width="20" height="20" rx="2" fill="#cc7700"/>
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#663300">base09 = "#cc7700" # ConsoleWarning</text>
+  
+  <rect x="560" y="440" width="20" height="20" rx="2" fill="#d48a00"/>
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#663300">base0A = "#d48a00" # VDUNotice</text>
+  
+  <rect x="560" y="470" width="20" height="20" rx="2" fill="#b37200"/>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#663300">base0B = "#b37200" # AmberSuccess</text>
+  
+  <rect x="560" y="500" width="20" height="20" rx="2" fill="#996600"/>
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#663300">base0C = "#996600" # CRTSelection</text>
+  
+  <rect x="560" y="530" width="20" height="20" rx="2" fill="#8c5e00"/>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#663300">base0D = "#8c5e00" # TerminalInfo</text>
+  
+  <rect x="560" y="560" width="20" height="20" rx="2" fill="#804000"/>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#663300">base0E = "#804000" # ConsoleFocus</text>
+</svg>
