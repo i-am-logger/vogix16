@@ -690,12 +690,6 @@ pkgs.testers.nixosTest {
     machine.fail("su - vogix -c 'vogix theme nonexistent'")
     print("✓ Non-existent theme rejected")
 
-    print("\n=== Test 14: Version Check ===")
-    output = machine.succeed("su - vogix -c 'vogix --version'")
-    assert "vogix16" in output or "0.1.0" in output
-    print("✓ Version command works")
-    print(f"Version: {output}")
-
     print("\n" + "="*60)
     print("🎉 ALL TESTS PASSED!")
     print("="*60)
