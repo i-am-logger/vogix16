@@ -5,6 +5,13 @@ All notable changes to Vogix16 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.0 (2025-12-02)
+
+
+### Features
+
+* vogix16 runtime theme management for NixOS ([584c9f3](https://github.com/i-am-logger/vogix16/commit/584c9f3ddbb519fd6869e3e4259b7819da2028c1))
+
 ## [Unreleased]
 
 ### Added
