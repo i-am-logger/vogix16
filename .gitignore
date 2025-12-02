@@ -1,0 +1,25 @@
+# Rust/Cargo
+target/
+# Note: Cargo.lock should be committed for binary projects
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+# Nix
+result
+result-*
+
+# Editor
+.vscode/
+.idea/
+
+# Qemu
+*.qcow2

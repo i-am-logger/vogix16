@@ -88,23 +88,23 @@
   <text x="560" y="360" font-family="monospace" font-size="14" fill="#6e6a73"># Functional colors</text>
   
   <rect x="560" y="380" width="20" height="20" rx="2" fill="#b75a5a"/>
-  <text x="590" y="395" font-family="monospace" font-size="14" fill="#6e6a73">base08 = "#b75a5a" # Error - Muted rose</text>
-  
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#b75a5a">base08 = "#b75a5a" # Error - Muted rose</text>
+
   <rect x="560" y="410" width="20" height="20" rx="2" fill="#b7803f"/>
-  <text x="590" y="425" font-family="monospace" font-size="14" fill="#6e6a73">base09 = "#b7803f" # Warning - Amber</text>
-  
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#b7803f">base09 = "#b7803f" # Warning - Amber</text>
+
   <rect x="560" y="440" width="20" height="20" rx="2" fill="#a8a04a"/>
-  <text x="590" y="455" font-family="monospace" font-size="14" fill="#6e6a73">base0A = "#a8a04a" # Notice - Olive gold</text>
-  
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#a8a04a">base0A = "#a8a04a" # Notice - Olive gold</text>
+
   <rect x="560" y="470" width="20" height="20" rx="2" fill="#709a68"/>
-  <text x="590" y="485" font-family="monospace" font-size="14" fill="#6e6a73">base0B = "#709a68" # Success - Vintage sage</text>
-  
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#709a68">base0B = "#709a68" # Success - Vintage sage</text>
+
   <rect x="560" y="500" width="20" height="20" rx="2" fill="#5f969a"/>
-  <text x="590" y="515" font-family="monospace" font-size="14" fill="#6e6a73">base0C = "#5f969a" # Selection - Teal</text>
-  
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#5f969a">base0C = "#5f969a" # Selection - Teal</text>
+
   <rect x="560" y="530" width="20" height="20" rx="2" fill="#5d7595"/>
-  <text x="590" y="545" font-family="monospace" font-size="14" fill="#6e6a73">base0D = "#5d7595" # Information - Slate blue</text>
-  
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#5d7595">base0D = "#5d7595" # Information - Slate blue</text>
+
   <rect x="560" y="560" width="20" height="20" rx="2" fill="#8470a0"/>
-  <text x="590" y="575" font-family="monospace" font-size="14" fill="#6e6a73">base0E = "#8470a0" # Focus - Muted lavender</text>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#8470a0">base0E = "#8470a0" # Focus - Muted lavender</text>
 </svg>

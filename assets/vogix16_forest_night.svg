@@ -65,7 +65,7 @@
   <text x="590" y="115" font-family="monospace" font-size="14" fill="#435645">base00 = "#ebefe9" # Moonlight silver</text>
   
   <rect x="560" y="130" width="20" height="20" rx="2" fill="#d8e1db"/>
-  <text x="590" y="145" font-family="monospace\" font-size="14" fill="#435645">base01 = "#d8e1db" # Morning mist</text>
+  <text x="590" y="145" font-family="monospace" font-size="14" fill="#435645">base01 = "#d8e1db" # Morning mist</text>
   
   <rect x="560" y="160" width="20" height="20" rx="2" fill="#b3c4ba"/>
   <text x="590" y="175" font-family="monospace" font-size="14" fill="#435645">base02 = "#b3c4ba" # Moonlit canopy</text>

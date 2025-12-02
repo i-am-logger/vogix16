@@ -38,25 +38,25 @@
   <text x="60" y="360" font-family="monospace" font-size="14" fill="#A19A95"># Functional colors</text>
   
   <rect x="60" y="380" width="20" height="20" rx="2" fill="#CC3F26"/>
-  <text x="90" y="395" font-family="monospace" font-size="14" fill="#CC3F26">base08 = "#CC3F26" # Error - Lava Red</text>
-  
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#CC3F26">base08 = "#CC3F26" # Error</text>
+
   <rect x="60" y="410" width="20" height="20" rx="2" fill="#DE7C31"/>
-  <text x="90" y="425" font-family="monospace" font-size="14" fill="#DE7C31">base09 = "#DE7C31" # Warning - Ember Orange</text>
-  
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#DE7C31">base09 = "#DE7C31" # Warning</text>
+
   <rect x="60" y="440" width="20" height="20" rx="2" fill="#E8B026"/>
-  <text x="90" y="455" font-family="monospace" font-size="14" fill="#E8B026">base0A = "#E8B026" # Notice - Sulfur Yellow</text>
-  
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#E8B026">base0A = "#E8B026" # Notice</text>
+
   <rect x="60" y="470" width="20" height="20" rx="2" fill="#5D9F4F"/>
-  <text x="90" y="485" font-family="monospace" font-size="14" fill="#5D9F4F">base0B = "#5D9F4F" # Success - Verdant Green</text>
-  
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#5D9F4F">base0B = "#5D9F4F" # Success</text>
+
   <rect x="60" y="500" width="20" height="20" rx="2" fill="#5F9893"/>
-  <text x="90" y="515" font-family="monospace" font-size="14" fill="#5F9893">base0C = "#5F9893" # Selection - Mineral Cyan</text>
-  
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#5F9893">base0C = "#5F9893" # Selection</text>
+
   <rect x="60" y="530" width="20" height="20" rx="2" fill="#5878AA"/>
-  <text x="90" y="545" font-family="monospace" font-size="14" fill="#5878AA">base0D = "#5878AA" # Information - Ash Blue</text>
-  
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#5878AA">base0D = "#5878AA" # Information</text>
+
   <rect x="60" y="560" width="20" height="20" rx="2" fill="#9071B0"/>
-  <text x="90" y="575" font-family="monospace" font-size="14" fill="#9071B0">base0E = "#9071B0" # Focus - Amethyst Purple</text>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#9071B0">base0E = "#9071B0" # Focus</text>
   
   <!-- Light Theme Content -->
   <text x="560" y="80" font-family="monospace" font-size="14" fill="#3F3734"># Volcanic monochromatic scale (light to dark)</text>
@@ -88,23 +88,23 @@
   <text x="560" y="360" font-family="monospace" font-size="14" fill="#3F3734"># Functional colors</text>
   
   <rect x="560" y="380" width="20" height="20" rx="2" fill="#A8301F"/>
-  <text x="590" y="395" font-family="monospace" font-size="14" fill="#A8301F">base08 = "#A8301F" # Error - Dark Lava Red</text>
-  
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#A8301F">base08 = "#A8301F" # Error</text>
+
   <rect x="560" y="410" width="20" height="20" rx="2" fill="#B45A1C"/>
-  <text x="590" y="425" font-family="monospace" font-size="14" fill="#B45A1C">base09 = "#B45A1C" # Warning - Dark Ember Orange</text>
-  
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#B45A1C">base09 = "#B45A1C" # Warning</text>
+
   <rect x="560" y="440" width="20" height="20" rx="2" fill="#A47B16"/>
-  <text x="590" y="455" font-family="monospace" font-size="14" fill="#A47B16">base0A = "#A47B16" # Notice - Dark Sulfur Yellow</text>
-  
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#A47B16">base0A = "#A47B16" # Notice</text>
+
   <rect x="560" y="470" width="20" height="20" rx="2" fill="#3C7232"/>
-  <text x="590" y="485" font-family="monospace" font-size="14" fill="#3C7232">base0B = "#3C7232" # Success - Dark Verdant Green</text>
-  
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#3C7232">base0B = "#3C7232" # Success</text>
+
   <rect x="560" y="500" width="20" height="20" rx="2" fill="#3B6A67"/>
-  <text x="590" y="515" font-family="monospace" font-size="14" fill="#3B6A67">base0C = "#3B6A67" # Selection - Dark Mineral Cyan</text>
-  
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#3B6A67">base0C = "#3B6A67" # Selection</text>
+
   <rect x="560" y="530" width="20" height="20" rx="2" fill="#3C5985"/>
-  <text x="590" y="545" font-family="monospace" font-size="14" fill="#3C5985">base0D = "#3C5985" # Information - Dark Ash Blue</text>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#3C5985">base0D = "#3C5985" # Information</text>
   
   <rect x="560" y="560" width="20" height="20" rx="2" fill="#614F85"/>
-  <text x="590" y="575" font-family="monospace" font-size="14" fill="#614F85">base0E = "#614F85" # Focus - Dark Amethyst Purple</text>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#614F85">base0E = "#614F85" # Focus</text>
 </svg>

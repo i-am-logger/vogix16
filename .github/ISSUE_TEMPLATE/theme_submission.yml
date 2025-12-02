@@ -1,0 +1,103 @@
+name: Theme Submission
+description: Submit a new theme for inclusion in Vogix16
+title: "[Theme]: "
+labels: ["theme", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing a theme! Please provide the following information.
+
+  - type: input
+    id: theme-name
+    attributes:
+      label: Theme Name
+      description: What is the name of your theme?
+      placeholder: nordic-aurora
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Theme Category
+      description: Which category best fits your theme?
+      options:
+        - Natural (nature-inspired, organic)
+        - Hacker (tech, cyberpunk, terminal)
+        - Modern (contemporary, clean, minimalist)
+        - Vintage (retro, nostalgic, classic)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Theme Description
+      description: Describe your theme's inspiration and characteristics
+      placeholder: A theme inspired by the aurora borealis with cool blues and greens...
+    validations:
+      required: true
+
+  - type: textarea
+    id: colors
+    attributes:
+      label: Color Palette (Dark Variant)
+      description: Provide the dark variant colors
+      placeholder: |
+        base00 = "#1a1a2e"
+        base01 = "#252540"
+        base02 = "#303050"
+        ...
+      render: nix
+    validations:
+      required: true
+
+  - type: textarea
+    id: colors-light
+    attributes:
+      label: Color Palette (Light Variant)
+      description: Provide the light variant colors
+      placeholder: |
+        base00 = "#f5f5fa"
+        base01 = "#e5e5ef"
+        ...
+      render: nix
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Add screenshots showing the theme in action (optional but recommended)
+      placeholder: Drag and drop images here or paste URLs
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing
+      description: Describe how you've tested the theme
+      placeholder: |
+        - Tested with alacritty, btop, console
+        - Verified contrast ratios
+        - Both variants work correctly
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Theme Requirements
+      options:
+        - label: Theme follows the Vogix16 design system (see docs/design-system.md)
+          required: true
+        - label: Both dark and light variants are provided
+          required: true
+        - label: All 16 colors (base00-base0F) are defined
+          required: true
+        - label: Functional colors follow semantic meaning
+          required: true
+        - label: Theme has been tested with at least one application
+          required: true
+        - label: I have read CONTRIBUTING.md
+          required: true

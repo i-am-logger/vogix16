@@ -9,24 +9,30 @@
 Vogix16 is inspired by Base16, but with key differences:
 
 ### Base Colors (Monochromatic UI Foundation)
-- **base00**: Background - Primary surface color (darkest in dark mode, lightest in light mode)
-- **base01**: Alternative Surfaces - Secondary panels, cards, subtle containers
-- **base02**: Subtle Highlights - Hover states, inactive selections, subtle differentiators
-- **base03**: Muted Elements - Secondary information, disabled content, placeholders
-- **base04**: Borders & Dividers - Separators, outlines, structural elements
-- **base05**: Body Text - Primary content text and interface elements
-- **base06**: Emphasized Content - Headings, highlighted content, important text
-- **base07**: High Contrast Elements - Highest visibility elements (lightest in dark mode, darkest in light mode)
+
+When using Vogix16 in NixOS/home-manager, these colors are exposed with semantic names:
+
+- **base00** (`background`): Main background - Primary surface color (darkest in dark mode, lightest in light mode)
+- **base01** (`background-surface`): Alternative surfaces - Secondary panels, cards, subtle containers
+- **base02** (`background-selection`): Selection background - Hover states, active selections
+- **base03** (`foreground-comment`): Comments - Disabled content, subtle text, placeholders
+- **base04** (`foreground-border`): Borders & dividers - Separators, outlines, structural elements
+- **base05** (`foreground-text`): Main text - Primary content text and interface elements
+- **base06** (`foreground-heading`): Headings - Emphasized content, important text
+- **base07** (`foreground-bright`): High contrast - Highest visibility elements (lightest in dark mode, darkest in light mode)
 
 ### Functional Colors (Semantic Purpose Colors)
-- **base08**: Error/Danger - Error states, destructive actions, critical alerts
-- **base09**: Warning/Caution - Warning indicators, important notifications, cautionary elements
-- **base0A**: Notice/Attention - Status notifications, announcements, noteworthy information
-- **base0B**: Success/Confirmed - Success states, completed actions, positive indicators
-- **base0C**: Active/Current - Current selection, active element, focused content
-- **base0D**: Information/Interactive - Clickable elements, links, primary actions, informational content
-- **base0E**: Focus/Highlight - Focus indicators, highlighted content, secondary actions
-- **base0F**: Special States - System messages, specialized indicators, tertiary elements
+
+When using Vogix16 in NixOS/home-manager, these colors are exposed with semantic names:
+
+- **base08** (`danger`): Error/danger - Error states, destructive actions, critical alerts
+- **base09** (`warning`): Warning/caution - Warning indicators, important notifications, cautionary elements
+- **base0A** (`notice`): Notice/attention - Status notifications, announcements, noteworthy information
+- **base0B** (`success`): Success/confirmed - Success states, completed actions, positive indicators
+- **base0C** (`active`): Active/current - Current selection, active element, focused content
+- **base0D** (`link`): Links/interactive - Clickable elements, links, primary actions, informational content
+- **base0E** (`highlight`): Focus/highlight - Focus indicators, highlighted content, secondary actions
+- **base0F** (`special`): Special states - System messages, specialized indicators, tertiary elements
 
 > **Important**: Vogix16 defines functional colors by their semantic purpose, not by specific hues. While traditional color associations (red for errors, green for success) may be used, they are not required. What matters is that each functional color maintains its semantic meaning consistently across all interfaces and themes.
 

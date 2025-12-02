@@ -1,41 +1,146 @@
 # Vogix16
 
+[![CI](https://github.com/i-am-logger/vogix16/actions/workflows/ci.yml/badge.svg)](https://github.com/i-am-logger/vogix16/actions/workflows/ci.yml)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![NixOS](https://img.shields.io/badge/NixOS-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
+[![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+
 > Functional colors for minimalist minds.
 
-A minimalist design system that focuses on functional color usage. Vogix16 uses a carefully defined color palette where colors are primarily reserved for functional elements like status indicators, interactive controls, and system states.
+A minimalist design system and runtime theme management system for NixOS. Vogix16 combines a 16-color palette with functional semantic meaning, providing dynamic theme switching without requiring system rebuilds.
 
-## What is Vogix16?
+## Features
 
-Vogix16 is both a design system and a runtime theme management system specifically designed for NixOS:
+- **16-Color Design System**: Monochromatic base (base00-base07) + functional colors (base08-base0F)
+- **Runtime Theme Switching**: Change themes without NixOS rebuilds
+- **Dark/Light Variants**: Automatic variant switching with maintained semantic meaning
+- **Multiple Reload Methods**: DBus, Unix signals, Sway IPC, filesystem watching
+- **Nix-Based Theme Generation**: All theme configurations pre-generated at build time
+- **NixOS Integration**: Home Manager module with systemd service
+- **Shell Completions**: Support for Bash, Zsh, Fish, PowerShell, Elvish
 
-- **Design System**: A minimalist approach to UI colors that assigns functional meaning to each color in the palette. [Learn more about the design system →](docs/design-system.md)
-- **Runtime Theme Management**: A complete system for switching themes dynamically without requiring NixOS rebuilds
-- **Practical Implementation**: Combines design principles with technical implementation for a cohesive experience
+## Quick Start
 
-While inspired by Base16, Vogix16 places greater emphasis on semantic color meaning and provides runtime tools to make theme switching seamless across the entire desktop environment. See the [architecture overview](docs/architecture.md) for details on directory structure and theme processing implementation, and [CLI documentation](docs/cli.md) for usage instructions.
+### Installation (NixOS with Flakes)
+
+Add to your `flake.nix`:
+
+```nix
+{
+  inputs.vogix16.url = "github:i-am-logger/vogix16";
+
+  outputs = { nixpkgs, home-manager, vogix16, ... }: {
+    homeConfigurations.youruser = home-manager.lib.homeManagerConfiguration {
+      modules = [
+        vogix16.homeManagerModules.default
+        {
+          # Enable applications you want to theme
+          programs.alacritty.enable = true;
+          programs.btop.enable = true;
+
+          # Configure vogix16
+          programs.vogix16 = {
+            enable = true;
+            defaultTheme = "aikido";
+            defaultVariant = "dark";
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+### Usage
+
+```bash
+# Check current theme and variant
+vogix status
+
+# List available themes
+vogix list
+
+# Switch themes
+vogix theme forest
+
+# Toggle between dark and light variants
+vogix switch
+
+# Generate shell completions
+vogix completions bash > ~/.local/share/bash-completion/completions/vogix
+```
+
+## Testing
+
+Vogix16 includes comprehensive automated integration tests:
+
+```bash
+# Run all tests
+./test.sh
+
+# Or use nix directly
+nix flake check
+```
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+## Documentation
+
+- [Design System](docs/design-system.md) - Color philosophy and Vogix16 format
+- [Architecture](docs/architecture.md) - System architecture and integration
+- [CLI Reference](docs/cli.md) - Command-line interface guide
+- [Theming Guide](docs/theming.md) - Creating and customizing themes
+- [Reload Mechanisms](docs/reload.md) - Application reload methods
+- [Development Guide](DEVELOPMENT.md) - Setting up development environment
+- [Testing Guide](TESTING.md) - Automated testing documentation
+- [Implementation](IMPLEMENTATION.md) - Complete implementation details
+
+## Example Themes
+
+Vogix16 includes example themes demonstrating the design system:
+
+- **Aikido** - Grayscale monochromatic (default)
+- **Forest** - Green monochromatic
+
+Create custom themes by following the format in `themes/aikido.nix`.
 
 ## Philosophy
 
-Vogix follows a "less is more" approach to design:
+Vogix16 follows a "less is more" approach:
 
-- Colors are used intentionally and only where they provide functional value
-- Interface surfaces use a monochromatic color scale (which may be any color family, not just gray)
-- True distinct colors are reserved for elements that benefit from clear visual distinction
-- Dark and light variants maintain the same semantic color meanings
+- Colors used intentionally for functional value only
+- Interface surfaces use monochromatic scales
+- True distinct colors reserved for functional elements
+- Dark and light variants maintain semantic consistency
 
-## Theme Examples
+## Requirements
 
-Vogix16 includes a variety of themes that demonstrate its flexible design system:
-
-<img src="./assets/vogix16_aikido.svg" width="50%" alt="Vogix16 Aikido Theme Example">
-
-**[Browse the full theme catalog →](./themes/README.md)**
-
-Themes range from natural-inspired palettes to modern and vintage aesthetics, all while maintaining consistent functional color meanings regardless of the specific colors used. Check out our [theme format documentation](docs/theming.md) for creating and customizing themes, and the [reload mechanism documentation](docs/reload.md) for dynamic theme application.
+- NixOS (for full integration) or any Linux distribution (for standalone binary)
+- Rust Edition 2024
+- DBus (for DBus reload functionality)
+- Optional: Sway (for Sway IPC reload)
 
 ## License
 
-Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)
+Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) 4.0 International
 
-This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+See [LICENSE](LICENSE) for details.
 
+## Contributing
+
+Contributions welcome! Please:
+
+1. Run `./test.sh` to verify tests pass
+2. Follow the existing code style
+3. Update documentation as needed
+4. Add tests for new features
+
+## Acknowledgments
+
+Inspired by Base16, but with emphasis on semantic color meaning and runtime theme management.
+
+---
+
+**Maintainer**: [i-am-logger](https://github.com/i-am-logger)
+**Rust Edition**: 2024
+**Tests**: 16/16 passing ✅

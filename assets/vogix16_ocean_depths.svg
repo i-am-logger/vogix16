@@ -38,25 +38,25 @@
   <text x="60" y="360" font-family="monospace" font-size="14" fill="#5d839c"># Functional colors (bioluminescent)</text>
   
   <rect x="60" y="380" width="20" height="20" rx="2" fill="#ff475e"/>
-  <text x="90" y="395" font-family="monospace" font-size="14" fill="#ff475e">base08 = "#ff475e" # Error - Red plankton</text>
-  
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#ff475e">base08 = "#ff475e" # Error</text>
+
   <rect x="60" y="410" width="20" height="20" rx="2" fill="#ff9c5e"/>
-  <text x="90" y="425" font-family="monospace" font-size="14" fill="#ff9c5e">base09 = "#ff9c5e" # Warning - Sea star</text>
-  
+  <text x="90" y="425" font-family="monospace" font-size="14" fill="#ff9c5e">base09 = "#ff9c5e" # Warning</text>
+
   <rect x="60" y="440" width="20" height="20" rx="2" fill="#ffd373"/>
-  <text x="90" y="455" font-family="monospace" font-size="14" fill="#ffd373">base0A = "#ffd373" # Notice - Bioluminescent fungi</text>
-  
+  <text x="90" y="455" font-family="monospace" font-size="14" fill="#ffd373">base0A = "#ffd373" # Notice</text>
+
   <rect x="60" y="470" width="20" height="20" rx="2" fill="#60dfff"/>
-  <text x="90" y="485" font-family="monospace" font-size="14" fill="#60dfff">base0B = "#60dfff" # Success - Jellyfish blue</text>
-  
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#60dfff">base0B = "#60dfff" # Success</text>
+
   <rect x="60" y="500" width="20" height="20" rx="2" fill="#44ffd2"/>
-  <text x="90" y="515" font-family="monospace" font-size="14" fill="#44ffd2">base0C = "#44ffd2" # Selection - Algae glow</text>
-  
+  <text x="90" y="515" font-family="monospace" font-size="14" fill="#44ffd2">base0C = "#44ffd2" # Selection</text>
+
   <rect x="60" y="530" width="20" height="20" rx="2" fill="#72c2d1"/>
-  <text x="90" y="545" font-family="monospace" font-size="14" fill="#72c2d1">base0D = "#72c2d1" # Information - Deep sea creature</text>
-  
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#72c2d1">base0D = "#72c2d1" # Information</text>
+
   <rect x="60" y="560" width="20" height="20" rx="2" fill="#c39fff"/>
-  <text x="90" y="575" font-family="monospace" font-size="14" fill="#c39fff">base0E = "#c39fff" # Focus - Deep sea anemone</text>
+  <text x="90" y="575" font-family="monospace" font-size="14" fill="#c39fff">base0E = "#c39fff" # Focus</text>
   
   <!-- Light Theme Content -->
   <text x="560" y="80" font-family="monospace" font-size="14" fill="#2d4c69"># Ocean Depths monochromatic scale (light to dark)</text>
@@ -88,24 +88,24 @@
   <text x="560" y="360" font-family="monospace" font-size="14" fill="#2d4c69"># Functional colors (bioluminescent)</text>
   
   <rect x="560" y="380" width="20" height="20" rx="2" fill="#e03553"/>
-  <text x="590" y="395" font-family="monospace" font-size="14" fill="#e03553">base08 = "#e03553" # Error - Red plankton</text>
-  
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#e03553">base08 = "#e03553" # Error</text>
+
   <rect x="560" y="410" width="20" height="20" rx="2" fill="#e67e42"/>
-  <text x="590" y="425" font-family="monospace" font-size="14" fill="#e67e42">base09 = "#e67e42" # Warning - Sea star</text>
-  
+  <text x="590" y="425" font-family="monospace" font-size="14" fill="#e67e42">base09 = "#e67e42" # Warning</text>
+
   <rect x="560" y="440" width="20" height="20" rx="2" fill="#d9b44a"/>
-  <text x="590" y="455" font-family="monospace" font-size="14" fill="#d9b44a">base0A = "#d9b44a" # Notice - Bioluminescent fungi</text>
-  
+  <text x="590" y="455" font-family="monospace" font-size="14" fill="#d9b44a">base0A = "#d9b44a" # Notice</text>
+
   <rect x="560" y="470" width="20" height="20" rx="2" fill="#39b8df"/>
-  <text x="590" y="485" font-family="monospace" font-size="14" fill="#39b8df">base0B = "#39b8df" # Success - Jellyfish blue</text>
-  
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#39b8df">base0B = "#39b8df" # Success</text>
+
   <rect x="560" y="500" width="20" height="20" rx="2" fill="#1cd6ae"/>
-  <text x="590" y="515" font-family="monospace" font-size="14" fill="#1cd6ae">base0C = "#1cd6ae" # Selection - Algae glow</text>
-  
+  <text x="590" y="515" font-family="monospace" font-size="14" fill="#1cd6ae">base0C = "#1cd6ae" # Selection</text>
+
   <rect x="560" y="530" width="20" height="20" rx="2" fill="#4aa5b5"/>
-  <text x="590" y="545" font-family="monospace" font-size="14" fill="#4aa5b5">base0D = "#4aa5b5" # Information - Deep sea creature</text>
-  
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#4aa5b5">base0D = "#4aa5b5" # Information</text>
+
   <rect x="560" y="560" width="20" height="20" rx="2" fill="#9c7fdb"/>
-  <text x="590" y="575" font-family="monospace" font-size="14" fill="#9c7fdb">base0E = "#9c7fdb" # Focus - Deep sea anemone</text>
+  <text x="590" y="575" font-family="monospace" font-size="14" fill="#9c7fdb">base0E = "#9c7fdb" # Focus</text>
 </svg>
 

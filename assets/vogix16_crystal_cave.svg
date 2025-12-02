@@ -38,7 +38,7 @@
   <text x="60" y="360" font-family="monospace" font-size="14" fill="#9a82b0"># Functional colors (gemstone-inspired)</text>
   
   <rect x="60" y="380" width="20" height="20" rx="2" fill="#8a2be2"/>
-  <text x="90" y="395" font-family="monospace" font-size="14" fill="#8a2be2">base08 = "#8a2be2" # Error - deep amethyst</text>
+  <text x="90" y="395" font-family="monospace" font-size="14" fill="#8a2be2">base08 = "#8a2be2" # Error</text>
   
   <rect x="60" y="410" width="20" height="20" rx="2" fill="#e3a857"/>
   <text x="90" y="425" font-family="monospace" font-size="14" fill="#e3a857">base09 = "#e3a857" # Warning - citrine amber</text>
@@ -47,13 +47,13 @@
   <text x="90" y="455" font-family="monospace" font-size="14" fill="#d4af37">base0A = "#d4af37" # Notice - gold</text>
   
   <rect x="60" y="470" width="20" height="20" rx="2" fill="#7fffd4"/>
-  <text x="90" y="485" font-family="monospace" font-size="14" fill="#7fffd4">base0B = "#7fffd4" # Success - aquamarine</text>
+  <text x="90" y="485" font-family="monospace" font-size="14" fill="#7fffd4">base0B = "#7fffd4" # Success</text>
   
   <rect x="60" y="500" width="20" height="20" rx="2" fill="#66cdaa"/>
   <text x="90" y="515" font-family="monospace" font-size="14" fill="#66cdaa">base0C = "#66cdaa" # Selection - jade</text>
   
   <rect x="60" y="530" width="20" height="20" rx="2" fill="#f7cac9"/>
-  <text x="90" y="545" font-family="monospace" font-size="14" fill="#f7cac9">base0D = "#f7cac9" # Information - rose quartz</text>
+  <text x="90" y="545" font-family="monospace" font-size="14" fill="#f7cac9">base0D = "#f7cac9" # Information</text>
   
   <rect x="60" y="560" width="20" height="20" rx="2" fill="#b76e79"/>
   <text x="90" y="575" font-family="monospace" font-size="14" fill="#b76e79">base0E = "#b76e79" # Focus - ruby</text>
@@ -88,7 +88,7 @@
   <text x="560" y="360" font-family="monospace" font-size="14" fill="#5a4478"># Functional colors (gemstone-inspired)</text>
   
   <rect x="560" y="380" width="20" height="20" rx="2" fill="#6a0dad"/>
-  <text x="590" y="395" font-family="monospace" font-size="14" fill="#6a0dad">base08 = "#6a0dad" # Error - deep amethyst</text>
+  <text x="590" y="395" font-family="monospace" font-size="14" fill="#6a0dad">base08 = "#6a0dad" # Error</text>
   
   <rect x="560" y="410" width="20" height="20" rx="2" fill="#b8860b"/>
   <text x="590" y="425" font-family="monospace" font-size="14" fill="#b8860b">base09 = "#b8860b" # Warning - citrine amber</text>
@@ -97,13 +97,13 @@
   <text x="590" y="455" font-family="monospace" font-size="14" fill="#aa8c30">base0A = "#aa8c30" # Notice - gold</text>
   
   <rect x="560" y="470" width="20" height="20" rx="2" fill="#45a397"/>
-  <text x="590" y="485" font-family="monospace" font-size="14" fill="#45a397">base0B = "#45a397" # Success - aquamarine</text>
+  <text x="590" y="485" font-family="monospace" font-size="14" fill="#45a397">base0B = "#45a397" # Success</text>
   
   <rect x="560" y="500" width="20" height="20" rx="2" fill="#3aab87"/>
   <text x="590" y="515" font-family="monospace" font-size="14" fill="#3aab87">base0C = "#3aab87" # Selection - jade</text>
   
   <rect x="560" y="530" width="20" height="20" rx="2" fill="#c48c8d"/>
-  <text x="590" y="545" font-family="monospace" font-size="14" fill="#c48c8d">base0D = "#c48c8d" # Information - rose quartz</text>
+  <text x="590" y="545" font-family="monospace" font-size="14" fill="#c48c8d">base0D = "#c48c8d" # Information</text>
   
   <rect x="560" y="560" width="20" height="20" rx="2" fill="#9b3a47"/>
   <text x="590" y="575" font-family="monospace" font-size="14" fill="#9b3a47">base0E = "#9b3a47" # Focus - ruby</text>
