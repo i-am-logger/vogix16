@@ -1,4 +1,9 @@
-{ pkgs, home-manager, self, ... }:
+{
+  pkgs,
+  home-manager,
+  self,
+  ...
+}:
 
 let
   # Import the test-vm configuration
@@ -8,11 +13,13 @@ let
   themesDir = ../../themes;
   themeFiles = builtins.readDir themesDir;
   allThemes = builtins.listToAttrs (
-    builtins.map (filename:
+    builtins.map (
+      filename:
       let
-        name = builtins.replaceStrings [".nix"] [""] filename;
+        name = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
         theme = import (themesDir + "/${filename}");
-      in {
+      in
+      {
         inherit name;
         value = {
           dark = theme.dark;
@@ -29,32 +36,34 @@ in
 pkgs.testers.nixosTest {
   name = "vogix16-integration-test";
 
-  nodes.machine = { config, lib, ... }: {
-    imports = [
-      testVMConfig
-      self.nixosModules.default
-      home-manager.nixosModules.home-manager
-    ];
+  nodes.machine =
+    { config, lib, ... }:
+    {
+      imports = [
+        testVMConfig
+        self.nixosModules.default
+        home-manager.nixosModules.home-manager
+      ];
 
-    # Pass themesPath to both NixOS and home-manager modules
-    _module.args.themesPath = "${self}/themes";
+      # Pass themesPath to both NixOS and home-manager modules
+      _module.args.themesPath = "${self}/themes";
 
-    # Make vogix package available
-    nixpkgs.overlays = [
-      (final: prev: {
-        vogix = self.packages.x86_64-linux.vogix;
-      })
-    ];
+      # Make vogix package available
+      nixpkgs.overlays = [
+        (final: prev: {
+          vogix = self.packages.x86_64-linux.vogix;
+        })
+      ];
 
-    # Configure home-manager
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.users.vogix = import ./home.nix;
-    home-manager.sharedModules = [ self.homeManagerModules.default ];
-    home-manager.extraSpecialArgs = {
-      themesPath = "${self}/themes";
+      # Configure home-manager
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.users.vogix = import ./home.nix;
+      home-manager.sharedModules = [ self.homeManagerModules.default ];
+      home-manager.extraSpecialArgs = {
+        themesPath = "${self}/themes";
+      };
     };
-  };
 
   testScript = ''
     import time
@@ -71,8 +80,8 @@ pkgs.testers.nixosTest {
     # Wait for user session to be ready
     time.sleep(2)  # Give user session time to initialize
 
-    print("=== Test 1: Vogix16 Binary Exists ===")
-    machine.succeed("which vogix16")
+    print("=== Test 1: Vogix Binary Exists ===")
+    machine.succeed("which vogix")
     print("✓ vogix binary found")
 
     print("\n=== Test 1.5: Verify Linux Console Colors Are Set ===")
