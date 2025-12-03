@@ -5,6 +5,18 @@ All notable changes to Vogix16 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0](https://github.com/i-am-logger/vogix16/compare/v0.1.1...v1.0.0) (2025-12-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Templates directory removed - themes are now generated directly by Nix modules
+
+### Bug Fixes
+
+* resolve theme loading issues and improve development workflow ([946e62b](https://github.com/i-am-logger/vogix16/commit/946e62b626b9465d128030dd8bbd79436a036021))
+* resolve theme loading issues and improve development workflow ([da38cad](https://github.com/i-am-logger/vogix16/commit/da38cad5b974da8ebfc84b9cb8583dc6dc4c1652))
+
 ## [0.1.1](https://github.com/i-am-logger/vogix16/compare/v0.1.0...v0.1.1) (2025-12-02)
 
 
