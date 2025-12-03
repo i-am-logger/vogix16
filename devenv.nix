@@ -20,6 +20,7 @@ in
     pkgs.git
     pkgs.dbus
     pkgs.pkg-config
+    pkgs.nixpkgs-fmt
   ];
 
   # Development scripts
@@ -99,6 +100,7 @@ in
   git-hooks.hooks = {
     rustfmt.enable = true;
     clippy.enable = true;
+    nixpkgs-fmt.enable = true;
   };
 
   # https://devenv.sh/tasks/
