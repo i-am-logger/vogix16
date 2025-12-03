@@ -1,6 +1,5 @@
 # Vogix16
-
-[![CI](https://github.com/i-am-logger/vogix16/actions/workflows/ci.yml/badge.svg)](https://github.com/i-am-logger/vogix16/actions/workflows/ci.yml)
+[![CI and Release](https://github.com/i-am-logger/vogix16/actions/workflows/ci-and-release.yml/badge.svg?branch=master)](https://github.com/i-am-logger/vogix16/actions/workflows/ci-and-release.yml)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![NixOS](https://img.shields.io/badge/NixOS-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
 [![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust&logoColor=white)](https://www.rust-lang.org/)
