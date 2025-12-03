@@ -408,19 +408,25 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
 
 A single, efficient workflow handles both CI and releases with smart job dependencies:
 
+**All CI jobs run in parallel for maximum speed:**
+
 **Job 1: Fast Checks**
 - `devenv-checks` - Runs `devenv test` which executes all git hooks:
   - Nix code formatting (nixpkgs-fmt)
   - Rust formatting (rustfmt)
   - Rust linting (clippy)
 
-**Job 2: Build & Test** (depends on formatting passing)
-- `nix-checks-and-tests`:
+**Job 2: Nix Checks** (parallel with Job 1 & 3)
+- `nix-checks`:
   - Runs `nix flake check` (includes Rust tests)
-  - Runs integration tests (`./test.sh`)
   - Builds Nix package
 
-**Job 3: Release** (depends on all CI passing)
+**Job 3: Integration Tests** (parallel with Job 1 & 2)
+- `integration-tests`:
+  - Runs integration tests (`./test.sh`)
+  - Tests VM-based functionality
+
+**Job 4: Release** (depends on all CI passing)
 - `release-please`:
   - Creates/updates release PRs from conventional commits
   - Creates Git tags when release PRs are merged
@@ -431,9 +437,9 @@ A single, efficient workflow handles both CI and releases with smart job depende
 - Skips CI on release-please PRs (version bump only)
 - Uses `devenv test` - same checks as local development
 - Formatting/linting fails fast (10-30 seconds) before expensive builds
-- Integration tests reuse Nix cache from flake check
+- All three CI jobs run in parallel for maximum speed
 - Release job explicitly depends on all CI jobs passing
-- Total: 3 jobs instead of original 6 (50% reduction)
+- Total: 4 jobs instead of original 6 (33% reduction)
 
 ### Binary Releases (`.github/workflows/release.yml`)
 - Builds for x86_64-linux and aarch64-linux

@@ -37,8 +37,8 @@ jobs:
       - name: Run format & lint checks
         run: devenv test
 
-  nix-checks-and-tests:
-    name: Nix Checks & Integration Tests
+  nix-checks:
+    name: Nix Flake Check
     runs-on: ubuntu-latest
     # Skip CI for release-please PRs and release merges (only version bumps)
     if: |
@@ -60,6 +60,26 @@ jobs:
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    # Skip CI for release-please PRs and release merges (only version bumps)
+    if: |
+      !(
+        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
+        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
+      )
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
       - name: Enable KVM (for VM tests)
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -77,8 +97,9 @@ jobs:
       github.event_name == 'push' &&
       github.ref == 'refs/heads/master' &&
       (needs.devenv-checks.result == 'success' || needs.devenv-checks.result == 'skipped') &&
-      (needs.nix-checks-and-tests.result == 'success' || needs.nix-checks-and-tests.result == 'skipped')
-    needs: [devenv-checks, nix-checks-and-tests]
+      (needs.nix-checks.result == 'success' || needs.nix-checks.result == 'skipped') &&
+      (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped')
+    needs: [devenv-checks, nix-checks, integration-tests]
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
