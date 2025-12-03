@@ -1,4 +1,4 @@
-{ lib }:
+{ lib, appLib }:
 
 {
   # Config file path relative to ~/.config/btop/
