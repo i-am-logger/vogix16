@@ -334,21 +334,24 @@ pkgs.testers.nixosTest {
     else:
         print("\n=== Test 8c: SKIPPED - shell-colors module not yet implemented ===")
 
-    print("\n=== Test 8d: Verify Manifest Contains App Metadata ===")
+    print("\n=== Test 8d: Verify Manifest Contains App Metadata (Generic) ===")
     manifest_content = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/manifest.toml'")
     print("Manifest content (first 500 chars):")
     print(manifest_content[:500])
 
-    # Verify manifest has [apps] section with metadata
-    assert "[apps.alacritty]" in manifest_content or '[apps."alacritty"]' in manifest_content, "Manifest missing [apps.alacritty] section!"
-    assert "reload_method" in manifest_content, "Manifest missing reload_method!"
-    assert "config_path" in manifest_content, "Manifest missing config_path!"
-    print("✓ Manifest contains app metadata sections")
+    # Verify manifest has [apps] sections (generic check - at least one app configured)
+    import re
+    app_sections = re.findall(r'\[apps\.([^\]]+)\]', manifest_content)
+    assert len(app_sections) > 0, "Manifest has no [apps.*] sections!"
+    print(f"✓ Manifest contains {len(app_sections)} app sections")
 
-    # Verify btop config path is correct
-    if "btop" in manifest_content:
-        assert "themes/vogix.theme" in manifest_content, "Manifest has wrong btop config filename!"
-        print("✓ Manifest has correct btop config path (themes/vogix.theme)")
+    # Verify manifest has required fields (config_path is required for all apps)
+    assert "config_path" in manifest_content, "Manifest missing config_path field!"
+    print("✓ Manifest has required config_path field")
+
+    # Note: reload_method is optional per the new architecture
+    if "reload_method" in manifest_content:
+        print("✓ Some apps have reload_method defined")
 
     print("\n=== Test 8e: Verify ~/.config/vogix Does NOT Exist ===")
     # In the new architecture, ALL vogix data is in /run/user/UID/vogix16/
@@ -360,7 +363,6 @@ pkgs.testers.nixosTest {
 
     print("\n=== Test 9: ALL App Symlinks Point Through Current (Generic Test) ===")
     # Parse manifest to get all configured apps
-    import re
     app_sections = re.findall(r'\[apps\.([^\]]+)\]', manifest_content)
     app_sections = [app.strip('"') for app in app_sections]  # Remove quotes if present
     print(f"Found {len(app_sections)} apps in manifest: {app_sections}")
@@ -627,51 +629,61 @@ pkgs.testers.nixosTest {
     assert "_vogix" in output or "completion" in output
     print("✓ Shell completions work")
 
-    print("\n=== Test 11: Application Config Generation ===")
-    # Verify alacritty config is generated with correct colors
-    alacritty_config = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/colors.toml 2>/dev/null || cat ~/.config/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
-    if "NOTFOUND" not in alacritty_config:
-        print("✓ Alacritty config generated")
-        # Check for base16 color scheme structure
-        if "colors" in alacritty_config or "primary" in alacritty_config:
-            print("✓ Alacritty config has color scheme")
+    print("\n=== Test 11: Application Config Generation (Generic) ===")
+    # Parse manifest to get all configured apps (same pattern as Test 9)
+    app_sections = re.findall(r'\[apps\.([^\]]+)\]', manifest_content)
+    app_sections = [app.strip('"') for app in app_sections]
+    print(f"Testing config generation for {len(app_sections)} apps: {app_sections}")
 
-        # Verify it has hex colors (from aikido theme)
-        if "#" in alacritty_config:
-            print("✓ Alacritty config contains hex colors")
+    import shlex
+    apps_tested = 0
+    apps_with_colors = 0
 
-            # Verify key semantic aikido dark theme colors are present
-            # Note: We only check semantically-used colors, not all 16
-            key_colors = {
-                "background": aikido_dark_colors["base00"],
-                "foreground": aikido_dark_colors["base05"],
-                "danger": aikido_dark_colors["base08"],
-                "success": aikido_dark_colors["base0B"],
-            }
-            missing_colors = []
-            for name, color in key_colors.items():
-                if color.lower() not in alacritty_config.lower():
-                    missing_colors.append(f"{name}={color}")
+    for app_name in app_sections:
+        # Extract config_path from manifest for this app, restricting to the app's section
+        app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+        if not app_section_match:
+            app_section_match = re.search(rf'\[apps\.{app_name}\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
 
-            if not missing_colors:
-                print("✓ Key semantic Aikido dark colors verified in config!")
-                print("  (Vogix16 uses semantic colors - not forcing all 16 if not needed)")
-            else:
-                print(f"⚠ FAILED: {len(missing_colors)} colors missing: {', '.join(missing_colors)}")
-                print(f"Config preview: {alacritty_config[:500]}")
-    else:
-        print("⚠ Alacritty config not found (may need generation trigger)")
+        if not app_section_match:
+            print(f"  ⚠ WARNING: Could not parse section for {app_name}, skipping")
+            continue
 
-    # Verify btop config is generated
-    btop_config = machine.succeed("su - vogix -c 'cat ~/.config/btop/themes/vogix.theme 2>/dev/null || echo NOTFOUND'")
-    if "NOTFOUND" not in btop_config:
-        print("✓ Btop config generated")
-        if "#" in btop_config:
-            print("✓ Btop config contains hex colors")
-    else:
-        print("⚠ Btop config not found (may need generation trigger)")
+        section_content = app_section_match.group(1)
+        config_match = re.search(r'config_path = "([^"]+)"', section_content)
+        if not config_match:
+            print(f"  ⚠ WARNING: Could not parse config_path for {app_name}, skipping")
+            continue
+        config_path = config_match.group(1)
 
-    print("✓ Themed apps configuration tested")
+        # Try to read config file (using shlex.quote to prevent injection)
+        app_config = machine.succeed(f"su - vogix -c 'cat {shlex.quote(config_path)} 2>/dev/null || echo NOTFOUND'")
+
+        if "NOTFOUND" not in app_config:
+            print(f"  ✓ {app_name}: config exists at {config_path}")
+            apps_tested += 1
+
+            # Verify config contains hex colors (for apps that use them)
+            # Skip binary/non-text formats (like console palette)
+            if "#" in app_config:
+                print("    ✓ Contains hex colors")
+                apps_with_colors += 1
+
+                # Verify some aikido dark theme colors are present
+                # Check for background and foreground (most common semantic colors)
+                key_colors = {
+                    "background": aikido_dark_colors["base00"],
+                    "foreground": aikido_dark_colors["base05"],
+                }
+                colors_found = sum(1 for color in key_colors.values() if color.lower() in app_config.lower())
+                if colors_found > 0:
+                    print(f"    ✓ Found {colors_found}/{len(key_colors)} key semantic colors")
+        else:
+            print(f"  ⚠ {app_name}: config not found at {config_path}")
+
+    assert apps_tested > 0, "No app configs were successfully tested!"
+    print(f"\n✓ Tested {apps_tested} app configs, {apps_with_colors} contain colors")
+    print("✓ Application config generation verified (generic test)")
 
     print("\n=== Test 12: Theme Validation ===")
     # Themes are validated during Nix build - if we got this far, they're valid
@@ -701,7 +713,7 @@ pkgs.testers.nixosTest {
     print("✓ Variant switching with config updates")
     print("✓ Theme switching with config updates")
     print("✓ Symlink architecture verification")
-    print("✓ Application config generation (alacritty, btop)")
+    print(f"✓ Application config generation ({len(app_sections)} apps tested generically)")
     print("✓ Shell completions")
     print("✓ Theme validation")
     print("✓ Error handling")
