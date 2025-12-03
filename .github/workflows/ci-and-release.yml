@@ -1,15 +1,14 @@
-name: CI
+name: CI and Release
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
-    # Skip CI for release-please PRs since they only update version files
-    paths-ignore:
-      - 'CHANGELOG.md'
-      - 'Cargo.toml'  # Only version bumps
-      - '.release-please-manifest.json'
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   rust-checks:
@@ -94,3 +93,17 @@ jobs:
 
       - name: Build package
         run: nix build .#packages.x86_64-linux.default --print-build-logs
+
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [rust-checks, nix-checks, integration-tests, build-package]
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: rust
