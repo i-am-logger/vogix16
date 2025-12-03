@@ -97,6 +97,7 @@
               rust-analyzer
               pkg-config
               dbus
+              nixpkgs-fmt
             ];
           };
         }
