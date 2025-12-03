@@ -54,7 +54,7 @@
   # Options: "touch", "signal", "command"
   # If omitted, no reload action will be performed
   reloadMethod = {
-    method = "touch";  # or "signal", "command"
+    method = "touch"; # or "signal", "command"
 
     # If method = "signal":
     # signal = "SIGUSR1";

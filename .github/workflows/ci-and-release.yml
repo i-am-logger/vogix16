@@ -11,8 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  format-nix:
-    name: Nix Formatting
+  devenv-checks:
+    name: Format & Lint (devenv)
     runs-on: ubuntu-latest
     # Skip CI for release-please PRs and release merges (only version bumps)
     if: |
@@ -28,37 +28,14 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@main
         with:
           extra-conf: |
-            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
-            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org https://devenv.cachix.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
 
-      - name: Check Nix formatting
-        run: nix develop --command nixpkgs-fmt --check .
+      - name: Install devenv
+        run: nix profile install nixpkgs#devenv
 
-  rust-checks:
-    name: Rust Formatting & Linting
-    runs-on: ubuntu-latest
-    # Skip CI for release-please PRs and release merges (only version bumps)
-    if: |
-      !(
-        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
-        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
-      )
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-        with:
-          extra-conf: |
-            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
-            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
-
-      - name: Check Rust formatting
-        run: nix develop --command cargo fmt --check
-
-      - name: Run Clippy
-        run: nix develop --command cargo clippy -- -D warnings
+      - name: Run format & lint checks
+        run: devenv test
 
   nix-checks-and-tests:
     name: Nix Checks & Integration Tests
@@ -69,7 +46,7 @@ jobs:
         (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
         (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
       )
-    needs: [format-nix, rust-checks]
+    needs: [devenv-checks]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -1,7 +1,6 @@
-{
-  pkgs,
-  config,
-  ...
+{ pkgs
+, config
+, ...
 }:
 let
   cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
@@ -101,6 +100,26 @@ in
     rustfmt.enable = true;
     clippy.enable = true;
     nixpkgs-fmt.enable = true;
+  };
+
+  # https://devenv.sh/outputs/
+  outputs = {
+    vogix = config.languages.rust.import ./. {
+      # Override to skip Windows-specific dependencies
+      crateOverrides = pkgs.defaultCrateOverrides // {
+        # Skip all Windows-specific crates
+        windows-sys = attrs: null;
+        windows-core = attrs: null;
+        windows-targets = attrs: null;
+        windows_x86_64_gnu = attrs: null;
+        windows_x86_64_msvc = attrs: null;
+        windows_i686_gnu = attrs: null;
+        windows_i686_msvc = attrs: null;
+        windows_aarch64_msvc = attrs: null;
+        windows_aarch64_gnullvm = attrs: null;
+        anstyle-wincon = attrs: null;
+      };
+    };
   };
 
   # https://devenv.sh/tasks/
