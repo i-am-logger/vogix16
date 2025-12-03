@@ -1,4 +1,4 @@
-{ lib }:
+{ lib, appLib }:
 
 {
   # Config file path relative to ~/.config/console/
@@ -22,12 +22,6 @@
   # Format: 16 lines with hex colors (e.g., #000000)
   generate = colors:
     let
-      # Ensure color has # prefix
-      ensureHash = color:
-        if lib.hasPrefix "#" color
-        then color
-        else "#${color}";
-
       # ANSI color mapping: Minimal by default - monochromatic + semantic only
       # Apps needing specific colors should have their own Vogix16 configs
       palette = [
@@ -48,10 +42,8 @@
         colors.foreground-heading # 14: Bright Cyan
         colors.foreground-bright # 15: Bright White
       ];
-
-      # Ensure all colors have # prefix
-      hexColors = map ensureHash palette;
     in
     # Return hexadecimal format: 16 lines with # prefix
-    lib.concatStringsSep "\n" hexColors;
+      # Theme colors already have # prefix, just join them
+    lib.concatStringsSep "\n" palette;
 }

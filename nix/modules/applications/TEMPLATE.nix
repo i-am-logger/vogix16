@@ -5,8 +5,12 @@
 # - configFile: Where the config should be placed (relative to ~/.config/app/)
 # - generate: Function that takes colors and returns theme config
 # - reloadMethod: How to reload the app (optional)
+#
+# Parameters:
+# - lib: nixpkgs lib functions
+# - appLib: Shared utility functions from lib.nix (hexToRgb, ensureHash, etc.)
 
-{ lib }:
+{ lib, appLib }:
 
 {
   # REQUIRED: Config file path relative to ~/.config/<app>/

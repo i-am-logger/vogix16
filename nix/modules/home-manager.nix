@@ -82,15 +82,20 @@ let
   applicationFiles = builtins.readDir applicationsDir;
   nixApplicationFiles = builtins.filter (f: lib.hasSuffix ".nix" f) (builtins.attrNames applicationFiles);
 
-  # Extract app names from filenames (e.g., "alacritty.nix" -> "alacritty")
-  availableApps = map (filename: builtins.replaceStrings [ ".nix" ] [ "" ] filename) nixApplicationFiles;
+  # Load shared utility functions for app modules
+  appLib = import ./applications/lib.nix { inherit lib; };
 
-  # Load all generators dynamically
+  # Extract app names from filenames (e.g., "alacritty.nix" -> "alacritty")
+  # Exclude lib.nix from the list of apps
+  availableApps = map (filename: builtins.replaceStrings [ ".nix" ] [ "" ] filename)
+    (builtins.filter (f: f != "lib.nix") nixApplicationFiles);
+
+  # Load all generators dynamically, passing appLib utilities
   appGenerators = lib.listToAttrs (
     map
       (appName: {
         name = appName;
-        value = import (applicationsDir + "/${appName}.nix") { inherit lib; };
+        value = import (applicationsDir + "/${appName}.nix") { inherit lib appLib; };
       })
       availableApps
   );
