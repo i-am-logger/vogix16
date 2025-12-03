@@ -151,10 +151,4 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guide
 
 ## Acknowledgments
 
-Inspired by Base16, but with emphasis on semantic color meaning and runtime theme management.
-
----
-
-**Maintainer**: [i-am-logger](https://github.com/i-am-logger)
-**Rust Edition**: 2024
-**Tests**: 16/16 passing ✅
+Vogix16 builds on the shoulders of [Base16](https://github.com/chriskempson/base16), which proved a 16-color palette could unify a system; [Stylix](https://github.com/nix-community/stylix), which made theming native to NixOS; and [Omarchy](https://github.com/basecamp/omarchy), which showed how seamless runtime theme switching could be. Each shaped what Vogix16 became.
