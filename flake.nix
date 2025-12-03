@@ -98,17 +98,22 @@
       );
 
       # Development shells - using devenv
-      devShells = forAllSystems (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-          default = devenv.lib.mkShell {
-            inherit inputs pkgs;
-            modules = [ ./devenv.nix ];
-          };
-        }
-      );
+      # Note: Use 'devenv shell' for development instead of 'nix develop'
+      # devShells commented out due to Windows dependencies issue in crate2nix evaluation
+      # devShells = forAllSystems (system:
+      #   let
+      #     pkgs = import nixpkgs {
+      #       inherit system;
+      #       config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
+      #     };
+      #   in
+      #   {
+      #     default = devenv.lib.mkShell {
+      #       inherit inputs pkgs;
+      #       modules = [ ./devenv.nix ];
+      #     };
+      #   }
+      # );
 
       # Apps for easy access
       apps = forAllSystems (system:

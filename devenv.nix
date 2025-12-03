@@ -1,5 +1,6 @@
 { pkgs
 , config
+, lib
 , ...
 }:
 let
@@ -9,6 +10,9 @@ let
   packageDescription = cargoToml.package.description or "";
 in
 {
+  # Set root explicitly for flake compatibility
+  devenv.root = lib.mkDefault (builtins.toString ./.);
+
   dotenv.enable = true;
   imports = [
     ./nix/rust.nix
