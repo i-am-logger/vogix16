@@ -29,6 +29,7 @@ let
     alacritty = "colors.toml";
     btop = "themes/vogix.theme";
     console = "palette";  # Binary palette file for setvtrgb
+    ripgrep = "ripgreprc";  # Config file for RIPGREP_CONFIG_PATH
     shell-colors = "colors.sh";
     ls-colors = "dircolors";
   }.${app} or "config";
@@ -440,6 +441,11 @@ MANIFEST_EOF
       Install = {
         WantedBy = [ "default.target" ];  # Run at user login
       };
+    };
+
+    # Set ripgrep config path environment variable
+    home.sessionVariables = mkIf (builtins.elem "ripgrep" themedApps) {
+      RIPGREP_CONFIG_PATH = "${config.xdg.configHome}/ripgrep/ripgreprc";
     };
 
     # Automatically source shell colors in bash (if shell-colors and ls-colors are auto-detected)
