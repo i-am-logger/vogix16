@@ -12,7 +12,7 @@
     defaultVariant = "dark";
     # Apps are auto-detected from enabled programs (alacritty, btop, bash, console)
     # You can disable individual apps with: alacritty.enable = false; etc.
-    enableDaemon = false;  # Disabled for tests - daemon requires home-manager/.config watch path
+    enableDaemon = false; # Disabled for tests - daemon requires home-manager/.config watch path
 
     # Themes are auto-discovered from ../../themes directory
     # No need to list them manually!
@@ -30,7 +30,7 @@
         size = 12;
       };
       env = {
-        TERM = "alacritty";  # Ensure true color support
+        TERM = "alacritty"; # Ensure true color support
       };
     };
   };
@@ -39,9 +39,9 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "vogix";  # Use vogix theme (managed by vogix16)
+      color_theme = "vogix"; # Use vogix theme (managed by vogix16)
       theme_background = false;
-      update_ms = 100;  # Refresh every 100ms for dynamic demo display
+      update_ms = 100; # Refresh every 100ms for dynamic demo display
     };
   };
 
@@ -65,7 +65,7 @@
       shutdown = "sudo systemctl poweroff";
     };
     sessionVariables = {
-      COLORTERM = "truecolor";  # Enable true color support
+      COLORTERM = "truecolor"; # Enable true color support
     };
     initExtra = ''
       # Show welcome message with theme info

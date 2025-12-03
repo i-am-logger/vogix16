@@ -1,0 +1,110 @@
+name: CI and Release
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  devenv-checks:
+    name: Format & Lint (devenv)
+    runs-on: ubuntu-latest
+    # Skip CI for release-please PRs and release merges (only version bumps)
+    if: |
+      !(
+        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
+        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
+      )
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org https://devenv.cachix.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
+
+      - name: Install devenv
+        run: nix profile install nixpkgs#devenv
+
+      - name: Run format & lint checks
+        run: devenv test
+
+  nix-checks:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    # Skip CI for release-please PRs and release merges (only version bumps)
+    if: |
+      !(
+        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
+        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
+      )
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+      - name: Run nix flake check
+        run: nix flake check --print-build-logs
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    # Skip CI for release-please PRs and release merges (only version bumps)
+    if: |
+      !(
+        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
+        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
+      )
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+
+      - name: Enable KVM (for VM tests)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run integration tests
+        run: ./test.sh
+
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    # Run on push to master, regardless of whether CI was skipped (release merges) or passed (regular merges)
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/master' &&
+      (needs.devenv-checks.result == 'success' || needs.devenv-checks.result == 'skipped') &&
+      (needs.nix-checks.result == 'success' || needs.nix-checks.result == 'skipped') &&
+      (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped')
+    needs: [devenv-checks, nix-checks, integration-tests]
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: rust

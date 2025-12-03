@@ -7,9 +7,20 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    devenv.url = "github:cachix/devenv";
+    devenv.inputs.nixpkgs.follows = "nixpkgs";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    crate2nix.url = "github:nix-community/crate2nix";
+    crate2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  nixConfig = {
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
+  };
+
+  outputs = { self, nixpkgs, home-manager, devenv, ... }@inputs:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -21,17 +32,21 @@
       # Home Manager module
       homeManagerModules.default = import ./nix/modules/home-manager.nix;
 
-      # Packages for each system
+      # Packages for each system - from devenv outputs
       packages = forAllSystems (system:
         let
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
           };
+          # Use mkConfig but only access outputs, not shell
+          devenvOutputs = (devenv.lib.mkConfig {
+            inherit inputs pkgs;
+            modules = [ ./devenv.nix ];
+          }).outputs;
         in
-        {
-          default = pkgs.callPackage ./nix/packages/vogix.nix { };
-          vogix = pkgs.callPackage ./nix/packages/vogix.nix { };
+        devenvOutputs // {
+          default = devenvOutputs.vogix;
         }
       );
 
@@ -82,25 +97,23 @@
         }
       );
 
-      # Development shells
-      devShells = forAllSystems (system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-          default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              rustc
-              cargo
-              rustfmt
-              clippy
-              rust-analyzer
-              pkg-config
-              dbus
-            ];
-          };
-        }
-      );
+      # Development shells - using devenv
+      # Note: Use 'devenv shell' for development instead of 'nix develop'
+      # devShells commented out due to Windows dependencies issue in crate2nix evaluation
+      # devShells = forAllSystems (system:
+      #   let
+      #     pkgs = import nixpkgs {
+      #       inherit system;
+      #       config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
+      #     };
+      #   in
+      #   {
+      #     default = devenv.lib.mkShell {
+      #       inherit inputs pkgs;
+      #       modules = [ ./devenv.nix ];
+      #     };
+      #   }
+      # );
 
       # Apps for easy access
       apps = forAllSystems (system:

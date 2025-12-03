@@ -1,7 +1,7 @@
-{
-  pkgs,
-  config,
-  ...
+{ pkgs
+, config
+, lib
+, ...
 }:
 let
   cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
@@ -10,6 +10,9 @@ let
   packageDescription = cargoToml.package.description or "";
 in
 {
+  # Set root explicitly for flake compatibility
+  devenv.root = lib.mkDefault (builtins.toString ./.);
+
   dotenv.enable = true;
   imports = [
     ./nix/rust.nix
@@ -20,6 +23,7 @@ in
     pkgs.git
     pkgs.dbus
     pkgs.pkg-config
+    pkgs.nixpkgs-fmt
   ];
 
   # Development scripts
@@ -99,6 +103,27 @@ in
   git-hooks.hooks = {
     rustfmt.enable = true;
     clippy.enable = true;
+    nixpkgs-fmt.enable = true;
+  };
+
+  # https://devenv.sh/outputs/
+  outputs = {
+    vogix = config.languages.rust.import ./. {
+      # Override to skip Windows-specific dependencies
+      crateOverrides = pkgs.defaultCrateOverrides // {
+        # Skip all Windows-specific crates
+        windows-sys = attrs: null;
+        windows-core = attrs: null;
+        windows-targets = attrs: null;
+        windows_x86_64_gnu = attrs: null;
+        windows_x86_64_msvc = attrs: null;
+        windows_i686_gnu = attrs: null;
+        windows_i686_msvc = attrs: null;
+        windows_aarch64_msvc = attrs: null;
+        windows_aarch64_gnullvm = attrs: null;
+        anstyle-wincon = attrs: null;
+      };
+    };
   };
 
   # https://devenv.sh/tasks/

@@ -1,8 +1,7 @@
-{
-  pkgs,
-  home-manager,
-  self,
-  ...
+{ pkgs
+, home-manager
+, self
+, ...
 }:
 
 let
@@ -13,20 +12,22 @@ let
   themesDir = ../../themes;
   themeFiles = builtins.readDir themesDir;
   allThemes = builtins.listToAttrs (
-    builtins.map (
-      filename:
-      let
-        name = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
-        theme = import (themesDir + "/${filename}");
-      in
-      {
-        inherit name;
-        value = {
-          dark = theme.dark;
-          light = theme.light;
-        };
-      }
-    ) (builtins.filter (f: builtins.match ".*\\.nix$" f != null) (builtins.attrNames themeFiles))
+    builtins.map
+      (
+        filename:
+        let
+          name = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
+          theme = import (themesDir + "/${filename}");
+        in
+        {
+          inherit name;
+          value = {
+            dark = theme.dark;
+            light = theme.light;
+          };
+        }
+      )
+      (builtins.filter (f: builtins.match ".*\\.nix$" f != null) (builtins.attrNames themeFiles))
   );
 
   # Convert themes to JSON for the test script

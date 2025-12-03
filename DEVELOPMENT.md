@@ -6,7 +6,7 @@ This guide covers setting up a development environment and contributing to Vogix
 
 - Nix with flakes enabled
 - Rust Edition 2024 (provided by Nix)
-- devenv (optional, for enhanced development environment)
+- devenv (automatically available via flake)
 
 ## Quick Start
 
@@ -20,21 +20,22 @@ cd vogix16
 ### Enter Development Environment
 
 ```bash
-# Using Nix flakes
-nix develop
-
-# Or using devenv (if installed)
+# Using devenv (recommended)
 devenv shell
+
+# Note: 'nix develop --impure' has known issues with platform-specific dependencies
+# Use 'devenv shell' for the full development experience
 ```
 
 This provides:
-- Rust toolchain (rustc, cargo, rustfmt, clippy)
-- Rust analyzer for IDE support
+- Rust toolchain (rustc, cargo, rustfmt, clippy, rust-analyzer)
+- Nix formatting tools (nixpkgs-fmt)
 - Required system dependencies (pkg-config, dbus)
+- Pre-configured git hooks (rustfmt, clippy, nixpkgs-fmt)
 
 ## Building
 
-### Rust Binary
+### Rust Binary (Development)
 
 ```bash
 # Development build
@@ -47,16 +48,21 @@ cargo build --release
 cargo check
 ```
 
-### Nix Package
+### Nix Package (Production)
 
 ```bash
-# Build the package
-nix build
+# Build with devenv (recommended - uses crate2nix for optimal Rust builds)
+devenv build outputs.vogix
+
+# Or build with nix (uses the same package definition)
+nix build .#vogix
 
 # Build for specific architecture
-nix build .#packages.x86_64-linux.vogix16
-nix build .#packages.aarch64-linux.vogix16
+nix build .#packages.x86_64-linux.vogix
+nix build .#packages.aarch64-linux.vogix
 ```
+
+Both `devenv build` and `nix build` produce the same package using `crate2nix` for reproducible Rust builds.
 
 ## Testing
 
@@ -122,12 +128,23 @@ cargo clippy -- -D warnings
 
 ### Pre-commit Checks
 
-Before committing, ensure:
+Git hooks are automatically configured when you enter `devenv shell`. They run:
+- `rustfmt` - Rust code formatting
+- `clippy` - Rust linting
+- `nixpkgs-fmt` - Nix code formatting
+
+Manual checks before committing:
 ```bash
 cargo fmt --check && \
 cargo clippy -- -D warnings && \
 cargo test && \
+nixpkgs-fmt --check . && \
 nix flake check --no-build
+```
+
+Or use devenv's test command:
+```bash
+devenv test  # Runs all git hooks
 ```
 
 ## Project Structure
@@ -179,8 +196,7 @@ vogix16/
 │
 ├── .github/
 │   ├── workflows/          # CI/CD pipelines
-│   │   ├── ci.yml          # PR checks
-│   │   ├── release-please.yml  # Automated releases
+│   │   ├── ci-and-release.yml  # Consolidated CI + release automation
 │   │   └── release.yml     # Binary releases
 │   └── ISSUE_TEMPLATE/     # Issue templates
 │
@@ -388,20 +404,42 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
 
 ## CI/CD Pipeline
 
-### PR Checks (`.github/workflows/ci.yml`)
-- Rust formatting check
-- Clippy linting
-- Unit tests
-- Release build
-- Nix flake check
-- Integration tests
-- Multi-arch package builds
+### Consolidated Workflow (`.github/workflows/ci-and-release.yml`)
 
-### Release Process (`.github/workflows/release-please.yml`)
-1. Conventional commits merged to master
-2. release-please creates/updates release PR
-3. Merge release PR → creates Git tag
-4. Binary release workflow builds and publishes
+A single, efficient workflow handles both CI and releases with smart job dependencies:
+
+**All CI jobs run in parallel for maximum speed:**
+
+**Job 1: Fast Checks**
+- `devenv-checks` - Runs `devenv test` which executes all git hooks:
+  - Nix code formatting (nixpkgs-fmt)
+  - Rust formatting (rustfmt)
+  - Rust linting (clippy)
+
+**Job 2: Nix Checks** (parallel with Job 1 & 3)
+- `nix-checks`:
+  - Runs `nix flake check` (includes Rust tests)
+  - Builds Nix package
+
+**Job 3: Integration Tests** (parallel with Job 1 & 2)
+- `integration-tests`:
+  - Runs integration tests (`./test.sh`)
+  - Tests VM-based functionality
+
+**Job 4: Release** (depends on all CI passing)
+- `release-please`:
+  - Creates/updates release PRs from conventional commits
+  - Creates Git tags when release PRs are merged
+  - Only runs on push to master
+  - Blocked if any CI checks fail
+
+**Smart Optimizations:**
+- Skips CI on release-please PRs (version bump only)
+- Uses `devenv test` - same checks as local development
+- Formatting/linting fails fast (10-30 seconds) before expensive builds
+- All three CI jobs run in parallel for maximum speed
+- Release job explicitly depends on all CI jobs passing
+- Total: 4 jobs instead of original 6 (33% reduction)
 
 ### Binary Releases (`.github/workflows/release.yml`)
 - Builds for x86_64-linux and aarch64-linux

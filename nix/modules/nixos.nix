@@ -61,16 +61,21 @@ in
       console.colors =
         let
           # Try to find the first user with vogix16 enabled
-          homeManagerUsers = if options ? home-manager then
-            attrNames (filterAttrs (name: userCfg:
-              userCfg.programs.vogix16.enable or false
-            ) (config.home-manager.users or {}))
-          else [];
+          homeManagerUsers =
+            if options ? home-manager then
+              attrNames
+                (filterAttrs
+                  (name: userCfg:
+                    userCfg.programs.vogix16.enable or false
+                  )
+                  (config.home-manager.users or { }))
+            else [ ];
 
-          firstVogixUser = if homeManagerUsers != [] then builtins.head homeManagerUsers else null;
+          firstVogixUser = if homeManagerUsers != [ ] then builtins.head homeManagerUsers else null;
 
           # Get theme configuration from home-manager user
-          hmVogixCfg = if firstVogixUser != null
+          hmVogixCfg =
+            if firstVogixUser != null
             then config.home-manager.users.${firstVogixUser}.programs.vogix16
             else null;
 
@@ -82,38 +87,42 @@ in
           selectedVariant = if hmVogixCfg != null then hmVogixCfg.defaultVariant else null;
 
           # Resolve theme path
-          selectedThemePath = if selectedThemeName != null
+          selectedThemePath =
+            if selectedThemeName != null
             then themesDir + "/${selectedThemeName}.nix"
             else null;
 
           # Load theme
-          loadedTheme = if selectedThemePath != null && selectedVariant != null
+          loadedTheme =
+            if selectedThemePath != null && selectedVariant != null
             then import selectedThemePath
             else null;
 
           # Get colors based on variant
-          themeColors = if loadedTheme != null
+          themeColors =
+            if loadedTheme != null
             then (if selectedVariant == "dark" then loadedTheme.dark else loadedTheme.light)
             else null;
 
-        in mkIf (themeColors != null) (
-          map (c: builtins.replaceStrings ["#"] [""] c) [
-            themeColors.base00  # black (ANSI 0)
-            themeColors.base08  # red (ANSI 1)
-            themeColors.base0B  # green (ANSI 2)
-            themeColors.base0A  # yellow (ANSI 3)
-            themeColors.base0D  # blue (ANSI 4)
-            themeColors.base0E  # magenta (ANSI 5)
-            themeColors.base0C  # cyan (ANSI 6)
-            themeColors.base05  # white (ANSI 7)
-            themeColors.base03  # bright black (ANSI 8)
-            themeColors.base08  # bright red (ANSI 9)
-            themeColors.base0B  # bright green (ANSI 10)
-            themeColors.base0A  # bright yellow (ANSI 11)
-            themeColors.base0D  # bright blue (ANSI 12)
-            themeColors.base0E  # bright magenta (ANSI 13)
-            themeColors.base0C  # bright cyan (ANSI 14)
-            themeColors.base07  # bright white (ANSI 15)
+        in
+        mkIf (themeColors != null) (
+          map (c: builtins.replaceStrings [ "#" ] [ "" ] c) [
+            themeColors.base00 # black (ANSI 0)
+            themeColors.base08 # red (ANSI 1)
+            themeColors.base0B # green (ANSI 2)
+            themeColors.base0A # yellow (ANSI 3)
+            themeColors.base0D # blue (ANSI 4)
+            themeColors.base0E # magenta (ANSI 5)
+            themeColors.base0C # cyan (ANSI 6)
+            themeColors.base05 # white (ANSI 7)
+            themeColors.base03 # bright black (ANSI 8)
+            themeColors.base08 # bright red (ANSI 9)
+            themeColors.base0B # bright green (ANSI 10)
+            themeColors.base0A # bright yellow (ANSI 11)
+            themeColors.base0D # bright blue (ANSI 12)
+            themeColors.base0E # bright magenta (ANSI 13)
+            themeColors.base0C # bright cyan (ANSI 14)
+            themeColors.base07 # bright white (ANSI 15)
           ]
         );
     })
@@ -126,24 +135,24 @@ in
           loadedTheme = import cfg.theme;
           themeColors = if cfg.variant == "dark" then loadedTheme.dark else loadedTheme.light;
         in
-          map (c: builtins.replaceStrings ["#"] [""] c) [
-            themeColors.base00  # black (ANSI 0)
-            themeColors.base08  # red (ANSI 1)
-            themeColors.base0B  # green (ANSI 2)
-            themeColors.base0A  # yellow (ANSI 3)
-            themeColors.base0D  # blue (ANSI 4)
-            themeColors.base0E  # magenta (ANSI 5)
-            themeColors.base0C  # cyan (ANSI 6)
-            themeColors.base05  # white (ANSI 7)
-            themeColors.base03  # bright black (ANSI 8)
-            themeColors.base08  # bright red (ANSI 9)
-            themeColors.base0B  # bright green (ANSI 10)
-            themeColors.base0A  # bright yellow (ANSI 11)
-            themeColors.base0D  # bright blue (ANSI 12)
-            themeColors.base0E  # bright magenta (ANSI 13)
-            themeColors.base0C  # bright cyan (ANSI 14)
-            themeColors.base07  # bright white (ANSI 15)
-          ];
+        map (c: builtins.replaceStrings [ "#" ] [ "" ] c) [
+          themeColors.base00 # black (ANSI 0)
+          themeColors.base08 # red (ANSI 1)
+          themeColors.base0B # green (ANSI 2)
+          themeColors.base0A # yellow (ANSI 3)
+          themeColors.base0D # blue (ANSI 4)
+          themeColors.base0E # magenta (ANSI 5)
+          themeColors.base0C # cyan (ANSI 6)
+          themeColors.base05 # white (ANSI 7)
+          themeColors.base03 # bright black (ANSI 8)
+          themeColors.base08 # bright red (ANSI 9)
+          themeColors.base0B # bright green (ANSI 10)
+          themeColors.base0A # bright yellow (ANSI 11)
+          themeColors.base0D # bright blue (ANSI 12)
+          themeColors.base0E # bright magenta (ANSI 13)
+          themeColors.base0C # bright cyan (ANSI 14)
+          themeColors.base07 # bright white (ANSI 15)
+        ];
     })
   ]);
 }

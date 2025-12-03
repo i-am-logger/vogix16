@@ -33,9 +33,9 @@
     alacritty
     btop
     tmux
-    tree  # For showing directory structure in demo
+    tree # For showing directory structure in demo
     asciinema
-    asciinema-agg  # For converting .cast to GIF
+    asciinema-agg # For converting .cast to GIF
 
     # Demo script in PATH
     (pkgs.writeScriptBin "vogix-demo" (builtins.readFile ../../scripts/demo.sh))
@@ -91,13 +91,13 @@
       memorySize = 2048;
       cores = 2;
       graphics = true;
-      resolution = { x = 1920; y = 1080; };  # HD resolution
+      resolution = { x = 1920; y = 1080; }; # HD resolution
 
       # Use default shared directory (usually $TMPDIR/xchg on host -> /tmp/shared in VM)
 
       qemu.options = [
-        "-vga virtio"  # Better graphics with virtio
-        "-display gtk,zoom-to-fit=on"  # GTK display with auto-zoom
+        "-vga virtio" # Better graphics with virtio
+        "-display gtk,zoom-to-fit=on" # GTK display with auto-zoom
       ];
     };
   };
