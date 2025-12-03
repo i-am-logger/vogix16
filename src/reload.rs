@@ -10,14 +10,49 @@ impl ReloadDispatcher {
     }
 
     /// Reload all themed applications
+    /// This function continues processing all apps even if some fail,
+    /// reporting errors to stderr without crashing the program.
     pub fn reload_apps(&self, config: &Config) -> Result<()> {
-        println!("\nReloading applications...");
+        if config.apps.is_empty() {
+            println!("No applications configured");
+            return Ok(());
+        }
+
+        let mut failed_apps = Vec::new();
+        let mut skipped_apps = Vec::new();
+
         for (app_name, app_metadata) in &config.apps {
-            match self.reload_app(app_name, app_metadata) {
-                Ok(msg) => println!("  ✓ {}: {}", app_name, msg),
-                Err(e) => eprintln!("  ⚠ {}: {}", app_name, e),
+            // Skip apps that don't need reloading
+            if app_metadata.reload_method == "none" {
+                skipped_apps.push(app_name.clone());
+                continue;
+            }
+
+            if let Err(e) = self.reload_app(app_name, app_metadata) {
+                failed_apps.push((app_name.clone(), e.to_string()));
             }
         }
+
+        let success_count = config.apps.len() - failed_apps.len() - skipped_apps.len();
+        let total_reload = config.apps.len() - skipped_apps.len();
+
+        if failed_apps.is_empty() {
+            if total_reload > 0 {
+                println!("✓ Reloaded {} applications", success_count);
+            } else {
+                println!("No applications needed reloading");
+            }
+        } else {
+            eprintln!(
+                "⚠ Reloaded {}/{} applications. Failures:",
+                success_count, total_reload
+            );
+            for (app_name, error) in &failed_apps {
+                eprintln!("  - {}: {}", app_name, error);
+            }
+        }
+
+        // Always succeed - vogix shouldn't crash if an app fails to reload
         Ok(())
     }
 
@@ -44,10 +79,11 @@ impl ReloadDispatcher {
                 Ok("executed reload command".to_string())
             }
             "touch" => {
-                // Touch the symlink to trigger file watchers (use -h to touch symlink, not target)
-                let cmd = format!("touch -h {} 2>/dev/null || true", metadata.config_path);
+                // Touch the symlink itself (-h flag) to update its mtime
+                // Applications watching the file will detect the change
+                let cmd = format!("touch -h {}", metadata.config_path);
                 self.run_command(&cmd)?;
-                Ok("touched config file (triggers auto-reload)".to_string())
+                Ok("touched to trigger auto-reload".to_string())
             }
             "none" => Ok("no reload needed (changes take effect on next use)".to_string()),
             _ => Err(VogixError::ReloadError(format!(

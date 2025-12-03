@@ -2,53 +2,67 @@
 
 {
   # Config file path relative to ~/.config/alacritty/
-  configFile = "colors.toml";
+  configFile = "alacritty.toml";
 
   # Reload method: touch the config symlink to trigger Alacritty's file watcher
   reloadMethod = {
     method = "touch";
   };
 
-  # Generator function to create alacritty colors config from semantic colors
-  # Returns TOML content
-  generate = colors: ''
-    [colors.primary]
-    background = "${colors.background}"
-    foreground = "${colors.foreground-text}"
-    bright_foreground = "${colors.foreground-bright}"
+  # Format used by home-manager for this app's settings
+  format = "toml";
 
-    [colors.selection]
-    text = "${colors.foreground-text}"
-    background = "${colors.background-selection}"
+  # Settings path in home-manager config
+  settingsPath = "programs.alacritty.settings";
 
-    [colors.cursor]
-    text = "${colors.background}"
-    cursor = "${colors.active}"
+  # Generator function that returns programs.alacritty.settings overrides
+  # Returns attribute set that will be merged with user's settings
+  generate = colors: {
+    colors = {
+      primary = {
+        background = colors.background;
+        foreground = colors.foreground-text;
+        bright_foreground = colors.foreground-bright;
+      };
 
-    [colors.vi_mode_cursor]
-    text = "${colors.background}"
-    cursor = "${colors.highlight}"
+      selection = {
+        text = colors.foreground-text;
+        background = colors.background-selection;
+      };
 
-    # ANSI colors: Minimal by default - monochromatic + semantic only
-    # Apps needing specific colors should have their own Vogix16 configs
-    [colors.normal]
-    black = "${colors.background}"
-    red = "${colors.danger}"
-    green = "${colors.success}"
-    yellow = "${colors.warning}"
-    blue = "${colors.foreground-text}"
-    magenta = "${colors.foreground-text}"
-    cyan = "${colors.foreground-text}"
-    white = "${colors.foreground-text}"
+      cursor = {
+        text = colors.background;
+        cursor = colors.active;
+      };
 
-    [colors.bright]
-    black = "${colors.foreground-comment}"
-    red = "${colors.danger}"
-    green = "${colors.success}"
-    yellow = "${colors.warning}"
-    blue = "${colors.foreground-heading}"
-    magenta = "${colors.foreground-heading}"
-    cyan = "${colors.foreground-heading}"
-    white = "${colors.foreground-bright}"
-  '';
+      vi_mode_cursor = {
+        text = colors.background;
+        cursor = colors.highlight;
+      };
+
+      # ANSI colors: Minimal by default - monochromatic + semantic only
+      # Apps needing specific colors should have their own Vogix16 configs
+      normal = {
+        black = colors.background;
+        red = colors.danger;
+        green = colors.success;
+        yellow = colors.warning;
+        blue = colors.foreground-text;
+        magenta = colors.foreground-text;
+        cyan = colors.foreground-text;
+        white = colors.foreground-text;
+      };
+
+      bright = {
+        black = colors.foreground-comment;
+        red = colors.danger;
+        green = colors.success;
+        yellow = colors.warning;
+        blue = colors.foreground-heading;
+        magenta = colors.foreground-heading;
+        cyan = colors.foreground-heading;
+        white = colors.foreground-bright;
+      };
+    };
+  };
 }

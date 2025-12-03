@@ -43,9 +43,9 @@ impl Theme {
     pub fn discover_themes() -> Result<Vec<String>> {
         let mut themes = Vec::new();
 
-        // Read manifest.toml from runtime directory (/run/user/UID/vogix16/manifest.toml)
+        // Read config.toml from runtime directory (/run/user/UID/vogix16/config.toml)
         let runtime_dir = crate::config::Config::runtime_dir()?;
-        let manifest_path = runtime_dir.join("manifest.toml");
+        let manifest_path = runtime_dir.join("config.toml");
 
         if !manifest_path.exists() {
             return Err(VogixError::ConfigNotFound(manifest_path));
@@ -55,9 +55,9 @@ impl Theme {
             .map_err(|_| VogixError::ConfigNotFound(manifest_path.clone()))?;
 
         // Parse TOML to extract theme names
-        let manifest: toml::Value = content.parse().map_err(|e| {
-            VogixError::InvalidTheme(format!("Failed to parse manifest.toml: {}", e))
-        })?;
+        let manifest: toml::Value = content
+            .parse()
+            .map_err(|e| VogixError::InvalidTheme(format!("Failed to parse config.toml: {}", e)))?;
 
         // Extract theme names from [themes] section
         if let Some(themes_table) = manifest.get("themes").and_then(|v| v.as_table()) {
