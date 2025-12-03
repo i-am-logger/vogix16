@@ -34,7 +34,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Load configuration from the runtime manifest (/run/user/UID/vogix16/manifest.toml)
+    /// Load configuration from the runtime config (/run/user/UID/vogix16/config.toml)
     pub fn load() -> Result<Self> {
         let manifest_path = Self::manifest_path()?;
 
@@ -117,10 +117,10 @@ impl Config {
         ))
     }
 
-    /// Get the runtime manifest path (/run/user/UID/vogix16/manifest.toml)
+    /// Get the runtime config path (/run/user/UID/vogix16/config.toml)
     fn manifest_path() -> Result<PathBuf> {
         let runtime_dir = Self::runtime_dir()?;
-        Ok(runtime_dir.join("manifest.toml"))
+        Ok(runtime_dir.join("config.toml"))
     }
 
     /// Get the vogix16 runtime directory (/run/user/UID/vogix16/)

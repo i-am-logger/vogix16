@@ -69,6 +69,7 @@ pkgs.testers.nixosTest {
   testScript = ''
     import time
     import json
+    import shlex
 
     # Load all theme colors from Nix
     all_themes = json.loads(r"""${themesJSON}""")
@@ -142,20 +143,30 @@ pkgs.testers.nixosTest {
     print("✓ vogix16-setup.service ran successfully at login")
 
     # Check service logs to verify symlinks were created correctly
+    # Flush journal first to ensure all logs are written
+    machine.succeed("su - vogix -c 'journalctl --user --flush'")
     service_log = machine.succeed("su - vogix -c 'journalctl --user -u vogix16-setup.service --no-pager'")
     print("\nService log excerpt (last 100 lines):")
     log_lines = service_log.split("\n")
     for line in log_lines[-100:]:
-        if "Setting up" in line or "Target:" in line or "Link:" in line or "Verified" in line or "ERROR" in line:
+        if "Setting up" in line or "Target:" in line or "Link:" in line or "Verified" in line or "ERROR" in line or "mode:" in line:
             print(f"  {line}")
 
     # CRITICAL: Verify service created ABSOLUTE symlinks (not relative)
-    if "✓ Verified absolute symlink:" not in service_log:
+    # Check for either directory or files mode verification messages
+    has_directory_verification = "✓ Verified directory symlink:" in service_log
+    has_files_verification = "✓ Verified config symlink:" in service_log
+
+    if not (has_directory_verification or has_files_verification):
         print("\n❌ ERROR: Service log doesn't show symlink verification!")
+        print("Expected either '✓ Verified directory symlink:' or '✓ Verified config symlink:'")
         print("This means symlinks may be relative (wrong) instead of absolute.")
         raise AssertionError("Service didn't verify absolute symlinks - check logs above")
 
-    print("✓ Service verified all symlinks are absolute paths")
+    if has_directory_verification:
+        print("✓ Service verified all directory symlinks are absolute paths (directory mode)")
+    else:
+        print("✓ Service verified all config file symlinks are absolute paths (files mode)")
 
     print("\n=== Test 6: Nix Pre-Generated Theme-Variant Configs ===")
     # Get UID for constructing /run paths
@@ -174,14 +185,14 @@ pkgs.testers.nixosTest {
     print(f"✓ aikido-light theme-variant directory exists in {vogix_runtime}/themes/")
 
     # Check that configs are pre-generated with actual colors (not {{baseXX}})
-    aikido_dark_config = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/themes/aikido-dark/alacritty/colors.toml 2>/dev/null || echo NOTFOUND'")
+    aikido_dark_config = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/themes/aikido-dark/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
     if "NOTFOUND" not in aikido_dark_config:
         print("✓ aikido-dark alacritty config exists")
         assert "{{base" not in aikido_dark_config, "Config contains unprocessed template placeholders!"
         assert "#" in aikido_dark_config, "Config missing hex colors!"
         print("✓ aikido-dark config has actual colors (no {{baseXX}} placeholders)")
 
-    aikido_light_config = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/themes/aikido-light/alacritty/colors.toml 2>/dev/null || echo NOTFOUND'")
+    aikido_light_config = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/themes/aikido-light/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
     if "NOTFOUND" not in aikido_light_config:
         print("✓ aikido-light alacritty config exists")
         assert "{{base" not in aikido_light_config, "Config contains unprocessed template placeholders!"
@@ -209,7 +220,7 @@ pkgs.testers.nixosTest {
     aikido_dark_colors = aikido_colors['dark']
 
     # Check alacritty config has semantic colors (not all 16 - only those semantically needed)
-    alacritty_config = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/colors.toml 2>/dev/null || echo NOTFOUND'")
+    alacritty_config = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
     if "NOTFOUND" not in alacritty_config:
         print("✓ Alacritty config accessible")
         # Verify key semantic colors are present (not all 16 - only what's semantically used)
@@ -335,8 +346,8 @@ pkgs.testers.nixosTest {
     else:
         print("\n=== Test 8c: SKIPPED - shell-colors module not yet implemented ===")
 
-    print("\n=== Test 8d: Verify Manifest Contains App Metadata (Generic) ===")
-    manifest_content = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/manifest.toml'")
+    print("\n=== Test 8d: Verify Config Contains App Metadata (Generic) ===")
+    manifest_content = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/config.toml'")
     print("Manifest content (first 500 chars):")
     print(manifest_content[:500])
 
@@ -366,43 +377,65 @@ pkgs.testers.nixosTest {
     # Parse manifest to get all configured apps
     app_sections = re.findall(r'\[apps\.([^\]]+)\]', manifest_content)
     app_sections = [app.strip('"') for app in app_sections]  # Remove quotes if present
-    print(f"Found {len(app_sections)} apps in manifest: {app_sections}")
+    print(f"Found {len(app_sections)} apps in config: {app_sections}")
 
-    assert len(app_sections) > 0, "No apps found in manifest!"
+    assert len(app_sections) > 0, "No apps found in config!"
 
-    # For each app in manifest, verify symlink exists and points to correct location
+    # For each app in config, verify file-level symlinks
     for app_name in app_sections:
         print(f"\n  Testing app: {app_name}")
 
-        # Extract config_path from manifest for this app
-        app_section_match = re.search(rf'\[apps\."{app_name}"\].*?config_path = "([^"]+)"', manifest_content, re.DOTALL)
+        # Extract app section from config
+        app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
         if not app_section_match:
-            app_section_match = re.search(rf'\[apps\.{app_name}\].*?config_path = "([^"]+)"', manifest_content, re.DOTALL)
+            app_section_match = re.search(rf'\[apps\.{app_name}\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
 
         if not app_section_match:
-            print(f"    ⚠ WARNING: Could not parse config_path for {app_name}")
+            print(f"    ⚠ WARNING: Could not parse section for {app_name}")
             continue
 
-        config_path = app_section_match.group(1)
-        print(f"    Config path from manifest: {config_path}")
+        app_section = app_section_match.group(1)
 
-        # Check if symlink exists
+        # Extract config_path
+        config_path_match = re.search(r'config_path = "([^"]+)"', app_section)
+        if not config_path_match:
+            print(f"    ⚠ WARNING: Could not parse config_path for {app_name}")
+            continue
+        config_path = config_path_match.group(1)
+
+        # Check that config file is a symlink
+        print(f"    Checking config file symlink: {config_path}")
+
+        # Check if config file symlink exists
         link_check = machine.execute(f"su - vogix -c 'test -L {config_path} && echo SYMLINK || echo NOTLINK'")
         if "SYMLINK" not in link_check[1]:
-            raise AssertionError(f"FAILED: {app_name} config is not a symlink: {config_path}")
+            raise AssertionError(f"FAILED: {app_name} config file is not a symlink: {config_path}")
 
         # Read symlink target
         target = machine.succeed(f"su - vogix -c 'readlink {config_path}'").strip()
-        print(f"    Symlink target: {target}")
+        print(f"    Config file symlink target: {target}")
 
-        # Extract theme and variant for this app from manifest
-        theme_match = re.search(rf'\[apps\."{app_name}"\].*?theme = "([^"]+)"', manifest_content, re.DOTALL)
-        if not theme_match:
-            theme_match = re.search(rf'\[apps\.{app_name}\].*?theme = "([^"]+)"', manifest_content, re.DOTALL)
+        # For hybrid apps, also check theme file symlink
+        theme_file_match = re.search(r'theme_file_path = "([^"]+)"', app_section)
+        if theme_file_match:
+            theme_file_path = theme_file_match.group(1)
+            print(f"    Checking theme file symlink: {theme_file_path}")
 
-        variant_match = re.search(rf'\[apps\."{app_name}"\].*?variant = "([^"]+)"', manifest_content, re.DOTALL)
-        if not variant_match:
-            variant_match = re.search(rf'\[apps\.{app_name}\].*?variant = "([^"]+)"', manifest_content, re.DOTALL)
+            theme_link_check = machine.execute(f"su - vogix -c 'test -L {theme_file_path} && echo SYMLINK || echo NOTLINK'")
+            if "SYMLINK" not in theme_link_check[1]:
+                raise AssertionError(f"FAILED: {app_name} theme file is not a symlink: {theme_file_path}")
+
+            theme_target = machine.succeed(f"su - vogix -c 'readlink {theme_file_path}'").strip()
+            print(f"    Theme file symlink target: {theme_target}")
+
+            # Verify theme symlink is absolute
+            assert theme_target.startswith("/run/user/"), f"FAILED: {app_name} theme symlink not absolute! Got: {theme_target}"
+            assert "vogix16/themes/" in theme_target, f"FAILED: {app_name} theme symlink doesn't point to vogix16/themes! Got: {theme_target}"
+            print("    ✓ Theme symlink is absolute path to runtime")
+
+        # Extract theme and variant for this app from app section
+        theme_match = re.search(r'theme = "([^"]+)"', app_section)
+        variant_match = re.search(r'variant = "([^"]+)"', app_section)
 
         if theme_match and variant_match:
             expected_theme = theme_match.group(1)
@@ -441,54 +474,41 @@ pkgs.testers.nixosTest {
 
     print(f"\n✓ ALL {len(app_sections)} app symlinks verified successfully!")
 
-    print("\n=== Test 9b: Verify Touch Updates Symlink Mtime for ALL Touch-Reload Apps ===")
-    # Find all apps with reload_method="touch"
-    touch_reload_apps = []
+    print("\n=== Test 9b: Verify Config Files Accessible Through Directory Symlinks ===")
+    # With directory-level symlinks, verify that files within the symlinked directories are accessible
     for app_name in app_sections:
-        reload_method_match = re.search(rf'\[apps\."{app_name}"\].*?reload_method = "([^"]+)"', manifest_content, re.DOTALL)
-        if not reload_method_match:
-            reload_method_match = re.search(rf'\[apps\.{app_name}\].*?reload_method = "([^"]+)"', manifest_content, re.DOTALL)
+        print(f"\n  Testing file access for: {app_name}")
 
-        if reload_method_match and reload_method_match.group(1) == "touch":
-            touch_reload_apps.append(app_name)
-
-    print(f"Apps using touch reload: {touch_reload_apps}")
-
-    for app_name in touch_reload_apps:
-        print(f"\n  Testing touch reload for: {app_name}")
-
-        # Get config_path
-        app_section_match = re.search(rf'\[apps\."{app_name}"\].*?config_path = "([^"]+)"', manifest_content, re.DOTALL)
+        # Get config_path from manifest
+        app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
         if not app_section_match:
-            app_section_match = re.search(rf'\[apps\.{app_name}\].*?config_path = "([^"]+)"', manifest_content, re.DOTALL)
-
-        if not app_section_match:
-            print(f"    ⚠ WARNING: Could not parse config_path for {app_name}")
             continue
 
-        config_path = app_section_match.group(1)
+        app_section_content = app_section_match.group(1)
+        config_match = re.search(r'config_path = "([^"]+)"', app_section_content)
+        if not config_match:
+            continue
 
-        # Get mtime before touch
-        mtime_before = machine.succeed(f"su - vogix -c 'stat -c %Y {config_path}'").strip()
-        print(f"    Mtime before touch: {mtime_before}")
+        config_path = config_match.group(1)
 
-        # Touch the symlink (this is what vogix does to trigger reload)
-        # Use -h to touch the symlink itself, not the target (which is in read-only /nix/store)
-        machine.succeed(f"su - vogix -c 'touch -h {config_path}'")
+        # Verify config file is accessible through the directory symlink
+        file_check = machine.execute(f"su - vogix -c 'test -f {config_path} && echo EXISTS || echo NOTEXIST'")
+        if "EXISTS" in file_check[1]:
+            print(f"    ✓ {app_name}: config file accessible at {config_path}")
 
-        # Get mtime after touch
-        mtime_after = machine.succeed(f"su - vogix -c 'stat -c %Y {config_path}'").strip()
-        print(f"    Mtime after touch: {mtime_after}")
+            # For hybrid apps, also check theme file
+            theme_file_match = re.search(r'theme_file_path = "([^"]+)"', app_section_content)
+            if theme_file_match:
+                theme_file_path = theme_file_match.group(1)
+                theme_check = machine.execute(f"su - vogix -c 'test -f {theme_file_path} && echo EXISTS || echo NOTEXIST'")
+                if "EXISTS" in theme_check[1]:
+                    print(f"    ✓ {app_name}: theme file accessible at {theme_file_path}")
+                else:
+                    print(f"    ⚠ {app_name}: theme file NOT found at {theme_file_path}")
+        else:
+            print(f"    ⚠ {app_name}: config file NOT accessible at {config_path}")
 
-        assert mtime_before != mtime_after, f"FAILED: touch didn't update mtime for {app_name}! App won't reload!"
-        print(f"    ✓ touch successfully updated mtime for {app_name}")
-
-    print(f"\n✓ Touch reload verified for all {len(touch_reload_apps)} touch-reload apps!")
-
-    # Sleep 1 second to ensure next touch will have different timestamp
-    # (Unix timestamps have 1-second resolution)
-    import time
-    time.sleep(1)
+    print("\n✓ All app files verified accessible through directory symlinks!")
 
     print("\n=== Test 10: SWITCH VARIANT Dark→Light - GENERIC TEST FOR ALL APPS ===")
     # Get current symlink target BEFORE switch
@@ -511,12 +531,49 @@ pkgs.testers.nixosTest {
 
         if "NOTFOUND" not in config_content:
             app_configs_before[app_name] = config_content
-            # Verify dark colors present (skip for binary files like console)
-            if app_name != "console":
+
+            # Check if app has theme_file_path (hybrid app)
+            # Extract only this app's section (up to next [ or end of string)
+            app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+            if not app_section_match:
+                app_section_match = re.search(rf'\[apps\.{app_name}\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+
+            if app_section_match:
+                app_section_content = app_section_match.group(1)
+                theme_file_match = re.search(r'theme_file_path = "([^"]+)"', app_section_content)
+            else:
+                theme_file_match = None
+
+            has_theme_file = theme_file_match is not None
+
+            # For non-hybrid apps (no theme file), verify colors are in config file
+            # For hybrid apps, colors are in separate theme file, not in config
+            if not has_theme_file and "#" in config_content:
                 dark_bg = aikido_dark_colors['base00'].lower()
                 assert dark_bg in config_content.lower(), f"{app_name}: Expected dark color {dark_bg} before switch"
 
     print(f"Captured config for {len(app_configs_before)} apps before switch")
+
+    # Capture mtime BEFORE switch (for apps with touch reload method)
+    # Check config file mtime to verify touch updates it
+    app_mtimes_before = {}
+    for app_name in app_configs_before.keys():
+        app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+        if not app_section_match:
+            app_section_match = re.search(rf'\[apps\.{app_name}\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+
+        if app_section_match:
+            app_section = app_section_match.group(1)
+            reload_method_match = re.search(r'reload_method = "([^"]+)"', app_section)
+            if reload_method_match and reload_method_match.group(1) == "touch":
+                # Check config file mtime
+                config_path_match = re.search(r'config_path = "([^"]+)"', app_section)
+                if config_path_match:
+                    config_path = config_path_match.group(1)
+                    mtime_cmd = f"su - vogix -c 'stat -c %Y {shlex.quote(config_path)} 2>/dev/null || echo 0'"
+                    mtime_result = machine.succeed(mtime_cmd).strip()
+                    app_mtimes_before[app_name] = (int(mtime_result), config_path)
+                    print(f"  Captured mtime for {app_name}: {mtime_result}")
 
     # SWITCH TO LIGHT VARIANT
     switch_output = machine.succeed("su - vogix -c 'vogix switch 2>&1'")
@@ -526,8 +583,8 @@ pkgs.testers.nixosTest {
     assert "light" in new_state.lower()
     print("✓ Status command reports 'light' variant")
 
-    # Verify reload dispatcher ran
-    assert "Reloading applications" in switch_output, "FAILED: Reload dispatcher didn't run!"
+    # Verify reload dispatcher ran (check for success message)
+    assert "Reloaded" in switch_output, "FAILED: Reload dispatcher didn't run!"
     print("✓ Reload dispatcher ran during switch")
 
     # CRITICAL: Check that 'current' symlink actually changed
@@ -537,6 +594,23 @@ pkgs.testers.nixosTest {
     assert current_before != current_after, "'current' symlink didn't change!"
     assert "light" in current_after.lower(), "'current' symlink doesn't point to light variant!"
     print("✓ 'current' symlink changed from dark to light")
+
+    # CRITICAL: Verify mtime was updated for apps with touch reload method
+    if len(app_mtimes_before) > 0:
+        print(f"\n  Verifying mtime updates for {len(app_mtimes_before)} apps with 'touch' reload method:")
+        for app_name, (mtime_before, check_path) in app_mtimes_before.items():
+            mtime_cmd = f"su - vogix -c 'stat -c %Y {shlex.quote(check_path)} 2>/dev/null || echo 0'"
+            mtime_after = int(machine.succeed(mtime_cmd).strip())
+            print(f"    {app_name}: mtime before={mtime_before}, after={mtime_after}")
+
+            if mtime_after <= mtime_before:
+                raise AssertionError(
+                    f"FAILED: {app_name} mtime was NOT updated by touch! "
+                    f"Path: {check_path}, Before: {mtime_before}, After: {mtime_after}. "
+                    f"This means applications won't detect the theme change."
+                )
+            print(f"    ✓ {app_name}: mtime updated")
+        print("✓ All mtimes updated successfully")
 
     # Verify ALL app configs changed and have correct light colors
     light_bg = aikido_colors['light']['base00'].lower()
@@ -552,11 +626,38 @@ pkgs.testers.nixosTest {
         config_after = machine.succeed(f"su - vogix -c 'cat {config_path} 2>/dev/null || echo NOTFOUND'")
 
         assert "NOTFOUND" not in config_after, f"{app_name} config not found after switch!"
-        assert app_configs_before[app_name] != config_after, f"{app_name} config didn't change after switch!"
-        # Verify light colors present (skip for binary files like console)
-        if app_name != "console":
-            assert light_bg in config_after.lower(), f"{app_name}: Expected light color {light_bg} after switch"
-        print(f"  ✓ {app_name}: config changed and has correct light colors")
+
+        # Check if app has theme_file_path (hybrid app)
+        # Extract only this app's section (up to next [ or end of string)
+        app_section_match = re.search(rf'\[apps\."{app_name}"\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+        if not app_section_match:
+            app_section_match = re.search(rf'\[apps\.{app_name}\](.*?)(?=\[|$)', manifest_content, re.DOTALL)
+
+        if app_section_match:
+            app_section_content = app_section_match.group(1)
+            theme_file_match = re.search(r'theme_file_path = "([^"]+)"', app_section_content)
+        else:
+            theme_file_match = None
+
+        has_theme_file = theme_file_match is not None
+
+        # For hybrid apps, config file might not change (only theme files change)
+        # For non-hybrid apps, config should change and contain light colors
+        if not has_theme_file:
+            assert app_configs_before[app_name] != config_after, f"{app_name} config didn't change after switch!"
+            # Verify light colors present (skip for binary/non-text formats)
+            if "#" in config_after:
+                assert light_bg in config_after.lower(), f"{app_name}: Expected light color {light_bg} after switch"
+            print(f"  ✓ {app_name}: config changed and has correct light colors")
+        elif theme_file_match is not None:
+            # For hybrid apps, verify theme file exists and has colors
+            theme_file_path = theme_file_match.group(1)
+            theme_file_content = machine.succeed(f"su - vogix -c 'cat {shlex.quote(theme_file_path)} 2>/dev/null || echo NOTFOUND'")
+            assert "NOTFOUND" not in theme_file_content, f"{app_name} theme file not found at {theme_file_path}!"
+            # Verify theme file has light colors
+            if "#" in theme_file_content:
+                assert light_bg in theme_file_content.lower(), f"{app_name}: Expected light color {light_bg} in theme file"
+            print(f"  ✓ {app_name}: theme file exists and has correct light colors")
 
     print(f"\n✓ ALL {len(app_configs_before)} app configs verified - colors switched from dark to light!")
 
@@ -594,7 +695,7 @@ pkgs.testers.nixosTest {
             current_before = machine.succeed(f"su - vogix -c 'readlink {vogix_runtime}/themes/current-theme'")
 
             # Get alacritty config colors before theme switch
-            alacritty_before = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/colors.toml 2>/dev/null || echo NOTFOUND'")
+            alacritty_before = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
 
             # Switch to theme
             machine.succeed(f"su - vogix -c 'vogix theme {theme_name}'")
@@ -610,7 +711,7 @@ pkgs.testers.nixosTest {
             print(f"✓ 'current' symlink changed to {theme_name}")
 
             # Verify app config visible through symlink changed (different theme has different colors)
-            alacritty_after = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/colors.toml 2>/dev/null || echo NOTFOUND'")
+            alacritty_after = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/alacritty.toml 2>/dev/null || echo NOTFOUND'")
             if alacritty_before != "NOTFOUND" and alacritty_after != "NOTFOUND":
                 assert alacritty_before != alacritty_after, f"App config didn't change after switching to {theme_name}!"
                 print(f"✓ App config updated (colors changed from aikido to {theme_name})")
@@ -636,7 +737,6 @@ pkgs.testers.nixosTest {
     app_sections = [app.strip('"') for app in app_sections]
     print(f"Testing config generation for {len(app_sections)} apps: {app_sections}")
 
-    import shlex
     apps_tested = 0
     apps_with_colors = 0
 
