@@ -5,6 +5,13 @@ All notable changes to Vogix16 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/i-am-logger/vogix16/compare/v0.2.0...v0.3.0) (2025-12-03)
+
+
+### Features
+
+* **app:** add ripgrep theme support ([#112](https://github.com/i-am-logger/vogix16/issues/112)) ([1451178](https://github.com/i-am-logger/vogix16/commit/145117824302d89c694424a1dd8072856aa449c7))
+
 ## [0.2.0](https://github.com/i-am-logger/vogix16/compare/v0.1.3...v0.2.0) (2025-12-03)
 
 
