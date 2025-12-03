@@ -291,6 +291,49 @@ nix build --print-build-logs
 nix flake check --show-trace
 ```
 
+## Known Issues
+
+### Nix Eval Cache During Development
+
+**Problem**: When modifying application modules (e.g., `nix/modules/applications/btop.nix`), Nix's evaluation cache may return stale results even though files are git-tracked and the flake detects a dirty tree.
+
+**Symptoms**:
+- You modify an application module file
+- Run `git add` to track the change
+- Build the VM or run flake check
+- Generated configs still have OLD content
+
+**Root Cause**: This is a known limitation of Nix flakes evaluation cache for local repositories under active development. The eval cache has race conditions/bugs with dirty git trees. See: [NixOS/nix#12102](https://github.com/NixOS/nix/pull/12102)
+
+**Workarounds**:
+
+1. **Use development helpers** (recommended):
+   ```bash
+   # VM launcher (automatically disables eval cache)
+   nix run .#vogix-vm
+
+   # Check flake without eval cache
+   nix run .#dev-check
+
+   # From inside devenv shell
+   nix-build-dev         # Build VM without eval cache
+   nix-check-dev         # Check flake without eval cache
+   ```
+
+2. **Manual flag** (for other nix commands):
+   ```bash
+   nix build --option eval-cache false
+   nix flake check --option eval-cache false
+   ```
+
+3. **Force cache invalidation** (make trivial edit to `flake.nix`):
+   ```bash
+   # Add/remove a comment in flake.nix
+   # This changes the flake fingerprint → cache invalidates
+   ```
+
+**Status**: Waiting for upstream Nix to implement automatic eval cache disabling for local repos. Track progress in issue [#101](https://github.com/i-am-logger/vogix16/issues/101).
+
 ## Architecture Overview
 
 ### Build Time (Nix)

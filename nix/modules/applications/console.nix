@@ -11,23 +11,24 @@ let
     then color
     else "#${color}";
 
-  # Standard Linux console color mapping (ANSI order)
+  # ANSI color mapping: Minimal by default - monochromatic + semantic only
+  # Apps needing specific colors should have their own Vogix16 configs
   palette = [
     colors.background          # 0: Black
-    colors.danger              # 1: Red
-    colors.success             # 2: Green
-    colors.notice              # 3: Yellow
-    colors.link                # 4: Blue
-    colors.highlight           # 5: Magenta
-    colors.active              # 6: Cyan
+    colors.danger              # 1: Red (semantic: errors)
+    colors.success             # 2: Green (semantic: success)
+    colors.warning             # 3: Yellow (semantic: warnings)
+    colors.foreground-text     # 4: Blue
+    colors.foreground-text     # 5: Magenta
+    colors.foreground-text     # 6: Cyan
     colors.foreground-text     # 7: White
     colors.foreground-comment  # 8: Bright Black
-    colors.danger              # 9: Bright Red
-    colors.success             # 10: Bright Green
-    colors.notice              # 11: Bright Yellow
-    colors.link                # 12: Bright Blue
-    colors.highlight           # 13: Bright Magenta
-    colors.active              # 14: Bright Cyan
+    colors.danger              # 9: Bright Red (semantic: errors)
+    colors.success             # 10: Bright Green (semantic: success)
+    colors.warning             # 11: Bright Yellow (semantic: warnings)
+    colors.foreground-heading  # 12: Bright Blue
+    colors.foreground-heading  # 13: Bright Magenta
+    colors.foreground-heading  # 14: Bright Cyan
     colors.foreground-bright   # 15: Bright White
   ];
 

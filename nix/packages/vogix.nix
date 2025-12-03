@@ -25,12 +25,6 @@ rustPlatform.buildRustPackage rec {
     dbus
   ];
 
-  # Install templates
-  postInstall = ''
-    mkdir -p $out/share/vogix16
-    cp -r ${../../templates} $out/share/vogix16/templates
-  '';
-
   meta = with lib; {
     description = cargoToml.package.description;
     homepage = "https://github.com/i-am-logger/vogix16";
