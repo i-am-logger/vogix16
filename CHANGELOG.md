@@ -5,6 +5,13 @@ All notable changes to Vogix16 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3](https://github.com/i-am-logger/vogix16/compare/v0.1.2...v0.1.3) (2025-12-03)
+
+
+### Bug Fixes
+
+* make VM tests generic and auto-discovering ([#108](https://github.com/i-am-logger/vogix16/issues/108)) ([7138374](https://github.com/i-am-logger/vogix16/commit/7138374c28a4e52a082e3a8f87cc12ae17447f17))
+
 ## [0.1.2](https://github.com/i-am-logger/vogix16/compare/v0.1.1...v0.1.2) (2025-12-03)
 
 
