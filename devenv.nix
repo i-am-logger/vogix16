@@ -38,6 +38,18 @@ in
     cargo build --release
   '';
 
+  # Nix development scripts (disable eval cache to avoid stale results)
+  scripts.nix-build-dev.exec = ''
+    echo "🏗️  Building VM with eval cache disabled (for active development)..."
+    nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm \
+      --option eval-cache false
+  '';
+
+  scripts.nix-check-dev.exec = ''
+    echo "✅ Checking flake with eval cache disabled (for active development)..."
+    nix flake check --option eval-cache false
+  '';
+
   # Environment variables
   env = {
     PROJECT_NAME = "vogix16";
@@ -56,9 +68,14 @@ in
     } | ${pkgs.boxes}/bin/boxes -d stone -a l -i none
     echo
     echo "Available scripts:"
-    echo "  • dev-test  - Run tests"
-    echo "  • dev-run   - Run the application"
-    echo "  • dev-build - Build the application"
+    echo "  Rust Development:"
+    echo "    • dev-test      - Run tests"
+    echo "    • dev-run       - Run the application"
+    echo "    • dev-build     - Build the application"
+    echo ""
+    echo "  Nix Development (eval cache disabled):"
+    echo "    • nix-build-dev - Build VM without eval cache"
+    echo "    • nix-check-dev - Check flake without eval cache"
     echo ""
   '';
 

@@ -21,5 +21,9 @@ result-*
 .vscode/
 .idea/
 
+# Claude Code
+.claude/
+CLAUDE.md
+
 # Qemu
 *.qcow2

@@ -39,7 +39,7 @@
       nixosConfigurations.vogix16-test-vm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          themesPath = "${self}/themes";
+          themesPath = ./themes;
         };
         modules = [
           ./nix/vm/test-vm.nix
@@ -61,7 +61,7 @@
             home-manager.users.vogix = import ./nix/vm/home.nix;
             home-manager.sharedModules = [ self.homeManagerModules.default ];
             home-manager.extraSpecialArgs = {
-              themesPath = "${self}/themes";
+              themesPath = ./themes;
             };
           }
         ];
@@ -103,11 +103,34 @@
       );
 
       # Apps for easy access
-      apps = forAllSystems (system: {
-        vogix-vm = {
-          type = "app";
-          program = "${self.nixosConfigurations.vogix16-test-vm.config.system.build.vm}/bin/run-vogix16-test-vm";
-        };
-      });
+      apps = forAllSystems (system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          # VM launcher with eval cache disabled to ensure fresh builds during development
+          vogix-vm = {
+            type = "app";
+            program = "${pkgs.writeShellScript "vogix-vm" ''
+              echo "Building and launching VM with eval cache disabled..."
+              nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm \
+                --option eval-cache false \
+                --no-link \
+                --print-out-paths | while read vm_path; do
+                "$vm_path/bin/run-vogix16-test-vm"
+              done
+            ''}";
+          };
+
+          # Development helper that disables eval cache to avoid stale results
+          # when modifying application modules during active development
+          dev-check = {
+            type = "app";
+            program = "${pkgs.writeShellScript "dev-check" ''
+              echo "Running flake checks with eval cache disabled (for development)..."
+              nix flake check --option eval-cache false "$@"
+            ''}";
+          };
+        });
     };
 }

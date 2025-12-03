@@ -20,23 +20,25 @@ colors: ''
   text = "${colors.background}"
   cursor = "${colors.highlight}"
 
+  # ANSI colors: Minimal by default - monochromatic + semantic only
+  # Apps needing specific colors should have their own Vogix16 configs
   [colors.normal]
   black = "${colors.background}"
   red = "${colors.danger}"
   green = "${colors.success}"
-  yellow = "${colors.notice}"
-  blue = "${colors.link}"
-  magenta = "${colors.highlight}"
-  cyan = "${colors.active}"
+  yellow = "${colors.warning}"
+  blue = "${colors.foreground-text}"
+  magenta = "${colors.foreground-text}"
+  cyan = "${colors.foreground-text}"
   white = "${colors.foreground-text}"
 
   [colors.bright]
   black = "${colors.foreground-comment}"
   red = "${colors.danger}"
   green = "${colors.success}"
-  yellow = "${colors.notice}"
-  blue = "${colors.link}"
-  magenta = "${colors.highlight}"
-  cyan = "${colors.active}"
+  yellow = "${colors.warning}"
+  blue = "${colors.foreground-heading}"
+  magenta = "${colors.foreground-heading}"
+  cyan = "${colors.foreground-heading}"
   white = "${colors.foreground-bright}"
 ''

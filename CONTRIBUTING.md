@@ -223,7 +223,15 @@ feat(themes): add [Your Theme Name] with dark and light variants
 
 ## Adding Application Support
 
-To add support for a new application:
+To add support for a new application, follow Vogix16's semantic color principles. See [docs/design-system.md](docs/design-system.md) for detailed guidelines on when to use functional colors vs. monochromatic colors.
+
+### Key Principle
+
+Ask: **"Does this color communicate status, state, or information the user needs?"**
+- YES → Use functional colors (danger, success, warning, etc.)
+- NO → Use monochromatic base colors (background, foreground-*, etc.)
+
+See [nix/modules/applications/README.md](nix/modules/applications/README.md) for implementation examples.
 
 ### 1. Create Generator Function
 
@@ -231,10 +239,15 @@ To add support for a new application:
 # nix/modules/applications/myapp.nix
 { lib }: colors: ''
 # Application configuration using semantic color names
+# Use monochromatic for structure
 background = ${colors.background}
 foreground = ${colors.foreground-text}
+borders = ${colors.foreground-border}
+
+# Use functional colors only for semantic meaning
 error-color = ${colors.danger}
 success-color = ${colors.success}
+warning-color = ${colors.warning}
 ''
 ```
 

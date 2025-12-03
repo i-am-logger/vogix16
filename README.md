@@ -14,6 +14,8 @@ A minimalist design system and runtime theme management system for NixOS. Vogix1
 - **16-Color Design System**: Monochromatic base (base00-base07) + functional colors (base08-base0F)
 - **Runtime Theme Switching**: Change themes without NixOS rebuilds
 - **Dark/Light Variants**: Automatic variant switching with maintained semantic meaning
+- **Application-Specific Configs**: Direct Vogix16 integration for supported applications
+- **Minimal ANSI Support**: Terminal emulators provide minimal ANSI passthrough (not an ANSI color scheme)
 - **Multiple Reload Methods**: DBus, Unix signals, Sway IPC, filesystem watching
 - **Nix-Based Theme Generation**: All theme configurations pre-generated at build time
 - **NixOS Integration**: Home Manager module with systemd service
@@ -91,6 +93,7 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 - [CLI Reference](docs/cli.md) - Command-line interface guide
 - [Theming Guide](docs/theming.md) - Creating and customizing themes
 - [Reload Mechanisms](docs/reload.md) - Application reload methods
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute to Vogix16
 - [Development Guide](DEVELOPMENT.md) - Setting up development environment
 - [Testing Guide](TESTING.md) - Automated testing documentation
 - [Implementation](IMPLEMENTATION.md) - Complete implementation details
@@ -113,6 +116,17 @@ Vogix16 follows a "less is more" approach:
 - True distinct colors reserved for functional elements
 - Dark and light variants maintain semantic consistency
 
+Functional colors convey information the user needs to know (errors, warnings, resource levels), while monochromatic colors provide structure. See [Design System](docs/design-system.md) for detailed guidelines on semantic color usage.
+
+### Not an ANSI Color Scheme
+
+Vogix16 is a **design system with semantic color meanings**, not an ANSI color scheme:
+
+- Applications should use Vogix16 directly through their own configuration files
+- Terminal emulators provide **minimal ANSI mappings** (monochromatic + semantic colors only)
+- ANSI passthrough is deliberately minimal to maintain the design philosophy
+- Each supported application gets a thoughtfully designed Vogix16 configuration
+
 ## Requirements
 
 - NixOS (for full integration) or any Linux distribution (for standalone binary)
@@ -128,12 +142,13 @@ See [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-Contributions welcome! Please:
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
 
-1. Run `./test.sh` to verify tests pass
-2. Follow the existing code style
-3. Update documentation as needed
-4. Add tests for new features
+- Submitting themes
+- Adding application support
+- Code style and conventions
+- Testing requirements
+- Pull request process
 
 ## Acknowledgments
 

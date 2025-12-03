@@ -44,3 +44,112 @@ When using Vogix16 in NixOS/home-manager, these colors are exposed with semantic
 
 3. **Strict Functional Color Usage**: Colors are assigned based on semantic function rather than aesthetics. Each functional color has a consistent purpose (e.g., base08 always represents errors/danger) even if the actual color used varies between themes.
 
+4. **Not an ANSI Color Scheme**: Vogix16 is a design system, not an ANSI terminal color scheme. Applications receive Vogix16 colors through their own configuration files with semantic color names, not through ANSI escape codes.
+
+## Semantic Color Usage
+
+The core principle of Vogix16 is using functional colors only when they convey information the user needs to know.
+
+### Decision Framework
+
+Ask yourself: **"Does this color communicate status, state, or information the user needs?"**
+
+**YES - Use Functional Colors:**
+- Error states, failures → `danger`
+- Success confirmations, completions → `success`
+- Warnings, cautions, alerts → `warning`
+- Important notices → `notice`
+- Resource utilization levels (CPU at 90% vs 10%)
+- Temperature/status gradients (cool → warm → hot)
+- Currently active/selected/focused items → `active`
+- Interactive elements, links → `link`
+- Highlighted content, focus indicators → `highlight`
+- Added/removed/modified content (git diffs, file changes)
+
+**NO - Use Monochromatic Base Colors:**
+- UI borders, dividers, structural elements
+- File type differentiation (unless indicating errors/warnings)
+- Syntax highlighting purely for aesthetics
+- Category labels without status meaning
+- Navigation elements
+- Decorative accents
+- Organizational groupings
+
+### Practical Examples
+
+**System Monitor (btop):**
+- ✓ CPU gradient: low → `foreground-comment`, moderate → `warning`, high → `danger` (semantic: user needs to know utilization)
+- ✓ Selected item → `active` (semantic: indicates current focus)
+- ✗ Box borders → all use `foreground-border` (not semantic: just structure)
+
+**Version Control (git):**
+- ✓ Added lines → `success` (semantic: successful addition)
+- ✓ Removed lines → `danger` (semantic: deletion)
+- ✓ Modified hunks → `warning` (semantic: pending changes)
+- ✗ File paths, line numbers → monochromatic (not semantic: just structure)
+
+**File Listings (ls/eza):**
+- ✓ Permission errors → `danger` (semantic: access denied)
+- ✓ Symbolic link errors → `warning` (semantic: broken link)
+- ✗ File types (directories, executables) → monochromatic (not semantic: just categorization)
+
+## Application Integration
+
+### Direct Configuration (Recommended)
+
+Applications should integrate with Vogix16 by:
+- Reading Vogix16 configuration files with semantic color names
+- Mapping semantic names to their own color requirements
+- Following Vogix16's minimalist principles in their color usage
+
+**Supported applications**: btop, alacritty (UI), neovim, vim, tmux, and more (see `nix/modules/applications/`)
+
+#### Example: btop (System Monitor)
+
+btop demonstrates proper semantic color usage:
+
+**Monochromatic (structural elements):**
+- All box borders → `foreground-border` (same color, no semantic meaning)
+- Main text → `foreground-text`
+- Titles → `foreground-heading`
+- Graph text → `foreground-text`
+
+**Semantic (functional indicators):**
+- CPU usage gradient: low → `foreground-comment`, moderate → `warning`, high → `danger`
+- Temperature gradient: cool → `foreground-comment`, warm → `warning`, hot → `danger`
+- Memory usage: low → `foreground-comment`, moderate → `warning`, high → `danger`
+- Selected item → `active` (indicates current focus)
+
+The key principle: Resource utilization levels ARE semantic information. The user needs to know when CPU is at 90% (danger) vs 50% (warning) vs 10% (normal). This is not decorative - it's functional color usage.
+
+#### Example: git (Version Control)
+
+Another proper semantic usage:
+
+**Semantic:**
+- Added lines → `success` (successful addition)
+- Removed lines → `danger` (deletion/removal)
+- Modified hunks → `warning` (changes pending review)
+
+**Monochromatic:**
+- File paths, line numbers, diff headers → monochromatic scale
+
+### Terminal Emulator ANSI (Minimal Passthrough)
+
+Terminal emulators (alacritty, Linux console) provide minimal ANSI color mappings:
+
+**Minimal ANSI Mapping**:
+- ANSI colors 0,7,8,15 → Monochromatic base (background, foreground, comments, bright)
+- ANSI colors 1,9 (red) → `danger` (semantic: errors)
+- ANSI colors 2,10 (green) → `success` (semantic: success states)
+- ANSI colors 3,11 (yellow) → `warning` (semantic: warnings)
+- ANSI colors 4,5,6,12,13,14 (blue/magenta/cyan) → Monochromatic foreground shades
+
+This minimal mapping ensures:
+- Terminal remains minimal by default
+- Only semantic colors appear through ANSI passthrough
+- Applications needing more colors should use direct Vogix16 configs
+- No "accidental" decorative colors from unconfigured applications
+
+**Key Principle**: ANSI passthrough is a practical necessity, not the primary integration method. For full Vogix16 support, applications should be configured directly with semantic color names.
+
