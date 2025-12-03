@@ -5,6 +5,11 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+    # Skip CI for release-please PRs since they only update version files
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - 'Cargo.toml'  # Only version bumps
+      - '.release-please-manifest.json'
 
 jobs:
   rust-checks:
