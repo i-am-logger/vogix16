@@ -1,8 +1,17 @@
 { lib }:
 
-# Helper function to generate alacritty colors config from semantic colors
-# Returns TOML content that can be written to a file
-colors: ''
+{
+  # Config file path relative to ~/.config/alacritty/
+  configFile = "colors.toml";
+
+  # Reload method: touch the config symlink to trigger Alacritty's file watcher
+  reloadMethod = {
+    method = "touch";
+  };
+
+  # Generator function to create alacritty colors config from semantic colors
+  # Returns TOML content
+  generate = colors: ''
   [colors.primary]
   background = "${colors.background}"
   foreground = "${colors.foreground-text}"
@@ -41,4 +50,5 @@ colors: ''
   magenta = "${colors.foreground-heading}"
   cyan = "${colors.foreground-heading}"
   white = "${colors.foreground-bright}"
-''
+  '';
+}

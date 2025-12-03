@@ -1,8 +1,17 @@
 { lib }:
 
-# Helper function to generate btop theme from semantic colors
-# Returns btop theme file content
-colors: ''
+{
+  # Config file path relative to ~/.config/btop/
+  configFile = "themes/vogix.theme";
+
+  # Reload method: touch the config symlink to trigger btop's file watcher
+  reloadMethod = {
+    method = "touch";
+  };
+
+  # Generator function to create btop theme from semantic colors
+  # Returns btop theme file content
+  generate = colors: ''
   # Vogix16 theme for btop
   # Main interface - monochromatic base
   theme[main_bg]="${colors.background}"
@@ -72,4 +81,5 @@ colors: ''
   theme[process_start]="${colors.foreground-comment}"
   theme[process_mid]="${colors.warning}"
   theme[process_end]="${colors.danger}"
-''
+  '';
+}
