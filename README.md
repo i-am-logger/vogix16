@@ -20,7 +20,7 @@ A minimalist design system and runtime theme management system for NixOS. Vogix1
 - **16-Color Design System**: Monochromatic base (base00-base07) + functional colors (base08-base0F)
 - **Runtime Theme Switching**: Change themes without NixOS rebuilds
 - **Dark/Light Variants**: Automatic variant switching with maintained semantic meaning
-- **Application-Specific Configs**: Direct Vogix16 integration for supported applications
+- **Application-Specific Configs**: Direct Vogix16 integration for [supported applications](https://github.com/i-am-logger/vogix16/tree/master/nix/modules/applications)
 - **Minimal ANSI Support**: Terminal emulators provide minimal ANSI passthrough (not an ANSI color scheme)
 - **Multiple Reload Methods**: DBus, Unix signals, Sway IPC, filesystem watching
 - **Nix-Based Theme Generation**: All theme configurations pre-generated at build time
