@@ -8,6 +8,13 @@
 
 A minimalist design system and runtime theme management system for NixOS. Vogix16 combines a 16-color palette with functional semantic meaning, providing dynamic theme switching without requiring system rebuilds.
 
+> [!WARNING]  
+> right now this runs and working in a vm.
+> ```bash
+> nix run .#vogix-vm
+> ```
+> vogix is alpha, it is not battlefield tested though i'm working on integrating it to my system. 
+
 ## Features
 
 - **16-Color Design System**: Monochromatic base (base00-base07) + functional colors (base08-base0F)
