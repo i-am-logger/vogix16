@@ -46,9 +46,6 @@ pkgs.testers.nixosTest {
         home-manager.nixosModules.home-manager
       ];
 
-      # Pass themesPath to both NixOS and home-manager modules
-      _module.args.themesPath = "${self}/themes";
-
       # Make vogix package available
       nixpkgs.overlays = [
         (final: prev: {
@@ -61,9 +58,6 @@ pkgs.testers.nixosTest {
       home-manager.useUserPackages = true;
       home-manager.users.vogix = import ./home.nix;
       home-manager.sharedModules = [ self.homeManagerModules.default ];
-      home-manager.extraSpecialArgs = {
-        themesPath = "${self}/themes";
-      };
     };
 
   testScript = ''
