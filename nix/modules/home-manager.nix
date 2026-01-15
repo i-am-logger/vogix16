@@ -1,7 +1,6 @@
 { config
 , lib
 , pkgs
-, themesPath ? null
 , ...
 }:
 
@@ -14,8 +13,7 @@ let
   vogix16 = pkgs.callPackage ../packages/vogix.nix { };
 
   # Auto-discover all theme files from themes directory
-  # Use provided themesPath or fall back to relative path
-  themesDir = if themesPath != null then themesPath else ../../themes;
+  themesDir = ../../themes;
   themeFiles = builtins.readDir themesDir;
   nixThemeFiles = builtins.filter (f: lib.hasSuffix ".nix" f) (builtins.attrNames themeFiles);
   autoDiscoveredThemes = lib.listToAttrs (
@@ -537,7 +535,7 @@ in
                                   ${pkgs.coreutils}/bin/mkdir -p "$CONFIG_DIR"
 
                                   # Check if target config file exists
-                                  if [[ ! -f "$CONFIG_TARGET" ]]; then
+                                  if [[ ! -r "$CONFIG_TARGET" ]]; then
                                     ${pkgs.coreutils}/bin/echo "    ERROR: Config target does not exist: $CONFIG_TARGET"
                                     exit 1
                                   fi

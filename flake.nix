@@ -53,9 +53,6 @@
       # NixOS VM for testing
       nixosConfigurations.vogix16-test-vm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {
-          themesPath = ./themes;
-        };
         modules = [
           ./nix/vm/test-vm.nix
           self.nixosModules.default
@@ -75,9 +72,6 @@
             home-manager.useUserPackages = true;
             home-manager.users.vogix = import ./nix/vm/home.nix;
             home-manager.sharedModules = [ self.homeManagerModules.default ];
-            home-manager.extraSpecialArgs = {
-              themesPath = ./themes;
-            };
           }
         ];
       };

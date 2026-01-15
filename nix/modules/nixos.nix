@@ -1,4 +1,4 @@
-{ config, lib, pkgs, options, themesPath ? null, ... }:
+{ config, lib, pkgs, options, ... }:
 
 with lib;
 
@@ -80,7 +80,7 @@ in
             else null;
 
           # Get themes directory
-          themesDir = if themesPath != null then themesPath else ../../themes;
+          themesDir = ../../themes;
 
           # Get theme name and variant
           selectedThemeName = if hmVogixCfg != null then hmVogixCfg.defaultTheme else null;
