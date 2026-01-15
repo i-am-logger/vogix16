@@ -81,8 +81,11 @@ impl ReloadDispatcher {
             "touch" => {
                 // Touch the symlink itself (-h flag) to update its mtime
                 // Applications watching the file will detect the change
-                let cmd = format!("touch -h {}", metadata.config_path);
-                self.run_command(&cmd)?;
+                Command::new("touch")
+                    .arg("-h")
+                    .arg(&metadata.config_path)
+                    .status()
+                    .map_err(|e| crate::reload::VogixError::ReloadError(e.to_string()))?;
                 Ok("touched to trigger auto-reload".to_string())
             }
             "none" => Ok("no reload needed (changes take effect on next use)".to_string()),
