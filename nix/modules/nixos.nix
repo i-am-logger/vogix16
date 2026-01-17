@@ -65,7 +65,7 @@ in
             if options ? home-manager then
               attrNames
                 (filterAttrs
-                  (name: userCfg:
+                  (_name: userCfg:
                     userCfg.programs.vogix16.enable or false
                   )
                   (config.home-manager.users or { }))

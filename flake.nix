@@ -60,8 +60,8 @@
           {
             # Make vogix package available in pkgs
             nixpkgs.overlays = [
-              (final: prev: {
-                vogix = self.packages.x86_64-linux.vogix;
+              (_final: _prev: {
+                inherit (self.packages.x86_64-linux) vogix;
               })
             ];
 

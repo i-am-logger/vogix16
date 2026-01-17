@@ -8,6 +8,7 @@ import re
 import sys
 from pathlib import Path
 
+
 def extract_colors_from_svg(svg_path):
     """
     Extract dark and light variant colors from an SVG file.
@@ -17,10 +18,10 @@ def extract_colors_from_svg(svg_path):
     - Right side (x >= 500): Light theme
     """
     content = svg_path.read_text()
-    theme_name = svg_path.stem.replace('vogix16_', '')
+    theme_name = svg_path.stem.replace("vogix16_", "")
 
     # Parse SVG line by line looking for baseXX definitions
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     dark_colors = {}
     light_colors = {}
@@ -55,7 +56,7 @@ def extract_colors_from_svg(svg_path):
                     light_colors[base_name] = color_value
 
     # Validate we have at least base00-base07 for both variants
-    required_bases = [f'base{i:02X}' for i in range(8)]
+    required_bases = [f"base{i:02X}" for i in range(8)]
 
     dark_missing = [b for b in required_bases if b not in dark_colors]
     light_missing = [b for b in required_bases if b not in light_colors]
@@ -64,67 +65,80 @@ def extract_colors_from_svg(svg_path):
         print(f"  ⚠️  Dark variant missing: {', '.join(dark_missing)}", file=sys.stderr)
 
     if light_missing:
-        print(f"  ⚠️  Light variant missing: {', '.join(light_missing)}", file=sys.stderr)
+        print(
+            f"  ⚠️  Light variant missing: {', '.join(light_missing)}", file=sys.stderr
+        )
 
     if len(dark_colors) < 8 or len(light_colors) < 8:
-        print(f"  ❌ Insufficient colors: dark={len(dark_colors)}, light={len(light_colors)}", file=sys.stderr)
+        print(
+            f"  ❌ Insufficient colors: dark={len(dark_colors)}, light={len(light_colors)}",
+            file=sys.stderr,
+        )
         return None
 
-    return {
-        'name': theme_name,
-        'dark': dark_colors,
-        'light': light_colors
-    }
+    return {"name": theme_name, "dark": dark_colors, "light": light_colors}
+
 
 def generate_nix_file(theme_data, output_path):
     """Generate a Nix theme file from extracted theme data."""
-    name = theme_data['name']
-    dark = theme_data['dark']
-    light = theme_data['light']
+    name = theme_data["name"]
+    dark = theme_data["dark"]
+    light = theme_data["light"]
 
     # Check if theme file already exists and preserve base0F if not in SVG
-    if output_path.exists() and 'base0F' not in dark:
+    if output_path.exists() and "base0F" not in dark:
         existing_content = output_path.read_text()
         # Extract existing base0F values
-        dark_0f_match = re.search(r'dark\s*=\s*\{[^}]*base0F\s*=\s*"(#[0-9a-fA-F]{6})"', existing_content, re.DOTALL)
-        light_0f_match = re.search(r'light\s*=\s*\{[^}]*base0F\s*=\s*"(#[0-9a-fA-F]{6})"', existing_content, re.DOTALL)
+        dark_0f_match = re.search(
+            r'dark\s*=\s*\{[^}]*base0F\s*=\s*"(#[0-9a-fA-F]{6})"',
+            existing_content,
+            re.DOTALL,
+        )
+        light_0f_match = re.search(
+            r'light\s*=\s*\{[^}]*base0F\s*=\s*"(#[0-9a-fA-F]{6})"',
+            existing_content,
+            re.DOTALL,
+        )
 
         if dark_0f_match:
-            dark['base0F'] = dark_0f_match.group(1).lower()
+            dark["base0F"] = dark_0f_match.group(1).lower()
             print(f"  ℹ️  Preserved existing dark base0F: {dark['base0F']}")
 
         if light_0f_match:
-            light['base0F'] = light_0f_match.group(1).lower()
+            light["base0F"] = light_0f_match.group(1).lower()
             print(f"  ℹ️  Preserved existing light base0F: {light['base0F']}")
 
     # Ensure we have base00-base0F, use what we have
-    all_bases = sorted(set(list(dark.keys()) + list(light.keys())), key=lambda x: int(x[4:], 16))
+    all_bases = sorted(
+        set(list(dark.keys()) + list(light.keys())), key=lambda x: int(x[4:], 16)
+    )
 
-    content = f'''{{
+    content = f"""{{
   name = "{name}";
 
   dark = {{
-'''
+"""
 
     for key in all_bases:
         if key in dark:
             content += f'    {key} = "{dark[key]}";\n'
 
-    content += '''  };
+    content += """  };
 
   light = {
-'''
+"""
 
     for key in all_bases:
         if key in light:
             content += f'    {key} = "{light[key]}";\n'
 
-    content += '''  };
+    content += """  };
 }
-'''
+"""
 
     output_path.write_text(content)
     return True
+
 
 def test_extraction(svg_path, expected_dark=None, expected_light=None):
     """Test extraction on a single file with optional validation."""
@@ -140,24 +154,24 @@ def test_extraction(svg_path, expected_dark=None, expected_light=None):
 
     print(f"\n✅ Extracted {theme_data['name']}")
     print(f"\nDark variant ({len(theme_data['dark'])} colors):")
-    for key in sorted(theme_data['dark'].keys(), key=lambda x: int(x[4:], 16)):
+    for key in sorted(theme_data["dark"].keys(), key=lambda x: int(x[4:], 16)):
         print(f"  {key} = {theme_data['dark'][key]}")
 
     print(f"\nLight variant ({len(theme_data['light'])} colors):")
-    for key in sorted(theme_data['light'].keys(), key=lambda x: int(x[4:], 16)):
+    for key in sorted(theme_data["light"].keys(), key=lambda x: int(x[4:], 16)):
         print(f"  {key} = {theme_data['light'][key]}")
 
     # Validate if expected values provided
     if expected_dark:
         for key, expected_val in expected_dark.items():
-            actual_val = theme_data['dark'].get(key, 'MISSING')
+            actual_val = theme_data["dark"].get(key, "MISSING")
             if actual_val.lower() != expected_val.lower():
                 print(f"  ❌ Dark {key}: expected {expected_val}, got {actual_val}")
                 return False
 
     if expected_light:
         for key, expected_val in expected_light.items():
-            actual_val = theme_data['light'].get(key, 'MISSING')
+            actual_val = theme_data["light"].get(key, "MISSING")
             if actual_val.lower() != expected_val.lower():
                 print(f"  ❌ Light {key}: expected {expected_val}, got {actual_val}")
                 return False
@@ -165,14 +179,15 @@ def test_extraction(svg_path, expected_dark=None, expected_light=None):
     print("\n✅ All validations passed!")
     return True
 
+
 def main():
     """Main function to process all SVG files."""
-    if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
         # Test mode - validate aikido extraction
         # Project root is one level up from scripts/
         repo_root = Path(__file__).parent.parent
-        assets_dir = repo_root / 'assets'
-        aikido_svg = assets_dir / 'vogix16_aikido.svg'
+        assets_dir = repo_root / "assets"
+        aikido_svg = assets_dir / "vogix16_aikido.svg"
 
         if not aikido_svg.exists():
             print(f"❌ Test file not found: {aikido_svg}")
@@ -180,14 +195,14 @@ def main():
 
         # Expected values from SVG visual inspection
         expected_dark = {
-            'base00': '#262626',  # Sumi (charcoal)
-            'base07': '#f6f5f0',  # Washi (paper)
-            'base08': '#4d5645',  # Error
+            "base00": "#262626",  # Sumi (charcoal)
+            "base07": "#f6f5f0",  # Washi (paper)
+            "base08": "#4d5645",  # Error
         }
         expected_light = {
-            'base00': '#f6f5f0',  # Washi (paper)
-            'base07': '#262626',  # Sumi (charcoal)
-            'base08': '#2a3328',  # Error
+            "base00": "#f6f5f0",  # Washi (paper)
+            "base07": "#262626",  # Sumi (charcoal)
+            "base08": "#2a3328",  # Error
         }
 
         success = test_extraction(aikido_svg, expected_dark, expected_light)
@@ -196,10 +211,10 @@ def main():
     # Production mode - extract all themes
     # Project root is one level up from scripts/
     repo_root = Path(__file__).parent.parent
-    assets_dir = repo_root / 'assets'
-    themes_dir = repo_root / 'themes'
+    assets_dir = repo_root / "assets"
+    themes_dir = repo_root / "themes"
 
-    svg_files = sorted(assets_dir.glob('vogix16_*.svg'))
+    svg_files = sorted(assets_dir.glob("vogix16_*.svg"))
 
     if not svg_files:
         print("❌ No SVG files found in assets/ directory", file=sys.stderr)
@@ -212,7 +227,7 @@ def main():
     failed = []
 
     for svg_path in svg_files:
-        print(f"Processing {svg_path.name}...", end=' ')
+        print(f"Processing {svg_path.name}...", end=" ")
         theme_data = extract_colors_from_svg(svg_path)
 
         if theme_data:
@@ -239,5 +254,6 @@ def main():
     print(f"\n✅ All themes extracted successfully!")
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

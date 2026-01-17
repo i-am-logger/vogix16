@@ -23,7 +23,6 @@ in
     pkgs.git
     pkgs.dbus
     pkgs.pkg-config
-    pkgs.nixpkgs-fmt
   ];
 
   # Development scripts
@@ -83,27 +82,48 @@ in
     echo ""
   '';
 
-  # https://devenv.sh/languages/
-  languages.rust = {
+  # https://devenv.sh/integrations/treefmt/
+  treefmt = {
     enable = true;
-    channel = "stable";
+    config = {
+      # Global exclusions
+      settings.global.excludes = [
+        # Application modules have { lib, appLib } interface contract
+        # Not all modules use these params but they're part of the API
+        "nix/modules/applications/*.nix"
+        # Devenv generated files
+        ".devenv.flake.nix"
+        ".devenv/"
+      ];
 
-    components = [
-      "rustc"
-      "cargo"
-      "clippy"
-      "rustfmt"
-      "rust-analyzer"
-    ];
+      programs = {
+        # Nix
+        nixpkgs-fmt.enable = true;
+        deadnix.enable = true;
+        statix.enable = true;
+
+        # Rust
+        rustfmt.enable = true;
+
+        # Python
+        black.enable = true;
+
+        # Shell
+        shellcheck.enable = true;
+        shfmt.enable = true;
+      };
+    };
   };
 
   # https://devenv.sh/git-hooks/
   git-hooks.settings.rust.cargoManifestPath = "./Cargo.toml";
 
   git-hooks.hooks = {
-    rustfmt.enable = true;
+    # Use treefmt for all formatting
+    treefmt.enable = true;
+
+    # Keep clippy for Rust linting (not just formatting)
     clippy.enable = true;
-    nixpkgs-fmt.enable = true;
   };
 
   # https://devenv.sh/outputs/
@@ -112,16 +132,16 @@ in
       # Override to skip Windows-specific dependencies
       crateOverrides = pkgs.defaultCrateOverrides // {
         # Skip all Windows-specific crates
-        windows-sys = attrs: null;
-        windows-core = attrs: null;
-        windows-targets = attrs: null;
-        windows_x86_64_gnu = attrs: null;
-        windows_x86_64_msvc = attrs: null;
-        windows_i686_gnu = attrs: null;
-        windows_i686_msvc = attrs: null;
-        windows_aarch64_msvc = attrs: null;
-        windows_aarch64_gnullvm = attrs: null;
-        anstyle-wincon = attrs: null;
+        windows-sys = _attrs: null;
+        windows-core = _attrs: null;
+        windows-targets = _attrs: null;
+        windows_x86_64_gnu = _attrs: null;
+        windows_x86_64_msvc = _attrs: null;
+        windows_i686_gnu = _attrs: null;
+        windows_i686_msvc = _attrs: null;
+        windows_aarch64_msvc = _attrs: null;
+        windows_aarch64_gnullvm = _attrs: null;
+        anstyle-wincon = _attrs: null;
       };
     };
   };
@@ -129,7 +149,7 @@ in
   # https://devenv.sh/tasks/
   tasks = {
     "test:fmt" = {
-      exec = "cargo fmt --check";
+      exec = "treefmt --fail-on-change";
     };
 
     "test:clippy" = {
@@ -146,7 +166,9 @@ in
   };
 
   # https://devenv.sh/tests/
-  enterTest = "devenv tasks run test:fmt test:clippy test:check test:unit";
+  # Use mkForce to override devenv's default enterTest which exports bash functions
+  # that cause issues with treefmt subprocesses (black, etc.)
+  enterTest = lib.mkForce "devenv tasks run test:fmt test:clippy test:check test:unit";
 
   # See full reference at https://devenv.sh/reference/options/
 }

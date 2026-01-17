@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   devenv-checks:
-    name: Format & Lint (devenv)
+    name: Format & Lint (treefmt)
     runs-on: ubuntu-latest
     # Skip CI for release-please PRs and release merges (only version bumps)
     if: |

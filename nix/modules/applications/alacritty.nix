@@ -20,7 +20,7 @@
   generate = colors: {
     colors = {
       primary = {
-        background = colors.background;
+        inherit (colors) background;
         foreground = colors.foreground-text;
         bright_foreground = colors.foreground-bright;
       };

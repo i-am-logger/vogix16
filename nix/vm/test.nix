@@ -22,8 +22,8 @@ let
         {
           inherit name;
           value = {
-            dark = theme.dark;
-            light = theme.light;
+            inherit (theme) dark;
+            inherit (theme) light;
           };
         }
       )
@@ -38,7 +38,7 @@ pkgs.testers.nixosTest {
   name = "vogix16-integration-test";
 
   nodes.machine =
-    { config, lib, ... }:
+    { ... }:
     {
       imports = [
         testVMConfig
@@ -48,8 +48,8 @@ pkgs.testers.nixosTest {
 
       # Make vogix package available
       nixpkgs.overlays = [
-        (final: prev: {
-          vogix = self.packages.x86_64-linux.vogix;
+        (_final: _prev: {
+          inherit (self.packages.x86_64-linux) vogix;
         })
       ];
 

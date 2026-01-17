@@ -9,7 +9,7 @@ let
 in
 rustPlatform.buildRustPackage rec {
   pname = cargoToml.package.name;
-  version = cargoToml.package.version;
+  inherit (cargoToml.package) version;
 
   src = lib.cleanSource ../..;
 
@@ -26,7 +26,7 @@ rustPlatform.buildRustPackage rec {
   ];
 
   meta = with lib; {
-    description = cargoToml.package.description;
+    inherit (cargoToml.package) description;
     homepage = "https://github.com/i-am-logger/vogix16";
     license = licenses.cc-by-nc-sa-40;
     maintainers = [ ];
