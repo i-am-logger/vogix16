@@ -21,9 +21,10 @@ result-*
 .vscode/
 .idea/
 
-# Claude Code
+# AI Coding Assistants
 .claude/
 CLAUDE.md
+AGENTS.md
 
 # Qemu
 *.qcow2
