@@ -2,6 +2,7 @@
 , rustPlatform
 , pkg-config
 , dbus
+,
 }:
 
 let
@@ -27,7 +28,7 @@ rustPlatform.buildRustPackage rec {
 
   meta = with lib; {
     inherit (cargoToml.package) description;
-    homepage = "https://github.com/i-am-logger/vogix16";
+    homepage = "https://github.com/i-am-logger/vogix";
     license = licenses.cc-by-nc-sa-40;
     maintainers = [ ];
     mainProgram = cargoToml.package.name;

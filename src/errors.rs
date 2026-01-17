@@ -5,6 +5,7 @@ use std::path::PathBuf;
 pub enum VogixError {
     Io(io::Error),
     ConfigNotFound(PathBuf),
+    ParseError(String),
     InvalidTheme(String),
     ThemeNotFound(String),
     SymlinkError(String),
@@ -18,6 +19,7 @@ impl std::fmt::Display for VogixError {
             VogixError::ConfigNotFound(path) => {
                 write!(f, "Config file not found: {}", path.display())
             }
+            VogixError::ParseError(msg) => write!(f, "Parse error: {}", msg),
             VogixError::InvalidTheme(msg) => write!(f, "Invalid theme: {}", msg),
             VogixError::ThemeNotFound(name) => write!(f, "Theme not found: {}", name),
             VogixError::SymlinkError(msg) => write!(f, "Symlink error: {}", msg),

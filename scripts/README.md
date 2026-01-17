@@ -1,6 +1,6 @@
-# Vogix16 Scripts
+# Vogix Scripts
 
-Development, theme management, and demo scripts for Vogix16.
+Development, theme management, and demo scripts for Vogix.
 
 ## Demo
 
@@ -21,7 +21,7 @@ Automated demo script with typing effects for recording with OBS or screen captu
 - Includes explanatory comments and architecture diagram
 - Fully automated - runs from start to finish
 
-**Used by:** `vogix16-demo` command in test VM
+**Used by:** `vogix-demo` command in test VM
 
 **Recording:** Start OBS, run this script, capture the terminal window
 

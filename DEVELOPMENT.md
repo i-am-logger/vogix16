@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers setting up a development environment and contributing to Vogix16.
+This guide covers setting up a development environment and contributing to Vogix.
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ This guide covers setting up a development environment and contributing to Vogix
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/i-am-logger/vogix16
-cd vogix16
+git clone https://github.com/i-am-logger/vogix
+cd vogix
 ```
 
 ### Enter Development Environment
@@ -98,11 +98,13 @@ nix run .#vogix-vm
 # Inside the VM, test commands:
 vogix status
 vogix list
-vogix theme forest
-vogix switch
+vogix list -s base16
+vogix -s base16 -t catppuccin -v mocha
+vogix -v darker
+vogix -v lighter
 ```
 
-See [TESTING.md](TESTING.md) for comprehensive testing documentation.
+See [TESTING.md](TESTING.md) for testing documentation.
 
 ## Code Quality
 
@@ -150,7 +152,7 @@ devenv test  # Runs all git hooks
 ## Project Structure
 
 ```
-vogix16/
+vogix/
 ├── src/                    # Rust source code
 │   ├── cli.rs              # Command-line interface (clap)
 │   ├── config.rs           # Configuration management
@@ -162,10 +164,11 @@ vogix16/
 │   ├── errors.rs           # Error handling
 │   └── main.rs             # Entry point
 │
-├── themes/                 # Theme library (19 themes × 2 variants)
-│   ├── aikido.nix
-│   ├── forest.nix
-│   └── ...
+├── themes/                 # Theme library
+│   └── vogix16/            # Native vogix16 themes (19 themes)
+│       ├── aikido.nix
+│       ├── forest.nix
+│       └── ...
 │
 ├── nix/
 │   ├── modules/
@@ -185,7 +188,7 @@ vogix16/
 ├── docs/                   # Documentation
 │   ├── architecture.md     # System architecture
 │   ├── cli.md              # CLI reference
-│   ├── design-system.md    # Color system
+│   ├── vogix16-design-system.md # vogix16 scheme guide
 │   ├── theming.md          # Theme format
 │   └── reload.md           # Reload mechanisms
 │
@@ -212,25 +215,35 @@ vogix16/
 
 ### Adding a New Theme
 
-1. Create theme file in `themes/`:
+1. Create theme file in `themes/vogix16/`:
    ```nix
-   # themes/mytheme.nix
+   # themes/vogix16/mytheme.nix
    {
-     dark = {
-       base00 = "#...";  # All 16 colors
-       # ...
+     name = "mytheme";
+     variants = {
+       dark = {
+         polarity = "dark";
+         colors = {
+           base00 = "#...";  # All 16 colors
+           # ...
+         };
+       };
+       light = {
+         polarity = "light";
+         colors = {
+           base00 = "#...";
+           # ...
+         };
+       };
      };
-     light = {
-       base00 = "#...";
-       # ...
-     };
+     defaults = { dark = "dark"; light = "light"; };
    }
    ```
 
 2. Test the theme:
    ```bash
    nix flake check
-   vogix list  # Should show your theme
+   vogix list -s vogix16  # Should show your theme
    ```
 
 3. Add to theme catalog in `themes/README.md`
@@ -242,33 +255,32 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed theme submission guidelines.
 1. Create generator in `nix/modules/applications/`:
    ```nix
    # nix/modules/applications/myapp.nix
-   { lib }: colors: ''
-   # Application config using semantic colors
-   background = ${colors.background}
-   foreground = ${colors.foreground-text}
-   error = ${colors.danger}
-   ''
-   ```
-
-2. Define config filename in `home-manager.nix`:
-   ```nix
-   getConfigFilename = app: {
-     myapp = "config.conf";
-   }.${app} or "config";
-   ```
-
-3. Define reload method:
-   ```nix
-   getAppReloadMethod = app: {
-     myapp = {
-       method = "signal";
-       signal = "SIGUSR1";
-       process_name = "myapp";
+   { lib, appLib }:
+   {
+     configFile = "myapp/config.conf";
+     reloadMethod = { method = "touch"; };
+     schemes = {
+       vogix16 = colors: ''
+         background = ${colors.background}
+         error = ${colors.danger}
+       '';
+       base16 = colors: ''
+         background = ${colors.base00}
+         red = ${colors.base08}
+       '';
+       base24 = colors: ''
+         background = ${colors.base00}
+         bright-red = ${colors.base12}
+       '';
+       ansi16 = colors: ''
+         background = ${colors.background}
+         red = ${colors.red}
+       '';
      };
-   }.${app} or { method = "none"; };
+   }
    ```
 
-4. Test integration:
+2. Test integration:
    ```bash
    nix flake check
    ```
@@ -284,8 +296,8 @@ RUST_BACKTRACE=full cargo run -- theme forest
 #### Check Generated Configs
 ```bash
 # After home-manager switch
-ls -la /run/user/$(id -u)/vogix16/themes/
-cat /run/user/$(id -u)/vogix16/manifest.toml
+ls -la /run/user/$(id -u)/vogix/themes/
+cat /run/user/$(id -u)/vogix/manifest.toml
 
 # Check symlinks
 ls -la ~/.config/alacritty/colors.toml
@@ -298,7 +310,7 @@ readlink ~/.config/alacritty/colors.toml
 nix flake show
 
 # Evaluate specific attribute
-nix eval .#packages.x86_64-linux.vogix16.version
+nix eval .#packages.x86_64-linux.vogix.version
 
 # Build with verbose output
 nix build --print-build-logs
@@ -348,21 +360,25 @@ nix flake check --show-trace
    # This changes the flake fingerprint → cache invalidates
    ```
 
-**Status**: Waiting for upstream Nix to implement automatic eval cache disabling for local repos. Track progress in issue [#101](https://github.com/i-am-logger/vogix16/issues/101).
+**Status**: Waiting for upstream Nix to implement automatic eval cache disabling for local repos. Track progress in issue [#101](https://github.com/i-am-logger/vogix/issues/101).
 
 ## Architecture Overview
 
 ### Build Time (Nix)
-1. Home-manager module discovers themes from `themes/*.nix`
+1. Home-manager module discovers themes:
+   - Native vogix16 themes from `themes/vogix16/*.nix`
+   - Imported base16/base24 from tinted-schemes fork
+   - Imported ansi16 from iTerm2-Color-Schemes fork
 2. Discovers application generators from `nix/modules/applications/`
-3. For each (theme × variant × app) combination, generates configs
+3. For each (scheme × theme × variant × app) combination, generates configs
 4. Stores generated configs in `/nix/store` (immutable)
-5. Systemd service symlinks configs to `/run/user/UID/vogix16/themes/`
+5. Systemd service symlinks configs to `/run/user/UID/vogix/themes/`
 
 ### Runtime (Rust CLI)
 1. CLI updates `current-theme` symlink (only this!)
-2. Triggers application reloads per manifest.toml
-3. Persists state to `/run/user/UID/vogix16/state/`
+2. Supports variant navigation (darker/lighter/dark/light)
+3. Triggers application reloads per manifest.toml
+4. Persists state to `/run/user/UID/vogix/state/`
 
 **Key Principle**: Nix generates everything at build time. Rust CLI only manages symlinks.
 
@@ -377,7 +393,7 @@ All components derive from here:
 
 Users pin versions via Git tags:
 ```nix
-inputs.vogix16.url = "github:i-am-logger/vogix16/v0.5.0";
+inputs.vogix.url = "github:i-am-logger/vogix/v0.5.0";
 ```
 
 ## Conventional Commits

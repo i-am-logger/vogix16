@@ -62,7 +62,7 @@ body:
       options:
         - label: I have searched existing issues to avoid duplicates
           required: true
-        - label: This feature aligns with the Vogix16 philosophy (minimalism, functional colors, NixOS integration)
+        - label: This feature aligns with the Vogix philosophy (minimalism, functional colors, NixOS integration)
           required: true
         - label: I would be willing to contribute to implementing this feature
           required: false

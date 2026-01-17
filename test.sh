@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Vogix16 Automated Test Runner
+# Vogix Automated Test Runner
 
 set -e
 
 echo "╔════════════════════════════════════════════════════════╗"
-echo "║     Vogix16 Automated Integration Tests                ║"
+echo "║     Vogix Automated Integration Tests                  ║"
 echo "╚════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -30,18 +30,39 @@ echo "🏗️  Building test infrastructure..."
 echo "This may take a few minutes on first run..."
 echo ""
 
-# Run the integration tests
-echo "🧪 Running integration tests..."
-nix build .#checks.x86_64-linux.integration --print-build-logs
+# Parse arguments
+TEST_SUITE="${1:-smoke}"
+
+# Available test suites
+AVAILABLE_TESTS="smoke architecture cli navigation scheme-switching state stress theme-switching"
+
+if [[ $TEST_SUITE == "all" ]]; then
+  echo "🧪 Running all integration tests..."
+  for test in $AVAILABLE_TESTS; do
+    echo ""
+    echo "━━━ Running: $test ━━━"
+    nix build ".#checks.x86_64-linux.$test" --print-build-logs
+  done
+elif echo " $AVAILABLE_TESTS " | grep -q " $TEST_SUITE "; then
+  echo "🧪 Running $TEST_SUITE tests..."
+  nix build ".#checks.x86_64-linux.$TEST_SUITE" --print-build-logs
+else
+  echo "❌ Unknown test suite: $TEST_SUITE"
+  echo "Available: $AVAILABLE_TESTS all"
+  exit 1
+fi
 
 echo ""
 echo "╔════════════════════════════════════════════════════════╗"
 echo "║              🎉 ALL TESTS PASSED! 🎉                   ║"
 echo "╚════════════════════════════════════════════════════════╝"
 echo ""
-echo "Test results saved in: ./result"
+echo "Test output saved in: ./result"
+echo ""
+echo "Usage: ./test.sh [suite]"
+echo "Available suites: smoke (default) | architecture | cli | navigation"
+echo "                  scheme-switching | state | stress | theme-switching | all"
 echo ""
 echo "To manually explore the test VM:"
-echo "  nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm"
-echo "  ./result/bin/run-vogix16-test-vm-vm"
+echo "  nix run .#vogix-vm"
 echo ""

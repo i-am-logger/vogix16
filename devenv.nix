@@ -32,19 +32,19 @@ in
   '';
 
   scripts.dev-run.exec = ''
-    echo "🚀 Running vogix16..."
+    echo "🚀 Running vogix..."
     cargo run --release
   '';
 
   scripts.dev-build.exec = ''
-    echo "🔨 Building vogix16..."
+    echo "🔨 Building vogix..."
     cargo build --release
   '';
 
   # Nix development scripts (disable eval cache to avoid stale results)
   scripts.nix-build-dev.exec = ''
     echo "🏗️  Building VM with eval cache disabled (for active development)..."
-    nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm \
+    nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm \
       --option eval-cache false
   '';
 
@@ -55,7 +55,7 @@ in
 
   # Environment variables
   env = {
-    PROJECT_NAME = "vogix16";
+    PROJECT_NAME = "vogix";
     CARGO_TARGET_DIR = "./target";
   };
 

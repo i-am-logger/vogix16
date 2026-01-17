@@ -148,7 +148,7 @@ main() {
   type_text "# Tier 2: Runtime directory structure"
   pause 1
   # shellcheck disable=SC2016  # Single quotes intentional - expanded by eval in run_cmd
-  run_cmd 'tree -L 1 $XDG_RUNTIME_DIR/vogix16/themes/'
+  run_cmd 'tree -L 1 $XDG_RUNTIME_DIR/vogix/themes/'
   echo ""
   type_text "# All theme variants + 'current-theme' symlink"
   pause 2
@@ -156,14 +156,14 @@ main() {
   type_text "# Let's see what current-theme points to:"
   pause 1
   # shellcheck disable=SC2016  # Single quotes intentional - expanded by eval in run_cmd
-  run_cmd 'ls -l $XDG_RUNTIME_DIR/vogix16/themes/ | grep current'
+  run_cmd 'ls -l $XDG_RUNTIME_DIR/vogix/themes/ | grep current'
   echo ""
   pause 2
 
   type_text "# Tier 3: Inside a theme variant (all configs)"
   pause 1
   # shellcheck disable=SC2016  # Single quotes intentional - expanded by eval in run_cmd
-  run_cmd 'tree -L 2 $XDG_RUNTIME_DIR/vogix16/themes/ocean_depths-dark/'
+  run_cmd 'tree -L 2 $XDG_RUNTIME_DIR/vogix/themes/ocean_depths-dark/'
   echo ""
   type_text "# Each app has its themed config here"
   pause 2
@@ -173,9 +173,9 @@ main() {
   show ""
   show "  ~/.config/btop/themes"
   show "    ↓ (symlink)"
-  show "  /run/user/UID/vogix16/themes/current-theme/btop"
+  show "  /run/user/UID/vogix/themes/current-theme/btop"
   show "    ↓ (symlink)"
-  show "  /run/user/UID/vogix16/themes/ocean_depths-dark/btop"
+  show "  /run/user/UID/vogix/themes/ocean_depths-dark/btop"
   show "    ↓ (symlink)"
   show "  /nix/store/xxxxx-ocean_depths-dark/btop/vogix.theme"
   pause 3
@@ -208,7 +208,7 @@ main() {
 
   # Final message
   echo ""
-  type_text "# Learn more: https://github.com/i-am-logger/vogix16"
+  type_text "# Learn more: https://github.com/i-am-logger/vogix"
   echo ""
   pause 2
 }

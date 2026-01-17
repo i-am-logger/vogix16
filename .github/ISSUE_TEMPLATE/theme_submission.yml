@@ -1,5 +1,5 @@
 name: Theme Submission
-description: Submit a new theme for inclusion in Vogix16
+description: Submit a new theme for inclusion in Vogix
 title: "[Theme]: "
 labels: ["theme", "enhancement"]
 body:
@@ -89,7 +89,7 @@ body:
     attributes:
       label: Theme Requirements
       options:
-        - label: Theme follows the Vogix16 design system (see docs/design-system.md)
+        - label: Theme follows the vogix16 design system (see docs/vogix16-design-system.md)
           required: true
         - label: Both dark and light variants are provided
           required: true

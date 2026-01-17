@@ -1,6 +1,6 @@
 # Reload Mechanism
 
-When a theme or variant is switched, applications need to be notified to reload their configurations. The Vogix16 system uses a flexible, configuration-driven approach to handle this.
+When a theme or variant is switched, applications need to be notified to reload their configurations. Vogix uses a configuration-driven approach to handle this.
 
 ## Configuration-Based Reload
 
