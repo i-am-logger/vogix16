@@ -7,10 +7,11 @@ Quick visual comparison to ensure extraction was successful.
 import re
 from pathlib import Path
 
+
 def extract_from_svg(svg_path):
     """Extract colors from SVG - using x-coordinate to detect dark vs light."""
     content = svg_path.read_text()
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     dark_colors = {}
     light_colors = {}
@@ -36,6 +37,7 @@ def extract_from_svg(svg_path):
 
     return dark_colors, light_colors
 
+
 def extract_from_nix(nix_path):
     """Extract colors from Nix theme file."""
     content = nix_path.read_text()
@@ -44,18 +46,23 @@ def extract_from_nix(nix_path):
     light_colors = {}
 
     # Parse dark section
-    dark_match = re.search(r'dark\s*=\s*\{([^}]+)\}', content, re.DOTALL)
+    dark_match = re.search(r"dark\s*=\s*\{([^}]+)\}", content, re.DOTALL)
     if dark_match:
-        for match in re.finditer(r'(base[0-9A-F]{2})\s*=\s*"(#[0-9a-fA-F]{6})"', dark_match.group(1)):
+        for match in re.finditer(
+            r'(base[0-9A-F]{2})\s*=\s*"(#[0-9a-fA-F]{6})"', dark_match.group(1)
+        ):
             dark_colors[match.group(1)] = match.group(2).lower()
 
     # Parse light section
-    light_match = re.search(r'light\s*=\s*\{([^}]+)\}', content, re.DOTALL)
+    light_match = re.search(r"light\s*=\s*\{([^}]+)\}", content, re.DOTALL)
     if light_match:
-        for match in re.finditer(r'(base[0-9A-F]{2})\s*=\s*"(#[0-9a-fA-F]{6})"', light_match.group(1)):
+        for match in re.finditer(
+            r'(base[0-9A-F]{2})\s*=\s*"(#[0-9a-fA-F]{6})"', light_match.group(1)
+        ):
             light_colors[match.group(1)] = match.group(2).lower()
 
     return dark_colors, light_colors
+
 
 def verify_theme(theme_name, svg_path, nix_path):
     """Verify a single theme matches."""
@@ -71,7 +78,7 @@ def verify_theme(theme_name, svg_path, nix_path):
     # Check dark variant (base00-base0E, excluding base0F which may not be in SVG)
     dark_mismatches = []
     for i in range(15):  # base00-base0E
-        base = f'base{i:02X}'
+        base = f"base{i:02X}"
         svg_color = svg_dark.get(base)
         nix_color = nix_dark.get(base)
 
@@ -81,7 +88,7 @@ def verify_theme(theme_name, svg_path, nix_path):
     # Check light variant
     light_mismatches = []
     for i in range(15):  # base00-base0E
-        base = f'base{i:02X}'
+        base = f"base{i:02X}"
         svg_color = svg_light.get(base)
         nix_color = nix_light.get(base)
 
@@ -97,6 +104,7 @@ def verify_theme(theme_name, svg_path, nix_path):
         return False, "; ".join(details)
 
     return True, "Perfect match"
+
 
 def main():
     """Test all themes."""
@@ -133,6 +141,8 @@ def main():
         print(f"⚠️  {len(results) - passed} themes have mismatches")
         return 1
 
+
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

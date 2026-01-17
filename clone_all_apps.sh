@@ -17,16 +17,16 @@ echo "This may take a while..."
 
 # Function to clone or update a repo
 clone_or_update() {
-    local name=$1
-    local url=$2
+  local name=$1
+  local url=$2
 
-    if [ -d "$name" ]; then
-        echo "✓ $name already exists, skipping..."
-    else
-        echo "→ Cloning $name..."
-        # Use HTTPS and prevent URL rewriting to SSH
-        git clone --quiet "$url" "$name" 2>&1 || true
-    fi
+  if [ -d "$name" ]; then
+    echo "✓ $name already exists, skipping..."
+  else
+    echo "→ Cloning $name..."
+    # Use HTTPS and prevent URL rewriting to SSH
+    git clone --quiet "$url" "$name" 2>&1 || true
+  fi
 }
 
 # TIER 1: Essential CLI/TUI Tools

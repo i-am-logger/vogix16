@@ -46,7 +46,7 @@
     # Your theme configuration here as Nix attribute set
     # This will be merged with user's existing settings
     colors = {
-      background = colors.background;
+      inherit (colors) background;
       foreground = colors.foreground-text;
     };
 

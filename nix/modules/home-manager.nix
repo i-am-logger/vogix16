@@ -38,7 +38,7 @@ let
   getAppVariant = app: if cfg.${app}.variant != null then cfg.${app}.variant else cfg.defaultVariant;
 
   # Load all theme files
-  loadedThemes = mapAttrs (name: path: import path) allThemes;
+  loadedThemes = mapAttrs (_name: import) allThemes;
 
   # Create semantic color mapping from baseXX colors
   # This provides a clean API for application modules
@@ -183,19 +183,6 @@ let
                   pkgs.formats.toml { }; # default to TOML
 
               # Helper to get merged settings for an app with theme colors
-              getMergedSettings =
-                app:
-                let
-                  appModule = appGenerators.${app} or null;
-                  generator = if appModule != null then appModule.generate or null else null;
-                  settingsPath = if appModule != null then appModule.settingsPath or null else null;
-                  pathParts = if settingsPath != null then lib.splitString "." settingsPath else [ ];
-                  # Get user's settings from config (already merged by home-manager)
-                  userSettings = lib.attrByPath pathParts { } config;
-                  # Merge with this theme's colors
-                  themeColorOverrides = if generator != null then generator colors else { };
-                in
-                lib.recursiveUpdate userSettings themeColorOverrides;
             in
             pkgs.runCommand "vogix16-theme-${variantName}" { } ''
               mkdir -p $out

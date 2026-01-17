@@ -9,16 +9,16 @@ echo "╚═══════════════════════�
 echo ""
 
 # Check if nix is available
-if ! command -v nix &> /dev/null; then
-    echo "❌ Error: Nix is not installed or not in PATH"
-    exit 1
+if ! command -v nix &>/dev/null; then
+  echo "❌ Error: Nix is not installed or not in PATH"
+  exit 1
 fi
 
 # Check if flakes are enabled
-if ! nix flake --version &> /dev/null; then
-    echo "❌ Error: Nix flakes are not enabled"
-    echo "Enable with: nix-env -iA nixpkgs.nixFlakes"
-    exit 1
+if ! nix flake --version &>/dev/null; then
+  echo "❌ Error: Nix flakes are not enabled"
+  echo "Enable with: nix-env -iA nixpkgs.nixFlakes"
+  exit 1
 fi
 
 echo "🔍 Checking flake validity..."

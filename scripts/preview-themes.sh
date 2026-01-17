@@ -10,14 +10,14 @@ echo "================================"
 echo ""
 
 for theme_file in "$THEMES_DIR"/*.nix; do
-    theme_name=$(basename "$theme_file" .nix)
+  theme_name=$(basename "$theme_file" .nix)
 
-    # Extract first 3 colors from dark variant
-    base00=$(grep -A 20 "dark = {" "$theme_file" | grep "base00" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
-    base05=$(grep -A 20 "dark = {" "$theme_file" | grep "base05" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
-    base08=$(grep -A 20 "dark = {" "$theme_file" | grep "base08" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
+  # Extract first 3 colors from dark variant
+  base00=$(grep -A 20 "dark = {" "$theme_file" | grep "base00" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
+  base05=$(grep -A 20 "dark = {" "$theme_file" | grep "base05" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
+  base08=$(grep -A 20 "dark = {" "$theme_file" | grep "base08" | head -1 | sed 's/.*= "\(#[0-9a-fA-F]*\)".*/\1/')
 
-    printf "%-20s  BG: %s  FG: %s  ERROR: %s\n" "$theme_name" "$base00" "$base05" "$base08"
+  printf "%-20s  BG: %s  FG: %s  ERROR: %s\n" "$theme_name" "$base00" "$base05" "$base08"
 done
 
 echo ""

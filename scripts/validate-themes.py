@@ -6,6 +6,7 @@ Proof test: Verify all themes have proper structure with all required colors.
 import re
 from pathlib import Path
 
+
 def test_theme_structure(nix_path):
     """Test that a theme file has all required base00-base0F colors."""
     content = nix_path.read_text()
@@ -15,21 +16,21 @@ def test_theme_structure(nix_path):
         return False, "Missing name"
 
     # Extract dark section
-    dark_match = re.search(r'dark\s*=\s*\{([^}]+)\}', content, re.DOTALL)
+    dark_match = re.search(r"dark\s*=\s*\{([^}]+)\}", content, re.DOTALL)
     if not dark_match:
         return False, "Missing dark section"
 
     dark_section = dark_match.group(1)
 
     # Extract light section
-    light_match = re.search(r'light\s*=\s*\{([^}]+)\}', content, re.DOTALL)
+    light_match = re.search(r"light\s*=\s*\{([^}]+)\}", content, re.DOTALL)
     if not light_match:
         return False, "Missing light section"
 
     light_section = light_match.group(1)
 
     # Check for all base00-base0F in both variants
-    required_bases = [f'base{i:02X}' for i in range(16)]
+    required_bases = [f"base{i:02X}" for i in range(16)]
 
     dark_missing = []
     light_missing = []
@@ -53,6 +54,7 @@ def test_theme_structure(nix_path):
         return False, "; ".join(errors)
 
     return True, "Complete structure"
+
 
 def main():
     """Test all theme files."""
@@ -91,6 +93,8 @@ def main():
         print("\n✅ ALL THEMES HAVE COMPLETE STRUCTURE")
         return 0
 
+
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())
