@@ -1,67 +1,67 @@
 # Changelog
 
-All notable changes to Vogix16 will be documented in this file.
+All notable changes to Vogix will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0](https://github.com/i-am-logger/vogix16/compare/v0.3.1...v0.4.0) (2026-01-17)
+## [0.4.0](https://github.com/i-am-logger/vogix/compare/v0.3.1...v0.4.0) (2026-01-17)
 
 
 ### Features
 
-* **devenv:** add treefmt-nix for unified formatting ([#126](https://github.com/i-am-logger/vogix16/issues/126)) ([574951a](https://github.com/i-am-logger/vogix16/commit/574951a0fa9f8ee661629141ac4557c8ba834aaf)), closes [#125](https://github.com/i-am-logger/vogix16/issues/125)
+* **devenv:** add treefmt-nix for unified formatting ([#126](https://github.com/i-am-logger/vogix/issues/126)) ([574951a](https://github.com/i-am-logger/vogix/commit/574951a0fa9f8ee661629141ac4557c8ba834aaf)), closes [#125](https://github.com/i-am-logger/vogix/issues/125)
 
-## [0.3.1](https://github.com/i-am-logger/vogix16/compare/v0.3.0...v0.3.1) (2026-01-15)
+## [0.3.1](https://github.com/i-am-logger/vogix/compare/v0.3.0...v0.3.1) (2026-01-15)
 
 
 ### Bug Fixes
 
-* **reload:** remove shell command injection in touch reload ([#122](https://github.com/i-am-logger/vogix16/issues/122)) ([fd961b7](https://github.com/i-am-logger/vogix16/commit/fd961b70b0bb56789092360905a23abc000f367f))
+* **reload:** remove shell command injection in touch reload ([#122](https://github.com/i-am-logger/vogix/issues/122)) ([fd961b7](https://github.com/i-am-logger/vogix/commit/fd961b70b0bb56789092360905a23abc000f367f))
 
-## [0.3.0](https://github.com/i-am-logger/vogix16/compare/v0.2.0...v0.3.0) (2025-12-03)
+## [0.3.0](https://github.com/i-am-logger/vogix/compare/v0.2.0...v0.3.0) (2025-12-03)
 
 
 ### Features
 
-* **app:** add ripgrep theme support ([#112](https://github.com/i-am-logger/vogix16/issues/112)) ([1451178](https://github.com/i-am-logger/vogix16/commit/145117824302d89c694424a1dd8072856aa449c7))
+* **app:** add ripgrep theme support ([#112](https://github.com/i-am-logger/vogix/issues/112)) ([1451178](https://github.com/i-am-logger/vogix/commit/145117824302d89c694424a1dd8072856aa449c7))
 
-## [0.2.0](https://github.com/i-am-logger/vogix16/compare/v0.1.3...v0.2.0) (2025-12-03)
+## [0.2.0](https://github.com/i-am-logger/vogix/compare/v0.1.3...v0.2.0) (2025-12-03)
 
 
 ### Features
 
-* integrate devenv with flake and optimize CI workflow ([#110](https://github.com/i-am-logger/vogix16/issues/110)) ([b3480aa](https://github.com/i-am-logger/vogix16/commit/b3480aa7dff2f1cad54f8d123498bb3b5d21d491))
+* integrate devenv with flake and optimize CI workflow ([#110](https://github.com/i-am-logger/vogix/issues/110)) ([b3480aa](https://github.com/i-am-logger/vogix/commit/b3480aa7dff2f1cad54f8d123498bb3b5d21d491))
 
-## [0.1.3](https://github.com/i-am-logger/vogix16/compare/v0.1.2...v0.1.3) (2025-12-03)
-
-
-### Bug Fixes
-
-* make VM tests generic and auto-discovering ([#108](https://github.com/i-am-logger/vogix16/issues/108)) ([7138374](https://github.com/i-am-logger/vogix16/commit/7138374c28a4e52a082e3a8f87cc12ae17447f17))
-
-## [0.1.2](https://github.com/i-am-logger/vogix16/compare/v0.1.1...v0.1.2) (2025-12-03)
+## [0.1.3](https://github.com/i-am-logger/vogix/compare/v0.1.2...v0.1.3) (2025-12-03)
 
 
 ### Bug Fixes
 
-* correct version bump - templates removal is not breaking ([5960fe0](https://github.com/i-am-logger/vogix16/commit/5960fe021f46a66b2909570852dad2084ac87b55))
-* resolve theme loading issues and improve development workflow ([946e62b](https://github.com/i-am-logger/vogix16/commit/946e62b626b9465d128030dd8bbd79436a036021))
-* resolve theme loading issues and improve development workflow ([da38cad](https://github.com/i-am-logger/vogix16/commit/da38cad5b974da8ebfc84b9cb8583dc6dc4c1652))
+* make VM tests generic and auto-discovering ([#108](https://github.com/i-am-logger/vogix/issues/108)) ([7138374](https://github.com/i-am-logger/vogix/commit/7138374c28a4e52a082e3a8f87cc12ae17447f17))
 
-## [0.1.1](https://github.com/i-am-logger/vogix16/compare/v0.1.0...v0.1.1) (2025-12-02)
+## [0.1.2](https://github.com/i-am-logger/vogix/compare/v0.1.1...v0.1.2) (2025-12-03)
 
 
 ### Bug Fixes
 
-* test searched for vogix16 bin rather then vogix ([69c488c](https://github.com/i-am-logger/vogix16/commit/69c488c0c570bb778cb0027e8763a283a4d48ecf))
+* correct version bump - templates removal is not breaking ([5960fe0](https://github.com/i-am-logger/vogix/commit/5960fe021f46a66b2909570852dad2084ac87b55))
+* resolve theme loading issues and improve development workflow ([946e62b](https://github.com/i-am-logger/vogix/commit/946e62b626b9465d128030dd8bbd79436a036021))
+* resolve theme loading issues and improve development workflow ([da38cad](https://github.com/i-am-logger/vogix/commit/da38cad5b974da8ebfc84b9cb8583dc6dc4c1652))
+
+## [0.1.1](https://github.com/i-am-logger/vogix/compare/v0.1.0...v0.1.1) (2025-12-02)
+
+
+### Bug Fixes
+
+* test searched for vogix16 bin rather then vogix ([69c488c](https://github.com/i-am-logger/vogix/commit/69c488c0c570bb778cb0027e8763a283a4d48ecf))
 
 ## 0.1.0 (2025-12-02)
 
 
 ### Features
 
-* vogix16 runtime theme management for NixOS ([584c9f3](https://github.com/i-am-logger/vogix16/commit/584c9f3ddbb519fd6869e3e4259b7819da2028c1))
+* vogix16 runtime theme management for NixOS ([584c9f3](https://github.com/i-am-logger/vogix/commit/584c9f3ddbb519fd6869e3e4259b7819da2028c1))
 
 ## [Unreleased]
 
@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release
-- Vogix16 design system with 16-color palette
+- vogix16 design system with 16-color palette
 - Basic theme switching functionality
 - Dark and light variant support
 - NixOS and home-manager integration
@@ -142,9 +142,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Application reload mechanism
 - Documentation for design system, architecture, and usage
 
-[Unreleased]: https://github.com/i-am-logger/vogix16/compare/v0.5.0...HEAD
-[0.5.0]: https://github.com/i-am-logger/vogix16/releases/tag/v0.5.0
-[0.4.0]: https://github.com/i-am-logger/vogix16/releases/tag/v0.4.0
-[0.3.0]: https://github.com/i-am-logger/vogix16/releases/tag/v0.3.0
-[0.2.0]: https://github.com/i-am-logger/vogix16/releases/tag/v0.2.0
-[0.1.0]: https://github.com/i-am-logger/vogix16/releases/tag/v0.1.0
+[Unreleased]: https://github.com/i-am-logger/vogix/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/i-am-logger/vogix/releases/tag/v0.5.0
+[0.4.0]: https://github.com/i-am-logger/vogix/releases/tag/v0.4.0
+[0.3.0]: https://github.com/i-am-logger/vogix/releases/tag/v0.3.0
+[0.2.0]: https://github.com/i-am-logger/vogix/releases/tag/v0.2.0
+[0.1.0]: https://github.com/i-am-logger/vogix/releases/tag/v0.1.0

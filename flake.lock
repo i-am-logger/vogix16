@@ -690,6 +690,22 @@
         "type": "github"
       }
     },
+    "iterm2-schemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768638404,
+        "narHash": "sha256-Kj2i/Vf0j60t9mPBBr3pnjeqN2wUyvGt8LR+SPoLMQI=",
+        "owner": "i-am-logger",
+        "repo": "iTerm2-Color-Schemes",
+        "rev": "a42706571196adccb968d87c1cb8924429b944ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "i-am-logger",
+        "repo": "iTerm2-Color-Schemes",
+        "type": "github"
+      }
+    },
     "nix": {
       "inputs": {
         "flake-compat": [
@@ -973,8 +989,10 @@
         "crate2nix": "crate2nix",
         "devenv": "devenv",
         "home-manager": "home-manager",
+        "iterm2-schemes": "iterm2-schemes",
         "nixpkgs": "nixpkgs_6",
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay",
+        "tinted-schemes": "tinted-schemes"
       }
     },
     "rust-overlay": {
@@ -1069,6 +1087,22 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "tinted-schemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768638381,
+        "narHash": "sha256-ihzXT3BvepRVww0k7hyXaJDWA9+Y2YRm7bfhSM+M/CY=",
+        "owner": "i-am-logger",
+        "repo": "tinted-schemes",
+        "rev": "8e2656b6a5d9d8f03d069a9c5ae90017e5a224e3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "i-am-logger",
+        "repo": "tinted-schemes",
         "type": "github"
       }
     }

@@ -1,5 +1,5 @@
 {
-  description = "Vogix16 - Runtime theme management for NixOS";
+  description = "Vogix - Runtime theme management for NixOS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -13,6 +13,20 @@
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     crate2nix.url = "github:nix-community/crate2nix";
     crate2nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Base16/Base24 color schemes - forked with directory-based structure
+    # Each theme is a directory with variant files (dark.yaml, light.yaml, etc.)
+    tinted-schemes = {
+      url = "github:i-am-logger/tinted-schemes";
+      flake = false;
+    };
+
+    # ANSI 16-color terminal schemes - forked with directory-based structure
+    # Uses ansi16/ directory with theme directories containing variant files
+    iterm2-schemes = {
+      url = "github:i-am-logger/iTerm2-Color-Schemes";
+      flake = false;
+    };
   };
 
   nixConfig = {
@@ -20,9 +34,18 @@
     extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = { self, nixpkgs, home-manager, devenv, ... }@inputs:
+  outputs =
+    { self
+    , nixpkgs
+    , home-manager
+    , devenv
+    , ...
+    }@inputs:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
@@ -30,28 +53,35 @@
       nixosModules.default = import ./nix/modules/nixos.nix;
 
       # Home Manager module
-      homeManagerModules.default = import ./nix/modules/home-manager.nix;
+      # Pass scheme sources for theme import
+      homeManagerModules.default = import ./nix/modules/home-manager.nix {
+        tintedSchemes = inputs.tinted-schemes;
+        iterm2Schemes = inputs.iterm2-schemes;
+      };
 
       # Packages for each system - from devenv outputs
-      packages = forAllSystems (system:
+      packages = forAllSystems (
+        system:
         let
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
           };
           # Use mkConfig but only access outputs, not shell
-          devenvOutputs = (devenv.lib.mkConfig {
-            inherit inputs pkgs;
-            modules = [ ./devenv.nix ];
-          }).outputs;
+          devenvOutputs =
+            (devenv.lib.mkConfig {
+              inherit inputs pkgs;
+              modules = [ ./devenv.nix ];
+            }).outputs;
         in
-        devenvOutputs // {
+        devenvOutputs
+        // {
           default = devenvOutputs.vogix;
         }
       );
 
       # NixOS VM for testing
-      nixosConfigurations.vogix16-test-vm = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.vogix-test-vm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           ./nix/vm/test-vm.nix
@@ -76,18 +106,45 @@
         ];
       };
 
-      # Automated integration tests
-      checks = forAllSystems (system:
+      # Automated integration tests - split by feature area
+      # Run individual tests: nix build .#checks.x86_64-linux.smoke
+      # Run all tests: nix flake check
+      checks = forAllSystems (
+        system:
         let
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
           };
+          testArgs = { inherit pkgs home-manager self; };
         in
         {
-          integration = import ./nix/vm/test.nix {
-            inherit pkgs home-manager self;
-          };
+          # Quick sanity checks (binary, status, list, systemd)
+          smoke = import ./nix/vm/tests/smoke.nix testArgs;
+
+          # Symlinks, runtime dirs, config structure
+          architecture = import ./nix/vm/tests/architecture.nix testArgs;
+
+          # Theme/variant switching with config verification
+          theme-switching = import ./nix/vm/tests/theme-switching.nix testArgs;
+
+          # Cross-scheme tests, palette format validation
+          scheme-switching = import ./nix/vm/tests/scheme-switching.nix testArgs;
+
+          # Darker/lighter navigation, catppuccin multi-variant
+          navigation = import ./nix/vm/tests/navigation.nix testArgs;
+
+          # Combined flags, list options, error handling
+          cli = import ./nix/vm/tests/cli.nix testArgs;
+
+          # State persistence, consistency
+          state = import ./nix/vm/tests/state.nix testArgs;
+
+          # Runtime size inspection
+          runtime-size = import ./nix/vm/tests/runtime-size.nix testArgs;
+
+          # Rapid switching tests
+          stress = import ./nix/vm/tests/stress.nix testArgs;
         }
       );
 
@@ -110,7 +167,8 @@
       # );
 
       # Apps for easy access
-      apps = forAllSystems (system:
+      apps = forAllSystems (
+        system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in
@@ -120,11 +178,11 @@
             type = "app";
             program = "${pkgs.writeShellScript "vogix-vm" ''
               echo "Building and launching VM with eval cache disabled..."
-              nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm \
+              nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm \
                 --option eval-cache false \
                 --no-link \
                 --print-out-paths | while read vm_path; do
-                "$vm_path/bin/run-vogix16-test-vm"
+                "$vm_path/bin/run-vogix-test-vm"
               done
             ''}";
           };
@@ -138,6 +196,7 @@
               nix flake check --option eval-cache false "$@"
             ''}";
           };
-        });
+        }
+      );
     };
 }

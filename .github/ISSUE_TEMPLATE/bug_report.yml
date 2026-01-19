@@ -54,7 +54,7 @@ body:
       description: Please provide your environment details
       value: |
         - NixOS version:
-        - Vogix16 version: (run `vogix --version`)
+        - Vogix version: (run `vogix --version`)
         - Home-manager version:
         - Desktop environment/Window manager:
       render: markdown
@@ -73,9 +73,9 @@ body:
     id: config
     attributes:
       label: Configuration
-      description: Your vogix16 home-manager configuration (if relevant)
+      description: Your vogix home-manager configuration (if relevant)
       placeholder: |
-        programs.vogix16 = {
+        programs.vogix = {
           enable = true;
           defaultTheme = "aikido";
           defaultVariant = "dark";
@@ -91,5 +91,5 @@ body:
           required: true
         - label: I have provided all required information
           required: true
-        - label: I am using the latest version of vogix16
+        - label: I am using the latest version of vogix
           required: false

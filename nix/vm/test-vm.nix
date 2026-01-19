@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 
 {
-  # VM configuration for testing vogix16
+  # VM configuration for testing Vogix
   imports = [ ];
 
   # Basic VM settings
@@ -9,7 +9,10 @@
   boot.loader.systemd-boot.enable = true;
 
   # Enable flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Minimal system configuration
   fileSystems."/" = {
@@ -18,12 +21,12 @@
   };
 
   # Networking
-  networking.hostName = "vogix16-test";
+  networking.hostName = "vogix-test";
   networking.useDHCP = true;
 
-  # Enable vogix16 NixOS module for console.colors integration
+  # Enable vogix NixOS module for console.colors integration
   # This will auto-detect theme settings from home-manager
-  vogix16.enable = true;
+  vogix.enable = true;
 
   # Demo script as a package
   # Updated: 2025-12-01 - Added asciinema-agg for GIF conversion
@@ -83,7 +86,10 @@
   system.stateVersion = "24.11";
 
   # Enable serial console for terminal mode
-  boot.kernelParams = [ "console=tty1" "console=ttyS0" ];
+  boot.kernelParams = [
+    "console=tty1"
+    "console=ttyS0"
+  ];
 
   # VM-specific settings
   virtualisation.vmVariant = {
@@ -91,7 +97,10 @@
       memorySize = 2048;
       cores = 2;
       graphics = true;
-      resolution = { x = 1920; y = 1080; }; # HD resolution
+      resolution = {
+        x = 1920;
+        y = 1080;
+      }; # HD resolution
 
       # Use default shared directory (usually $TMPDIR/xchg on host -> /tmp/shared in VM)
 

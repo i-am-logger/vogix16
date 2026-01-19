@@ -1,6 +1,6 @@
-# Contributing to Vogix16
+# Contributing to Vogix
 
-Thank you for your interest in contributing to Vogix16! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Vogix! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -26,8 +26,8 @@ For detailed development setup instructions, see [DEVELOPMENT.md](DEVELOPMENT.md
 
 ```bash
 # Clone the repository
-git clone https://github.com/i-am-logger/vogix16
-cd vogix16
+git clone https://github.com/i-am-logger/vogix
+cd vogix
 
 # Enter development shell
 nix develop
@@ -124,12 +124,12 @@ BREAKING CHANGE: `vogix switch dark/light` is now `vogix switch` with auto-detec
 
 ## Submitting Themes
 
-Vogix16 welcomes new theme submissions! Here's how to contribute a theme:
+Vogix welcomes new theme submissions for the native **vogix16** scheme. For base16/base24/ansi16 themes, contribute to their respective upstream repositories.
 
 ### Theme Requirements
 
-1. **Follow the Vogix16 Design System**: See [docs/design-system.md](docs/design-system.md)
-2. **Include Both Variants**: Provide both dark and light variants
+1. **Follow the vogix16 Design System**: See [docs/vogix16-design-system.md](docs/vogix16-design-system.md)
+2. **Use Multi-Variant Format**: Define variants with polarity
 3. **Use Semantic Colors**: Assign functional colors by purpose, not aesthetics
 4. **Test Thoroughly**: Verify colors work across all supported applications
 
@@ -138,34 +138,46 @@ Vogix16 welcomes new theme submissions! Here's how to contribute a theme:
 1. **Create Theme File**
 
 ```nix
-# themes/your-theme-name.nix
+# themes/vogix16/your-theme-name.nix
 {
-  dark = {
-    # Base colors (monochromatic scale - darkest to lightest)
-    base00 = "#......";  # Background
-    base01 = "#......";  # Surface
-    base02 = "#......";  # Selection
-    base03 = "#......";  # Comments
-    base04 = "#......";  # Borders
-    base05 = "#......";  # Text
-    base06 = "#......";  # Headings
-    base07 = "#......";  # Bright
+  name = "your-theme-name";
+  variants = {
+    dark = {
+      polarity = "dark";
+      colors = {
+        # Base colors (monochromatic scale - darkest to lightest)
+        base00 = "#......";  # Background
+        base01 = "#......";  # Surface
+        base02 = "#......";  # Selection
+        base03 = "#......";  # Comments
+        base04 = "#......";  # Borders
+        base05 = "#......";  # Text
+        base06 = "#......";  # Headings
+        base07 = "#......";  # Bright
 
-    # Functional colors (semantic purpose)
-    base08 = "#......";  # Danger
-    base09 = "#......";  # Warning
-    base0A = "#......";  # Notice
-    base0B = "#......";  # Success
-    base0C = "#......";  # Active
-    base0D = "#......";  # Link
-    base0E = "#......";  # Highlight
-    base0F = "#......";  # Special
+        # Functional colors (semantic purpose)
+        base08 = "#......";  # Danger
+        base09 = "#......";  # Warning
+        base0A = "#......";  # Notice
+        base0B = "#......";  # Success
+        base0C = "#......";  # Active
+        base0D = "#......";  # Link
+        base0E = "#......";  # Highlight
+        base0F = "#......";  # Special
+      };
+    };
+    light = {
+      polarity = "light";
+      colors = {
+        # Light variant (reverse base colors, adjust functional colors)
+        base00 = "#......";  # Background (lightest)
+        # ... (all 16 colors)
+      };
+    };
   };
-
-  light = {
-    # Light variant (reverse base colors, adjust functional colors)
-    base00 = "#......";  # Background (lightest)
-    # ... (all 16 colors)
+  defaults = {
+    dark = "dark";
+    light = "light";
   };
 }
 ```
@@ -188,7 +200,7 @@ nix flake check
 nix run .#vogix-vm
 
 # Inside VM, switch to your theme
-vogix theme your-theme-name
+vogix -s vogix16 -t your-theme-name -v dark
 ```
 
 4. **Submit Pull Request**
@@ -223,13 +235,14 @@ feat(themes): add [Your Theme Name] with dark and light variants
 
 ## Adding Application Support
 
-To add support for a new application, follow Vogix16's semantic color principles. See [docs/design-system.md](docs/design-system.md) for detailed guidelines on when to use functional colors vs. monochromatic colors.
+To add support for a new application, implement generators for all 4 color schemes. See [docs/vogix16-design-system.md](docs/vogix16-design-system.md) for detailed guidelines on when to use functional colors vs. monochromatic colors.
 
 ### Key Principle
 
-Ask: **"Does this color communicate status, state, or information the user needs?"**
-- YES → Use functional colors (danger, success, warning, etc.)
-- NO → Use monochromatic base colors (background, foreground-*, etc.)
+Each scheme has its own philosophy:
+- **vogix16**: Semantic colors for functional indicators only
+- **base16/base24**: Standard syntax highlighting mappings  
+- **ansi16**: Traditional ANSI terminal colors
 
 See [nix/modules/applications/README.md](nix/modules/applications/README.md) for implementation examples.
 
@@ -237,55 +250,73 @@ See [nix/modules/applications/README.md](nix/modules/applications/README.md) for
 
 ```nix
 # nix/modules/applications/myapp.nix
-{ lib }: colors: ''
-# Application configuration using semantic color names
-# Use monochromatic for structure
-background = ${colors.background}
-foreground = ${colors.foreground-text}
-borders = ${colors.foreground-border}
-
-# Use functional colors only for semantic meaning
-error-color = ${colors.danger}
-success-color = ${colors.success}
-warning-color = ${colors.warning}
-''
+{ lib, appLib }:
+{
+  configFile = "myapp/config.conf";
+  reloadMethod = { method = "touch"; };
+  
+  schemes = {
+    vogix16 = colors: ''
+      # Use semantic names for vogix16
+      background = ${colors.background}
+      foreground = ${colors.foreground-text}
+      error-color = ${colors.danger}
+    '';
+    
+    base16 = colors: ''
+      # Use base16 names
+      background = ${colors.base00}
+      foreground = ${colors.base05}
+      red = ${colors.base08}
+    '';
+    
+    base24 = colors: ''
+      # Use base24 names (includes base12-base17)
+      background = ${colors.base00}
+      foreground = ${colors.base05}
+      bright-red = ${colors.base12}
+    '';
+    
+    ansi16 = colors: ''
+      # Use ANSI names
+      background = ${colors.background}
+      foreground = ${colors.foreground}
+      red = ${colors.red}
+    '';
+  };
+}
 ```
 
-### 2. Define Config File Path
+### 2. Define Reload Method
 
-The generator's output filename is determined by `getConfigFilename` in `home-manager.nix`:
+Reload configuration is now part of the generator file:
 
 ```nix
-getConfigFilename = app: {
-  myapp = "config.conf";  # Relative to ~/.config/myapp/
-}.${app} or "config";
+{
+  configFile = "myapp/config.conf";
+  reloadMethod = {
+    method = "signal";        # or "touch", "command", "none"
+    signal = "SIGUSR1";       # if method = "signal"
+    process_name = "myapp";   # if method = "signal"
+  };
+  schemes = { /* ... */ };
+}
 ```
 
-### 3. Define Reload Method
-
-Add reload configuration in `getAppReloadMethod`:
-
-```nix
-myapp = {
-  method = "signal";        # or "touch", "command", "none"
-  signal = "SIGUSR1";       # if method = "signal"
-  process_name = "myapp";   # if method = "signal"
-};
-```
-
-### 4. Test Integration
+### 3. Test Integration
 
 ```bash
 # Add to test configuration
 programs.myapp.enable = true;
-programs.vogix16.enable = true;
+programs.vogix.enable = true;
 
 # Rebuild and test
 home-manager switch
 vogix status
+vogix -t aikido -v dark  # Test theme switching
 ```
 
-### 5. Document
+### 4. Document
 
 - Add application to README.md
 - Include example configuration in docs/theming.md
@@ -407,4 +438,4 @@ By contributing, you agree that your contributions will be licensed under the CC
 
 ---
 
-Thank you for contributing to Vogix16! 🎨
+Thank you for contributing to Vogix!

@@ -5,8 +5,8 @@
   home.homeDirectory = "/home/vogix";
   home.stateVersion = "24.11";
 
-  # Enable vogix16
-  programs.vogix16 = {
+  # Enable vogix
+  programs.vogix = {
     enable = true;
     defaultTheme = "aikido";
     defaultVariant = "dark";
@@ -39,7 +39,7 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "vogix"; # Use vogix theme (managed by vogix16)
+      color_theme = "vogix"; # Use vogix theme (managed by vogix)
       theme_background = false;
       update_ms = 100; # Refresh every 100ms for dynamic demo display
     };
@@ -70,20 +70,27 @@
     initExtra = ''
       # Show welcome message with theme info
       echo ""
-      echo "=== Vogix16 Test VM ==="
-      echo "Current theme: $(vogix status | grep 'Current theme:' | cut -d: -f2)"
+      echo "=== Vogix Test VM ==="
+      vogix status
       echo ""
       echo "Available commands:"
-      echo "  vogix list       - List all themes"
-      echo "  vogix theme X    - Switch to theme X"
-      echo "  vogix switch     - Toggle between dark/light"
-      echo "  vogix-demo       - Run demo (for OBS recording)"
-      echo "  reload-colors      - Reload shell colors after theme change"
-      echo "  colors             - Show ANSI color palette"
-      echo "  ls --color         - Test directory colors"
-      echo "  shutdown           - Power off VM"
+      echo "  vogix status          - Show current theme/variant/scheme"
+      echo "  vogix list            - List all themes"
+      echo "  vogix list -s base16  - List base16 themes"
+      echo "  vogix list -s base24  - List base24 themes"
+      echo "  vogix list -s ansi16  - List ansi16 themes"
+      echo "  vogix -t <theme>      - Switch theme"
+      echo "  vogix -v dark|light   - Switch variant"
+      echo "  vogix -v darker       - Navigate to darker variant"
+      echo "  vogix -v lighter      - Navigate to lighter variant"
+      echo "  vogix -s <scheme>     - Switch scheme (vogix16/base16/base24/ansi16)"
+      echo "  vogix -s base16 -t dracula -v dark  - Combined flags"
       echo ""
-      echo "NOTE: After changing theme/variant, run 'reload-colors' or start new shell (exec bash)"
+      echo "Shell commands:"
+      echo "  reload-colors    - Reload shell colors after theme change"
+      echo "  colors           - Show ANSI color palette"
+      echo "  ls --color       - Test directory colors"
+      echo "  shutdown         - Power off VM"
       echo ""
     '';
   };
