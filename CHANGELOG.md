@@ -5,6 +5,17 @@ All notable changes to Vogix will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0](https://github.com/i-am-logger/vogix/compare/v0.4.0...v1.0.0) (2026-01-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* Theme directory structure changed from themes/*.nix to themes/vogix16/*.nix for native themes. External themes now imported from tinted-schemes repository.
+
+### Features
+
+* add multi-scheme support for base16, base24, ansi16 ([#133](https://github.com/i-am-logger/vogix/issues/133)) ([46e8b28](https://github.com/i-am-logger/vogix/commit/46e8b28e48630fa51402d53ef11d855df1dc073e))
+
 ## [0.4.0](https://github.com/i-am-logger/vogix/compare/v0.3.1...v0.4.0) (2026-01-17)
 
 
