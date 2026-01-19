@@ -5,6 +5,29 @@ All notable changes to Vogix will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0](https://github.com/i-am-logger/vogix/compare/vogix-v0.4.0...vogix-v0.5.0) (2026-01-19)
+
+
+### Features
+
+* add multi-scheme support for base16, base24, ansi16 ([122354b](https://github.com/i-am-logger/vogix/commit/122354bcf38b1a52ff0e335349d0812b12dc58e0))
+* **app:** add ripgrep theme support ([#112](https://github.com/i-am-logger/vogix/issues/112)) ([1451178](https://github.com/i-am-logger/vogix/commit/145117824302d89c694424a1dd8072856aa449c7))
+* **devenv:** add treefmt-nix for unified formatting ([#126](https://github.com/i-am-logger/vogix/issues/126)) ([574951a](https://github.com/i-am-logger/vogix/commit/574951a0fa9f8ee661629141ac4557c8ba834aaf)), closes [#125](https://github.com/i-am-logger/vogix/issues/125)
+* integrate devenv with flake and optimize CI workflow ([#110](https://github.com/i-am-logger/vogix/issues/110)) ([b3480aa](https://github.com/i-am-logger/vogix/commit/b3480aa7dff2f1cad54f8d123498bb3b5d21d491))
+* integrate with home-manager settings system ([#115](https://github.com/i-am-logger/vogix/issues/115)) ([45c9c96](https://github.com/i-am-logger/vogix/commit/45c9c96ffbc257a6b02bf1ed03ae9985a5719982)), closes [#114](https://github.com/i-am-logger/vogix/issues/114)
+* vogix16 runtime theme management for NixOS ([584c9f3](https://github.com/i-am-logger/vogix/commit/584c9f3ddbb519fd6869e3e4259b7819da2028c1))
+
+
+### Bug Fixes
+
+* **ci:** upgrade cache-nix-action to v7 and add release-please manifest ([3ee3adf](https://github.com/i-am-logger/vogix/commit/3ee3adf546d65c40b6d1afa67a12b25cb43150a2))
+* correct version bump - templates removal is not breaking ([5960fe0](https://github.com/i-am-logger/vogix/commit/5960fe021f46a66b2909570852dad2084ac87b55))
+* make VM tests generic and auto-discovering ([#108](https://github.com/i-am-logger/vogix/issues/108)) ([7138374](https://github.com/i-am-logger/vogix/commit/7138374c28a4e52a082e3a8f87cc12ae17447f17))
+* **reload:** remove shell command injection in touch reload ([#122](https://github.com/i-am-logger/vogix/issues/122)) ([fd961b7](https://github.com/i-am-logger/vogix/commit/fd961b70b0bb56789092360905a23abc000f367f))
+* resolve theme loading issues and improve development workflow ([946e62b](https://github.com/i-am-logger/vogix/commit/946e62b626b9465d128030dd8bbd79436a036021))
+* resolve theme loading issues and improve development workflow ([da38cad](https://github.com/i-am-logger/vogix/commit/da38cad5b974da8ebfc84b9cb8583dc6dc4c1652))
+* test searched for vogix16 bin rather then vogix ([69c488c](https://github.com/i-am-logger/vogix/commit/69c488c0c570bb778cb0027e8763a283a4d48ecf))
+
 ## [0.4.0](https://github.com/i-am-logger/vogix/compare/v0.3.1...v0.4.0) (2026-01-17)
 
 
