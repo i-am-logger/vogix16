@@ -1,4 +1,4 @@
-{ lib, ... }:
+_:
 
 {
   # Config file path relative to ~/.config/alacritty/
@@ -21,7 +21,7 @@
     vogix16 = colors: {
       colors = {
         primary = {
-          background = colors.background;
+          inherit (colors) background;
           foreground = colors.foreground-text;
           bright_foreground = colors.foreground-bright;
         };
@@ -165,8 +165,7 @@
     ansi16 = colors: {
       colors = {
         primary = {
-          background = colors.background;
-          foreground = colors.foreground;
+          inherit (colors) background foreground;
         };
 
         selection = {

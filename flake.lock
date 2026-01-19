@@ -237,11 +237,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768738650,
-        "narHash": "sha256-oe9/b2DkYNlGg1GdX7n8U87y49CvXHED7nMGEE3WzjI=",
+        "lastModified": 1768815419,
+        "narHash": "sha256-Kpol6rStnF9X2AJ35x8A7/dMF6eiJatktRMM9MOtchQ=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "43328b8bc4096055622390ee4fc21b5977aab2e3",
+        "rev": "81552494542f06f8eda3da2b1f0b08f3ce79fa60",
         "type": "github"
       },
       "original": {
@@ -693,11 +693,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768770171,
-        "narHash": "sha256-JPmLGZgdWa8QcQbbtBqyZhpmxIHZ3lUO48laERjw+4k=",
+        "lastModified": 1768798936,
+        "narHash": "sha256-eHld4id3TeD9Sxx5vgv58BnTl1fz+ewIKspz/kEoAE8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "521d5ea1a229ba315dd1cceaf869946ddcc83d36",
+        "rev": "2954aa29441a1a98901362e4d35515875761ad65",
         "type": "github"
       },
       "original": {
@@ -1035,7 +1035,8 @@
         "iterm2-schemes": "iterm2-schemes",
         "nixpkgs": "nixpkgs_6",
         "rust-overlay": "rust-overlay",
-        "tinted-schemes": "tinted-schemes"
+        "tinted-schemes": "tinted-schemes",
+        "vogix16-themes": "vogix16-themes"
       }
     },
     "rust-overlay": {
@@ -1168,6 +1169,22 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "vogix16-themes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768807771,
+        "narHash": "sha256-+pPO9kLfFm/pPknkEOrxoZztyvCkOlDnzCv9gfLPu+4=",
+        "owner": "i-am-logger",
+        "repo": "vogix16-themes",
+        "rev": "3f7680585205eeb8f4b6f7e9773b1abde9582e9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "i-am-logger",
+        "repo": "vogix16-themes",
         "type": "github"
       }
     }

@@ -8,46 +8,50 @@ Application generators support all 4 color schemes through the `schemes` pattern
 
 ```nix
 # nix/modules/applications/alacritty.nix
-{ lib, appLib }:
+_:
 {
-  configFile = "alacritty.toml";
+  configFile = "alacritty/colors.toml";
+  format = "toml";
+  settingsPath = "programs.alacritty.settings";
   reloadMethod = { method = "touch"; };
   
   schemes = {
     vogix16 = colors: {
       # Semantic color usage (vogix16 philosophy)
-      background = colors.background;
-      foreground = colors.foreground-text;
-      error = colors.danger;
-      success = colors.success;
+      colors.primary.background = colors.background;
+      colors.primary.foreground = colors.foreground-text;
+      colors.normal.red = colors.danger;
+      colors.normal.green = colors.success;
     };
     
     base16 = colors: {
       # Base16 standard mapping
-      background = colors.base00;
-      foreground = colors.base05;
-      red = colors.base08;
-      green = colors.base0B;
+      colors.primary.background = colors.base00;
+      colors.primary.foreground = colors.base05;
+      colors.normal.red = colors.base08;
+      colors.normal.green = colors.base0B;
     };
     
     base24 = colors: {
       # Base24 with additional bright colors
-      background = colors.base00;
-      foreground = colors.base05;
-      bright-red = colors.base12;
-      bright-green = colors.base14;
+      colors.primary.background = colors.base00;
+      colors.primary.foreground = colors.base05;
+      colors.bright.red = colors.base12;
+      colors.bright.green = colors.base14;
     };
     
     ansi16 = colors: {
       # ANSI standard slot mapping
-      background = colors.background;
-      foreground = colors.foreground;
-      red = colors.red;
-      green = colors.green;
+      colors.primary.background = colors.background;
+      colors.primary.foreground = colors.foreground;
+      colors.normal.red = colors.red;
+      colors.normal.green = colors.green;
     };
   };
 }
 ```
+
+Note: Use `_:` if the module doesn't need parameters, or `{ lib, ... }:` if it needs `lib`.
 
 ## Configuration Strategy
 
@@ -93,28 +97,32 @@ When adding a new application:
 
 ### Generator Template
 
+See [docs/app-module-template.nix](../../docs/app-module-template.nix) for a complete template.
+
 ```nix
-{ lib, appLib }:
+_:
 {
   configFile = "path/to/config";
+  format = "toml";  # or "ini", "yaml", "text"
+  settingsPath = "programs.app.settings";
   reloadMethod = { method = "touch"; };  # or "signal", "command", "none"
   
   schemes = {
-    vogix16 = colors: ''
+    vogix16 = colors: {
       # Config using semantic names: colors.danger, colors.success, etc.
-    '';
+    };
     
-    base16 = colors: ''
+    base16 = colors: {
       # Config using base16 names: colors.base00, colors.base08, etc.
-    '';
+    };
     
-    base24 = colors: ''
+    base24 = colors: {
       # Config using base24 names: colors.base00-base17
-    '';
+    };
     
-    ansi16 = colors: ''
+    ansi16 = colors: {
       # Config using ANSI names: colors.red, colors.green, etc.
-    '';
+    };
   };
 }
 ```

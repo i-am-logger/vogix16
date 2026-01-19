@@ -3,21 +3,29 @@
 # Tests: State file persistence, consistency after operations
 #
 { pkgs
+, vogix16Themes
 , home-manager
 , self
 ,
 }:
 
 let
-  testLib = import ./lib.nix { inherit pkgs home-manager self; };
+  testLib = import ./lib.nix {
+    inherit
+      pkgs
+      home-manager
+      self
+      vogix16Themes
+      ;
+  };
 in
 testLib.mkTest "state" ''
   print("=== Test: State Persistence ===")
   # Make a change and verify it persists
   machine.succeed("su - vogix -c 'vogix -s base16 -t dracula -v dark'")
 
-  # Check state file exists and has correct content
-  state_content = machine.succeed("su - vogix -c 'cat $XDG_RUNTIME_DIR/vogix/state/current.toml 2>/dev/null || cat ~/.local/state/vogix/current.toml 2>/dev/null || echo NOTFOUND'")
+  # Check state file exists and has correct content (now in ~/.local/state/vogix/)
+  state_content = machine.succeed(f"su - vogix -c 'cat {vogix_state}/state.toml 2>/dev/null || echo NOTFOUND'")
   if state_content.strip() != "NOTFOUND":
       print(f"State content: {state_content[:200]}")
       assert "base16" in state_content.lower(), "State file doesn't contain scheme!"
@@ -40,29 +48,30 @@ testLib.mkTest "state" ''
   machine.succeed("su - vogix -c 'vogix -t matrix -v dark'")
   machine.succeed("su - vogix -c 'vogix -v lighter'")
 
-  # Final state should be: vogix16, matrix, light
+  # Final state should be: vogix16, matrix, day (light polarity variant)
   final_status = machine.succeed("su - vogix -c 'vogix status'")
   assert "matrix" in final_status.lower(), "Final theme should be matrix!"
-  assert "light" in final_status.lower(), "Final variant should be light (from lighter)!"
+  # Note: matrix theme uses 'day' as its light polarity variant name
+  assert "day" in final_status.lower(), "Final variant should be day (from lighter)!"
   assert "vogix16" in final_status.lower(), "Scheme should still be vogix16!"
   print("    ✓ State is consistent after complex operations")
 
   # Verify state file matches
-  state_content = machine.succeed("su - vogix -c 'cat $XDG_RUNTIME_DIR/vogix/state/current.toml 2>/dev/null || echo NOTFOUND'")
+  state_content = machine.succeed(f"su - vogix -c 'cat {vogix_state}/state.toml 2>/dev/null || echo NOTFOUND'")
   if "NOTFOUND" not in state_content:
       assert "matrix" in state_content.lower(), "State file should have matrix!"
-      assert "light" in state_content.lower(), "State file should have light!"
+      assert "day" in state_content.lower(), "State file should have day!"
       print("    ✓ State file matches status output")
 
-  # Verify symlink matches
-  current_link = machine.succeed(f"su - vogix -c 'readlink {vogix_runtime}/themes/current-theme'").strip()
-  assert "matrix" in current_link.lower() and "light" in current_link.lower(), "Symlink should point to matrix-light!"
+  # Verify symlink matches (current-theme is in state dir)
+  current_link = machine.succeed(f"su - vogix -c 'readlink {current_theme}'").strip()
+  assert "matrix" in current_link.lower() and "day" in current_link.lower(), "Symlink should point to matrix-day!"
   print("    ✓ Symlink matches state")
 
   # Verify config has correct colors
   alacritty = machine.succeed("su - vogix -c 'cat ~/.config/alacritty/alacritty.toml'")
-  matrix_light_bg = all_themes['matrix']['light']['base00'].lower()
-  assert matrix_light_bg in alacritty.lower(), f"Config should have matrix light bg {matrix_light_bg}!"
+  matrix_day_bg = all_themes['matrix']['day']['base00'].lower()
+  assert matrix_day_bg in alacritty.lower(), f"Config should have matrix day bg {matrix_day_bg}!"
   print("    ✓ Config has correct colors")
 
   print("\n✓ State consistency verified!")

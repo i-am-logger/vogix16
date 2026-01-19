@@ -1,0 +1,16 @@
+{{ colors.background }}
+{{ colors.danger }}
+{{ colors.success }}
+{{ colors.warning }}
+{{ colors.foreground_text }}
+{{ colors.foreground_text }}
+{{ colors.foreground_text }}
+{{ colors.foreground_text }}
+{{ colors.foreground_comment }}
+{{ colors.danger }}
+{{ colors.success }}
+{{ colors.warning }}
+{{ colors.foreground_heading }}
+{{ colors.foreground_heading }}
+{{ colors.foreground_heading }}
+{{ colors.foreground_bright }}

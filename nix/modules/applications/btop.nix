@@ -1,4 +1,4 @@
-{ lib, ... }:
+_:
 
 {
   # Btop is a HYBRID app: generates theme file + merges settings

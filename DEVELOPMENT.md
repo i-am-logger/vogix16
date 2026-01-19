@@ -79,14 +79,14 @@ cargo test -- --nocapture
 ### Integration Tests
 
 ```bash
-# Quick integration test
-./test.sh
-
 # Full Nix flake check (includes all tests)
 nix flake check
 
-# Run VM-based integration tests
-nix build .#checks.x86_64-linux.integration
+# Run specific integration test suites
+nix build .#checks.x86_64-linux.smoke           # Quick sanity checks
+nix build .#checks.x86_64-linux.architecture    # Symlinks, runtime dirs
+nix build .#checks.x86_64-linux.theme-switching # Theme/variant switching
+nix build .#checks.x86_64-linux.cli             # CLI flags, error handling
 ```
 
 ### VM Testing
@@ -153,155 +153,207 @@ devenv test  # Runs all git hooks
 
 ```
 vogix/
-├── src/                    # Rust source code
-│   ├── cli.rs              # Command-line interface (clap)
-│   ├── config.rs           # Configuration management
-│   ├── theme.rs            # Theme discovery and parsing
-│   ├── generator.rs        # Theme validation
-│   ├── reload.rs           # Application reload mechanisms
-│   ├── symlink.rs          # Symlink management
-│   ├── state.rs            # State persistence
-│   ├── errors.rs           # Error handling
-│   └── main.rs             # Entry point
-│
-├── themes/                 # Theme library
-│   └── vogix16/            # Native vogix16 themes (19 themes)
-│       ├── aikido.nix
-│       ├── forest.nix
-│       └── ...
+├── src/                        # Rust source code
+│   ├── commands/               # Command handlers
+│   │   ├── cache.rs            # Cache management
+│   │   ├── completions.rs      # Shell completions
+│   │   ├── list.rs             # List themes
+│   │   ├── refresh.rs          # Refresh symlinks
+│   │   ├── status.rs           # Show status
+│   │   └── theme_change.rs     # Theme/variant switching
+│   ├── cache/                  # Theme cache module
+│   │   ├── paths.rs            # Cache path management
+│   │   ├── renderer.rs         # Config rendering
+│   │   └── tests.rs
+│   ├── config/                 # Configuration
+│   │   ├── types.rs            # Config types
+│   │   └── tests.rs
+│   ├── template/               # Tera template rendering
+│   │   ├── filters.rs          # Custom filters
+│   │   ├── render.rs           # Render logic
+│   │   └── tests.rs
+│   ├── theme/                  # Theme management
+│   │   ├── discovery.rs        # Theme discovery
+│   │   ├── loader/             # Theme loaders by scheme
+│   │   ├── query.rs            # Theme queries
+│   │   └── types.rs            # Theme types
+│   ├── cli.rs                  # CLI definition (clap)
+│   ├── errors.rs               # Error handling
+│   ├── main.rs                 # Entry point
+│   ├── reload.rs               # Application reload mechanisms
+│   ├── scheme.rs               # Color scheme types
+│   ├── state.rs                # State persistence
+│   └── symlink.rs              # Symlink management
 │
 ├── nix/
 │   ├── modules/
-│   │   ├── home-manager.nix        # Home Manager module
-│   │   ├── nixos.nix               # NixOS module
-│   │   └── applications/           # Application theme generators
-│   │       ├── alacritty.nix
-│   │       ├── btop.nix
-│   │       └── console.nix
+│   │   ├── lib/                # Shared libraries
+│   │   │   ├── applications.nix  # App discovery
+│   │   │   ├── colors.nix        # Color utilities
+│   │   │   └── vogix16.nix       # vogix16 helpers
+│   │   ├── home-manager/       # Home-manager module (split)
+│   │   │   ├── default.nix
+│   │   │   ├── generators.nix
+│   │   │   ├── options.nix
+│   │   │   └── themes.nix
+│   │   ├── applications/       # Application theme generators
+│   │   │   ├── alacritty.nix
+│   │   │   ├── btop.nix
+│   │   │   └── ...
+│   │   └── nixos.nix           # NixOS module
 │   ├── packages/
-│   │   └── vogix.nix               # Package definition
+│   │   └── vogix.nix           # Package definition
 │   └── vm/
-│       ├── test-vm.nix             # VM configuration
-│       ├── test.nix                # Integration tests
-│       └── home.nix                # Test user config
+│       ├── tests/              # Integration tests
+│       │   ├── smoke.nix
+│       │   ├── architecture.nix
+│       │   ├── theme-switching.nix
+│       │   └── cli.nix
+│       ├── test-vm.nix         # VM configuration
+│       └── home.nix            # Test user config
 │
-├── docs/                   # Documentation
-│   ├── architecture.md     # System architecture
-│   ├── cli.md              # CLI reference
-│   ├── vogix16-design-system.md # vogix16 scheme guide
-│   ├── theming.md          # Theme format
-│   └── reload.md           # Reload mechanisms
+├── docs/                       # Documentation
+│   ├── architecture.md         # System architecture
+│   ├── cli.md                  # CLI reference
+│   ├── theming.md              # Theme format
+│   ├── reload.md               # Reload mechanisms
+│   └── app-module-template.nix # Template for new app modules
 │
-├── scripts/                # Development scripts
-│   ├── preview-themes.sh   # Preview theme colors
-│   ├── extract-themes.py   # Extract themes from SVG
-│   └── validate-themes.py  # Validate theme completeness
+├── scripts/                    # Development scripts
+│   └── demo.sh                 # Demo script
 │
 ├── .github/
-│   ├── workflows/          # CI/CD pipelines
+│   ├── workflows/              # CI/CD pipelines
 │   │   ├── ci-and-release.yml  # Consolidated CI + release automation
-│   │   └── release.yml     # Binary releases
-│   └── ISSUE_TEMPLATE/     # Issue templates
+│   │   └── release.yml         # Binary releases
+│   └── ISSUE_TEMPLATE/         # Issue templates
 │
-├── Cargo.toml              # Rust dependencies (version source of truth)
-├── flake.nix               # Nix flake definition
-├── test.sh                 # Quick integration test script
-├── CONTRIBUTING.md         # Contribution guidelines
-├── CHANGELOG.md            # Version history
-└── README.md               # Project overview
+├── Cargo.toml                  # Rust dependencies (version source of truth)
+├── flake.nix                   # Nix flake definition
+├── CONTRIBUTING.md             # Contribution guidelines
+├── CHANGELOG.md                # Version history
+└── README.md                   # Project overview
 ```
 
 ## Common Development Tasks
 
 ### Adding a New Theme
 
-1. Create theme file in `themes/vogix16/`:
-   ```nix
-   # themes/vogix16/mytheme.nix
-   {
-     name = "mytheme";
-     variants = {
-       dark = {
-         polarity = "dark";
-         colors = {
-           base00 = "#...";  # All 16 colors
-           # ...
-         };
-       };
-       light = {
-         polarity = "light";
-         colors = {
-           base00 = "#...";
-           # ...
-         };
-       };
-     };
-     defaults = { dark = "dark"; light = "light"; };
-   }
-   ```
+Themes are now maintained in the separate [vogix16-themes](https://github.com/i-am-logger/vogix16-themes) repository.
 
-2. Test the theme:
+1. Clone the themes repo:
    ```bash
-   nix flake check
-   vogix list -s vogix16  # Should show your theme
+   git clone https://github.com/i-am-logger/vogix16-themes
+   cd vogix16-themes
    ```
 
-3. Add to theme catalog in `themes/README.md`
+2. Create theme files in TOML format:
+   ```bash
+   mkdir themes/mytheme
+   ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed theme submission guidelines.
+   ```toml
+   # themes/mytheme/dark.toml
+   polarity = "dark"
+   
+   [colors]
+   base00 = "#1a1a1a"
+   base01 = "#282828"
+   base02 = "#383838"
+   base03 = "#585858"
+   base04 = "#b8b8b8"
+   base05 = "#d8d8d8"
+   base06 = "#e8e8e8"
+   base07 = "#f8f8f8"
+   base08 = "#ab4642"
+   base09 = "#dc9656"
+   base0A = "#f7ca88"
+   base0B = "#a1b56c"
+   base0C = "#86c1b9"
+   base0D = "#7cafc2"
+   base0E = "#ba8baf"
+   base0F = "#a16946"
+   ```
+
+3. Validate your theme:
+   ```bash
+   python scripts/validate-themes.py themes/mytheme
+   ```
+
+4. Submit a PR to vogix16-themes
+
+See the [vogix16-themes README](https://github.com/i-am-logger/vogix16-themes) for detailed guidelines.
 
 ### Adding Application Support
 
 1. Create generator in `nix/modules/applications/`:
+
    ```nix
    # nix/modules/applications/myapp.nix
-   { lib, appLib }:
+   _:
    {
      configFile = "myapp/config.conf";
-     reloadMethod = { method = "touch"; };
+     format = "toml";  # or "ini", "yaml", "text"
+     settingsPath = "programs.myapp.settings";
+     reloadMethod = { method = "touch"; };  # or "signal", "command", "none"
+     
      schemes = {
-       vogix16 = colors: ''
-         background = ${colors.background}
-         error = ${colors.danger}
-       '';
-       base16 = colors: ''
-         background = ${colors.base00}
-         red = ${colors.base08}
-       '';
-       base24 = colors: ''
-         background = ${colors.base00}
-         bright-red = ${colors.base12}
-       '';
-       ansi16 = colors: ''
-         background = ${colors.background}
-         red = ${colors.red}
-       '';
+       vogix16 = colors: {
+         background = colors.background;
+         foreground = colors.foreground-text;
+         error = colors.danger;
+       };
+       
+       base16 = colors: {
+         background = colors.base00;
+         foreground = colors.base05;
+         red = colors.base08;
+       };
+       
+       base24 = colors: {
+         background = colors.base00;
+         foreground = colors.base05;
+         bright-red = colors.base12;
+       };
+       
+       ansi16 = colors: {
+         background = colors.background;
+         foreground = colors.foreground;
+         red = colors.red;
+       };
      };
    }
    ```
+
+   Note: Use `_:` if the module doesn't need parameters, or `{ lib, ... }:` if it needs `lib`.
 
 2. Test integration:
    ```bash
    nix flake check
    ```
 
+See [docs/app-module-template.nix](docs/app-module-template.nix) for a complete template.
+
 ### Debugging
 
 #### Enable Rust Backtrace
 ```bash
 RUST_BACKTRACE=1 cargo run -- status
-RUST_BACKTRACE=full cargo run -- theme forest
+RUST_BACKTRACE=full cargo run -- -t forest
 ```
 
 #### Check Generated Configs
 ```bash
 # After home-manager switch
-ls -la /run/user/$(id -u)/vogix/themes/
-cat /run/user/$(id -u)/vogix/manifest.toml
+ls -la ~/.local/share/vogix/themes/
+cat /etc/vogix/config.toml
 
 # Check symlinks
 ls -la ~/.config/alacritty/colors.toml
 readlink ~/.config/alacritty/colors.toml
+
+# Check state
+cat ~/.local/state/vogix/state.toml
 ```
 
 #### Nix Debugging
@@ -366,21 +418,31 @@ nix flake check --show-trace
 
 ### Build Time (Nix)
 1. Home-manager module discovers themes:
-   - Native vogix16 themes from `themes/vogix16/*.nix`
+   - Native vogix16 themes from [vogix16-themes](https://github.com/i-am-logger/vogix16-themes) repo (TOML format)
    - Imported base16/base24 from tinted-schemes fork
    - Imported ansi16 from iTerm2-Color-Schemes fork
 2. Discovers application generators from `nix/modules/applications/`
 3. For each (scheme × theme × variant × app) combination, generates configs
 4. Stores generated configs in `/nix/store` (immutable)
-5. Systemd service symlinks configs to `/run/user/UID/vogix/themes/`
+5. Symlinks configs to `~/.local/share/vogix/themes/`
 
 ### Runtime (Rust CLI)
 1. CLI updates `current-theme` symlink (only this!)
 2. Supports variant navigation (darker/lighter/dark/light)
-3. Triggers application reloads per manifest.toml
-4. Persists state to `/run/user/UID/vogix/state/`
+3. Triggers application reloads per config
+4. Persists state to `~/.local/state/vogix/`
 
 **Key Principle**: Nix generates everything at build time. Rust CLI only manages symlinks.
+
+### Directory Locations
+
+| What | Path | Managed By |
+|------|------|------------|
+| System config | `/etc/vogix/config.toml` | NixOS module |
+| Theme packages | `~/.local/share/vogix/themes/` | home-manager |
+| Current symlink | `~/.local/state/vogix/current-theme` | Rust CLI |
+| User state | `~/.local/state/vogix/state.toml` | Rust CLI |
+| App configs | `~/.config/{app}/` | home-manager symlinks |
 
 ## Version Management
 
@@ -439,7 +501,7 @@ A single, efficient workflow handles both CI and releases with smart job depende
 
 **Job 3: Integration Tests** (parallel with Job 1 & 2)
 - `integration-tests`:
-  - Runs integration tests (`./test.sh`)
+  - Runs integration tests
   - Tests VM-based functionality
 
 **Job 4: Release** (depends on all CI passing)
@@ -479,4 +541,4 @@ A single, efficient workflow handles both CI and releases with smart job depende
 
 ---
 
-Happy hacking! 🚀
+Happy hacking!

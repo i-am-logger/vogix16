@@ -12,8 +12,11 @@ Vogix includes automated integration tests using the NixOS testing framework. Th
 # Run all integration tests
 nix flake check
 
-# Or explicitly run the integration test
-nix build .#checks.x86_64-linux.integration
+# Run specific test suites
+nix build .#checks.x86_64-linux.smoke           # Quick sanity checks
+nix build .#checks.x86_64-linux.architecture    # Symlinks, runtime dirs
+nix build .#checks.x86_64-linux.theme-switching # Theme/variant switching
+nix build .#checks.x86_64-linux.cli             # CLI flags, error handling
 ```
 
 ### What Gets Tested
@@ -33,7 +36,7 @@ The automated test suite verifies **18 test scenarios**:
 11. **Systemd Service** - Daemon service defined and can start
 12. **Shell Completions** - Completion generation works for all shells
 13. **Application Config Generation** - Alacritty and btop configs generated with correct hex colors
-14. **Theme Validation** - Theme files are valid Nix expressions
+14. **Theme Validation** - Theme files are valid
 15. **Error Handling** - Invalid inputs rejected gracefully
 16. **Version Check** - `--version` flag works
 17. **Multi-Scheme Support** - All 4 schemes (vogix16, base16, base24, ansi16) work
@@ -110,11 +113,11 @@ The tests use `pkgs.nixosTest`, which:
 - Pre-configured test user
 - All vogix16 features enabled
 
-**Test Script**: `nix/vm/test.nix`
-- Python-based test script
-- 15 test scenarios
-- Machine lifecycle management
-- Detailed logging
+**Test Scripts**: `nix/vm/tests/`
+- `smoke.nix` - Quick sanity checks
+- `architecture.nix` - Symlinks, runtime directories
+- `theme-switching.nix` - Theme and variant switching
+- `cli.nix` - CLI flags, error handling
 
 **Home Config**: `nix/vm/home.nix`
 - User configuration for testing
@@ -127,11 +130,8 @@ The tests use `pkgs.nixosTest`, which:
 If you want to manually explore the test environment:
 
 ```bash
-# Build the VM
-nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm
-
-# Run it
-./result/bin/run-vogix-test-vm-vm
+# Launch the test VM
+nix run .#vogix-vm
 
 # Inside VM, run commands manually:
 vogix status
@@ -141,6 +141,11 @@ vogix -s base16 -t catppuccin -v mocha
 vogix -v darker
 vogix -v lighter
 vogix -v dark
+
+# Check paths
+ls -la ~/.local/share/vogix/themes/
+ls -la ~/.local/state/vogix/
+cat /etc/vogix/config.toml
 ```
 
 ## Continuous Integration
@@ -166,7 +171,7 @@ jobs:
 
 ### Adding New Tests
 
-Edit `nix/vm/test.nix` and add test cases:
+Create a new test file in `nix/vm/tests/` or add test cases to existing files:
 
 ```python
 print("\n=== Test N: Your Test Name ===")
@@ -187,16 +192,15 @@ print("✓ Your test passed")
 
 ```bash
 # Run test with more verbose output
-nix build .#checks.x86_64-linux.integration --print-build-logs
+nix build .#checks.x86_64-linux.smoke --print-build-logs
 
 # Access the test VM interactively
-nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm
-./result/bin/run-vogix-test-vm-vm
+nix run .#vogix-vm
 ```
 
 ## Performance
 
-- **Test duration**: ~30-60 seconds
+- **Test duration**: ~30-60 seconds per test suite
 - **VM RAM**: 2GB
 - **VM CPUs**: 2 cores
 - **Storage**: Ephemeral (no persistence between runs)
@@ -241,8 +245,9 @@ services.vogix.enable = true;
 
 Check themes are installed in `home.nix`:
 ```nix
-programs.vogix.themes = {
-  aikido = ../../themes/aikido.nix;
+programs.vogix = {
+  enable = true;
+  # themes are discovered from vogix16-themes input
 };
 ```
 
@@ -258,7 +263,7 @@ nix flake check --print-build-logs
 
 ### Tests timeout
 
-Increase timeout in `test.nix`:
+Increase timeout in the test file:
 ```python
 machine.wait_for_unit("multi-user.target", timeout=120)
 ```

@@ -22,6 +22,10 @@ pub struct Cli {
     /// Use "darker" or "lighter" to navigate within the current theme
     #[arg(short = 'v', long, global = true)]
     pub variant: Option<String>,
+
+    /// Suppress non-error output
+    #[arg(short = 'q', long, global = true)]
+    pub quiet: bool,
 }
 
 #[derive(Subcommand)]
@@ -47,9 +51,20 @@ pub enum Commands {
         shell: CompletionShell,
     },
 
-    /// Apply theme changes (used internally)
-    #[command(hide = true)]
-    Apply,
+    /// Manage the template cache
+    Cache {
+        #[command(subcommand)]
+        command: CacheCommands,
+    },
+
+    /// Refresh current theme (reapply without changes)
+    Refresh,
+}
+
+#[derive(Subcommand)]
+pub enum CacheCommands {
+    /// Remove stale cache entries from old template versions
+    Clean,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -96,6 +111,7 @@ mod tests {
             scheme,
             theme: theme.map(String::from),
             variant: variant.map(String::from),
+            quiet: false,
         }
     }
 

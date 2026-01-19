@@ -5,8 +5,16 @@
   imports = [ ];
 
   # Basic VM settings
-  boot.loader.grub.enable = false;
-  boot.loader.systemd-boot.enable = true;
+  boot = {
+    loader = {
+      grub.enable = false;
+      systemd-boot.enable = true;
+    };
+    kernelParams = [
+      "console=tty1"
+      "console=ttyS0"
+    ];
+  };
 
   # Enable flakes
   nix.settings.experimental-features = [
@@ -67,29 +75,27 @@
   # Auto-login for easier testing (only once)
   services.getty.autologinUser = "vogix";
 
-  # Enable serial console getty (override test instrumentation)
-  systemd.services."serial-getty@ttyS0".enable = lib.mkForce true;
-
   # Disable auto-restart of getty so exit will actually close the terminal
-  systemd.services."getty@tty1" = {
-    serviceConfig.Restart = lib.mkForce "no";
-    serviceConfig.TTYVHangup = lib.mkForce "yes";
-    serviceConfig.TTYReset = lib.mkForce "yes";
-  };
-  systemd.services."serial-getty@ttyS0" = {
-    serviceConfig.Restart = lib.mkForce "no";
-    serviceConfig.TTYVHangup = lib.mkForce "yes";
-    serviceConfig.TTYReset = lib.mkForce "yes";
+  systemd.services = {
+    "serial-getty@ttyS0" = {
+      enable = lib.mkForce true;
+      serviceConfig = {
+        Restart = lib.mkForce "no";
+        TTYVHangup = lib.mkForce "yes";
+        TTYReset = lib.mkForce "yes";
+      };
+    };
+    "getty@tty1" = {
+      serviceConfig = {
+        Restart = lib.mkForce "no";
+        TTYVHangup = lib.mkForce "yes";
+        TTYReset = lib.mkForce "yes";
+      };
+    };
   };
 
   # System state version
   system.stateVersion = "24.11";
-
-  # Enable serial console for terminal mode
-  boot.kernelParams = [
-    "console=tty1"
-    "console=ttyS0"
-  ];
 
   # VM-specific settings
   virtualisation.vmVariant = {

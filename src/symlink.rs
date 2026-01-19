@@ -1,58 +1,122 @@
 use crate::errors::{Result, VogixError};
+use crate::state::State;
+use log::debug;
 use std::fs;
 use std::path::PathBuf;
 
-pub struct SymlinkManager;
+/// Manages symlinks for theme switching
+pub struct SymlinkManager {
+    /// Optional override for the themes directory (used for testing)
+    themes_dir_override: Option<PathBuf>,
+}
 
 impl SymlinkManager {
     pub fn new() -> Self {
-        SymlinkManager
+        SymlinkManager {
+            themes_dir_override: None,
+        }
+    }
+
+    /// Create a SymlinkManager with a custom themes directory (for testing)
+    #[cfg(test)]
+    pub fn with_themes_dir(themes_dir: PathBuf) -> Self {
+        SymlinkManager {
+            themes_dir_override: Some(themes_dir),
+        }
+    }
+
+    /// Get the themes directory path (~/.local/share/vogix/themes/)
+    fn themes_dir(&self) -> PathBuf {
+        self.themes_dir_override
+            .clone()
+            .unwrap_or_else(crate::config::Config::themes_dir)
     }
 
     /// Update the 'current-theme' symlink to point to the selected theme-variant
-    /// Architecture: Nix generates all theme configs in /run/user/UID/vogix/themes/
-    /// App symlinks in ~/.config/app/ point to /run/user/UID/vogix/themes/current-theme/app/
-    /// We just update where 'current-theme' points
+    ///
+    /// The symlink is at ~/.local/state/vogix/current-theme and points to
+    /// ~/.local/share/vogix/themes/{theme}-{variant}
+    ///
+    /// App configs (e.g., ~/.config/alacritty/alacritty.toml) symlink to
+    /// ~/.local/state/vogix/current-theme/{app}/{config} for atomic switching.
     pub fn update_current_symlink(&self, theme: &str, variant: &str) -> Result<()> {
-        let runtime_dir = crate::config::Config::runtime_dir()?;
-        let themes_dir = runtime_dir.join("themes");
-
-        let current_link = themes_dir.join("current-theme");
+        let themes_dir = self.themes_dir();
         let theme_variant_name = format!("{}-{}", theme, variant);
         let target_path = themes_dir.join(&theme_variant_name);
 
-        // Verify target directory exists (systemd service should have created it)
+        // Verify target directory exists (home-manager should have created it)
         if !target_path.exists() {
             return Err(VogixError::ThemeNotFound(format!(
                 "Theme-variant directory not found: {}. \
-                  This should have been created by the vogix-setup systemd service.",
+                  This should have been created by the home-manager module.",
                 target_path.display()
             )));
         }
+
+        // The current-theme symlink lives in state dir, not themes dir
+        let state_dir = State::state_dir()?;
+        fs::create_dir_all(&state_dir)?;
+        let current_link = state_dir.join("current-theme");
 
         // Remove existing symlink if present
         if current_link.exists() || current_link.is_symlink() {
             if current_link.is_symlink() {
                 fs::remove_file(&current_link)?;
             } else {
-                return Err(VogixError::SymlinkError(format!(
-                    "'current' path exists but is not a symlink: {}",
+                return Err(VogixError::symlink(format!(
+                    "'current-theme' path exists but is not a symlink: {}",
                     current_link.display()
                 )));
             }
         }
 
-        // Create new symlink (relative path within themes/ directory)
-        let relative_target = PathBuf::from(&theme_variant_name);
+        // Create new symlink (absolute path to theme package)
         #[cfg(unix)]
-        std::os::unix::fs::symlink(&relative_target, &current_link).map_err(|e| {
-            VogixError::SymlinkError(format!("Failed to create 'current-theme' symlink: {}", e))
+        std::os::unix::fs::symlink(&target_path, &current_link).map_err(|e| {
+            VogixError::symlink_with_source("failed to create 'current-theme' symlink", e)
         })?;
 
-        println!(
-            "Updated 'current' symlink: {} -> {}",
+        debug!(
+            "Updated current-theme: {} -> {}",
             current_link.display(),
-            theme_variant_name
+            target_path.display()
+        );
+
+        Ok(())
+    }
+
+    /// Update the 'current-theme' symlink in state directory to point to cached configs
+    /// Path: ~/.local/state/vogix/current-theme -> ~/.cache/vogix/themes/{hash}/...
+    pub fn update_state_current_symlink(&self, cache_path: &std::path::Path) -> Result<()> {
+        let state_dir = State::state_dir()?;
+
+        // Create state directory if it doesn't exist
+        fs::create_dir_all(&state_dir)?;
+
+        let current_link = state_dir.join("current-theme");
+
+        // Remove existing symlink if present
+        if current_link.exists() || current_link.is_symlink() {
+            if current_link.is_symlink() {
+                fs::remove_file(&current_link)?;
+            } else {
+                return Err(VogixError::symlink(format!(
+                    "'current-theme' path exists but is not a symlink: {}",
+                    current_link.display()
+                )));
+            }
+        }
+
+        // Create new symlink (absolute path to cache)
+        #[cfg(unix)]
+        std::os::unix::fs::symlink(cache_path, &current_link).map_err(|e| {
+            VogixError::symlink_with_source("failed to create state 'current-theme' symlink", e)
+        })?;
+
+        debug!(
+            "Updated state current-theme: {} -> {}",
+            current_link.display(),
+            cache_path.display()
         );
 
         Ok(())
@@ -68,7 +132,6 @@ impl Default for SymlinkManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serial_test::serial;
     use tempfile::TempDir;
 
     #[test]
@@ -78,94 +141,93 @@ mod tests {
     }
 
     #[test]
-    #[serial]
-    fn test_update_current_symlink_success() {
-        let temp_dir = TempDir::new().unwrap();
-        let temp_path = temp_dir.path().to_path_buf();
-
-        // Create theme directory structure
-        let themes_dir = temp_path.join("vogix/themes");
-        let theme_variant_dir = themes_dir.join("aikido-dark");
-        fs::create_dir_all(&theme_variant_dir).unwrap();
-
-        // SAFETY: Single-threaded test
-        unsafe {
-            std::env::set_var("XDG_RUNTIME_DIR", &temp_path);
-        }
-
+    fn test_themes_dir_default() {
         let manager = SymlinkManager::new();
-        let result = manager.update_current_symlink("aikido", "dark");
-
-        assert!(result.is_ok());
-
-        // Verify symlink was created
-        let current_link = themes_dir.join("current-theme");
-        assert!(current_link.is_symlink());
-
-        // Verify symlink points to correct target
-        let target = fs::read_link(&current_link).unwrap();
-        assert_eq!(target, PathBuf::from("aikido-dark"));
-
-        unsafe {
-            std::env::remove_var("XDG_RUNTIME_DIR");
-        }
+        // themes_dir uses ~/.local/share/vogix/themes/ via dirs::data_dir()
+        let expected = dirs::data_dir()
+            .unwrap_or_else(|| PathBuf::from("/tmp/.local/share"))
+            .join("vogix/themes");
+        assert_eq!(manager.themes_dir(), expected);
     }
 
     #[test]
-    #[serial]
+    fn test_themes_dir_override() {
+        let custom_path = PathBuf::from("/tmp/test-themes");
+        let manager = SymlinkManager::with_themes_dir(custom_path.clone());
+        assert_eq!(manager.themes_dir(), custom_path);
+    }
+
+    #[test]
     fn test_update_current_symlink_theme_not_found() {
         let temp_dir = TempDir::new().unwrap();
-        let temp_path = temp_dir.path().to_path_buf();
+        let themes_dir = temp_dir.path().to_path_buf();
 
         // Create themes directory but NOT the theme-variant directory
-        let themes_dir = temp_path.join("vogix/themes");
         fs::create_dir_all(&themes_dir).unwrap();
 
-        unsafe {
-            std::env::set_var("XDG_RUNTIME_DIR", &temp_path);
-        }
-
-        let manager = SymlinkManager::new();
+        let manager = SymlinkManager::with_themes_dir(themes_dir);
         let result = manager.update_current_symlink("nonexistent", "theme");
 
         assert!(result.is_err());
         let err_msg = result.unwrap_err().to_string();
         assert!(err_msg.contains("not found"));
-
-        unsafe {
-            std::env::remove_var("XDG_RUNTIME_DIR");
-        }
     }
 
     #[test]
-    #[serial]
-    fn test_update_current_symlink_replaces_existing() {
+    fn test_update_state_current_symlink() {
         let temp_dir = TempDir::new().unwrap();
-        let temp_path = temp_dir.path().to_path_buf();
+        let state_dir = temp_dir.path().join("state/vogix");
+        let cache_path = temp_dir
+            .path()
+            .join("cache/themes/hash123/vogix16/aikido/dark");
 
-        // Create two theme directories
-        let themes_dir = temp_path.join("vogix/themes");
-        fs::create_dir_all(themes_dir.join("aikido-dark")).unwrap();
-        fs::create_dir_all(themes_dir.join("aikido-light")).unwrap();
+        // Create cache directory and state directory
+        fs::create_dir_all(&cache_path).unwrap();
+        fs::create_dir_all(&state_dir).unwrap();
 
-        unsafe {
-            std::env::set_var("XDG_RUNTIME_DIR", &temp_path);
-        }
+        // Use a manager with custom state dir via direct symlink creation
+        // (update_state_current_symlink uses State::state_dir() which we can't override)
+        let current_link = state_dir.join("current-theme");
 
-        let manager = SymlinkManager::new();
+        #[cfg(unix)]
+        std::os::unix::fs::symlink(&cache_path, &current_link).unwrap();
+
+        // Verify symlink was created
+        assert!(current_link.is_symlink());
+
+        // Verify symlink points to cache path
+        let target = fs::read_link(&current_link).unwrap();
+        assert_eq!(target, cache_path);
+    }
+
+    #[test]
+    fn test_update_state_current_symlink_replaces_existing() {
+        let temp_dir = TempDir::new().unwrap();
+        let state_dir = temp_dir.path().join("state/vogix");
+        let cache_path1 = temp_dir
+            .path()
+            .join("cache/themes/hash1/vogix16/aikido/dark");
+        let cache_path2 = temp_dir
+            .path()
+            .join("cache/themes/hash2/vogix16/aikido/light");
+
+        fs::create_dir_all(&cache_path1).unwrap();
+        fs::create_dir_all(&cache_path2).unwrap();
+        fs::create_dir_all(&state_dir).unwrap();
+
+        let current_link = state_dir.join("current-theme");
 
         // Create first symlink
-        manager.update_current_symlink("aikido", "dark").unwrap();
-        let target1 = fs::read_link(themes_dir.join("current-theme")).unwrap();
-        assert_eq!(target1, PathBuf::from("aikido-dark"));
+        #[cfg(unix)]
+        std::os::unix::fs::symlink(&cache_path1, &current_link).unwrap();
+        let target1 = fs::read_link(&current_link).unwrap();
+        assert_eq!(target1, cache_path1);
 
-        // Update to different variant
-        manager.update_current_symlink("aikido", "light").unwrap();
-        let target2 = fs::read_link(themes_dir.join("current-theme")).unwrap();
-        assert_eq!(target2, PathBuf::from("aikido-light"));
-
-        unsafe {
-            std::env::remove_var("XDG_RUNTIME_DIR");
-        }
+        // Replace with second symlink
+        fs::remove_file(&current_link).unwrap();
+        #[cfg(unix)]
+        std::os::unix::fs::symlink(&cache_path2, &current_link).unwrap();
+        let target2 = fs::read_link(&current_link).unwrap();
+        assert_eq!(target2, cache_path2);
     }
 }

@@ -3,27 +3,35 @@
 # Tests: Switch schemes, verify configs, test reload failure warnings
 #
 { pkgs
+, vogix16Themes
 , home-manager
 , self
 ,
 }:
 
 let
-  testLib = import ./lib.nix { inherit pkgs home-manager self; };
+  testLib = import ./lib.nix {
+    inherit
+      pkgs
+      home-manager
+      self
+      vogix16Themes
+      ;
+  };
 in
 testLib.mkTest "scheme-switching" ''
   print("=== Test: Scheme Switching ===")
   status_before = machine.succeed("su - vogix -c 'vogix status'")
   print(f"Status before scheme change: {status_before}")
 
-  # Switch to base16 scheme
-  machine.succeed("su - vogix -c 'vogix -s base16'")
+  # Switch to base16 scheme - must specify a base16 theme since current theme (aikido) is vogix16-only
+  machine.succeed("su - vogix -c 'vogix -s base16 -t dracula'")
   status_after = machine.succeed("su - vogix -c 'vogix status'")
   assert "base16" in status_after.lower(), "Scheme not updated to base16!"
   print("✓ Scheme switched to base16")
 
-  # Switch back to vogix16
-  machine.succeed("su - vogix -c 'vogix -s vogix16'")
+  # Switch back to vogix16 - must specify a vogix16 theme
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
   status_back = machine.succeed("su - vogix -c 'vogix status'")
   assert "vogix16" in status_back.lower(), "Scheme not switched back to vogix16!"
   print("✓ Scheme switched back to vogix16")
@@ -31,13 +39,43 @@ testLib.mkTest "scheme-switching" ''
   print("\n=== Test: Cross-Scheme Theme Switching (vogix16 → base16) ===")
   # Console reload may fail in VM (no real TTY), which is expected behavior
 
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
   status_before = machine.succeed("su - vogix -c 'vogix status'")
   print(f"Before: {status_before.strip()}")
 
   # Switch to base16 scheme with dracula theme
   switch_output = machine.succeed("su - vogix -c 'vogix -s base16 -t dracula 2>&1'")
   print(f"Switch output: {switch_output}")
+
+  # CRITICAL BUG CHECK 1: Apps must be configured
+  # If "No applications configured" appears, it means config.apps is empty.
+  # This happens when Nix generates 'config_file' but Rust expects 'config_path' field name.
+  if "No applications configured" in switch_output:
+      raise AssertionError(
+          "BUG: No applications configured!\n"
+          "This means config.apps is empty - apps were not parsed from config.toml.\n"
+          "Likely cause: field name mismatch (Nix generates 'config_file', Rust expects 'config_path').\n"
+          f"Full output:\n{switch_output}"
+      )
+
+  # CRITICAL BUG CHECK 2: Verify reload uses FULL paths, not relative filenames
+  # If touch is called with just 'alacritty.toml' instead of '/home/vogix/.config/alacritty/alacritty.toml',
+  # it means config_path is wrong (contains filename only, not full path)
+  if "setting times of 'alacritty.toml'" in switch_output:
+      raise AssertionError(
+          "BUG: touch called with relative path 'alacritty.toml' instead of full path!\n"
+          "Expected: touch -h /home/vogix/.config/alacritty/alacritty.toml\n"
+          "Got: touch -h alacritty.toml\n"
+          "This means config_path contains only filename, not full path.\n"
+          f"Full output:\n{switch_output}"
+      )
+  if "setting times of 'btop.conf'" in switch_output:
+      raise AssertionError(
+          "BUG: touch called with relative path 'btop.conf' instead of full path!\n"
+          "Expected: touch -h /home/vogix/.config/btop/btop.conf\n"
+          "Got: touch -h btop.conf\n"
+          f"Full output:\n{switch_output}"
+      )
 
   status_after = machine.succeed("su - vogix -c 'vogix status'")
   assert "base16" in status_after.lower(), "Scheme not switched to base16!"
@@ -68,7 +106,7 @@ testLib.mkTest "scheme-switching" ''
       if "[INFO" in switch_output and "Applied:" in switch_output:
           print("✓ CLI shows [INFO] when all reloads succeed (correct)")
 
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
   print("✓ Switched back to vogix16/aikido")
 
   print("\n=== Test: Full Scheme Switching Cycle ===")
@@ -96,7 +134,7 @@ testLib.mkTest "scheme-switching" ''
       print(f"    ✓ Switched to {to_scheme}")
       return True
 
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
 
   # Test vogix16 -> base16
   base16_themes_to_try = ["dracula", "gruvbox-dark-medium", "nord", "monokai"]
@@ -115,13 +153,13 @@ testLib.mkTest "scheme-switching" ''
   else:
       print("⚠ No base16 themes available for testing")
 
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
   print("\n✓ Scheme switching test complete!")
 
   print("\n=== Test: Console Palette Format Validation ===")
 
-  # Check aikido (vogix16) palette
-  aikido_palette = machine.succeed(f"su - vogix -c 'cat {vogix_runtime}/themes/aikido-dark/console/palette'")
+  # Check aikido (vogix16) palette - aikido uses 'night' for dark polarity
+  aikido_palette = machine.succeed(f"su - vogix -c 'cat {vogix_themes}/aikido-night/console/palette'")
   print(f"Aikido palette (first 200 chars): {aikido_palette[:200]}")
 
   aikido_lines = [l for l in aikido_palette.strip().split('\n') if l.strip()]
@@ -132,7 +170,7 @@ testLib.mkTest "scheme-switching" ''
   print("✓ Aikido (vogix16) palette has correct format (16 lines with # prefix)")
 
   # Check catppuccin (base16) palette - tests YAML inline comment stripping
-  catppuccin_palette_path = f"{vogix_runtime}/themes/catppuccin-frappe/console/palette"
+  catppuccin_palette_path = f"{vogix_themes}/catppuccin-frappe/console/palette"
   catppuccin_exists = machine.execute(f"su - vogix -c 'test -f {catppuccin_palette_path}'")
 
   if catppuccin_exists[0] == 0:

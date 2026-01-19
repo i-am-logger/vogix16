@@ -30,12 +30,12 @@ git clone https://github.com/i-am-logger/vogix
 cd vogix
 
 # Enter development shell
-nix develop
+devenv shell
 
 # Build and test
 cargo build --release
 cargo test
-./test.sh
+nix flake check
 ```
 
 ## Development Workflow
@@ -62,16 +62,13 @@ git checkout -b fix/your-bug-fix
 cargo test
 
 # Run integration tests
-./test.sh
-
-# Or use Nix
 nix flake check
 
 # Format code
 cargo fmt
 
 # Check for issues
-cargo clippy
+cargo clippy -- -D warnings
 ```
 
 ## Commit Convention
@@ -124,118 +121,23 @@ BREAKING CHANGE: `vogix switch dark/light` is now `vogix switch` with auto-detec
 
 ## Submitting Themes
 
-Vogix welcomes new theme submissions for the native **vogix16** scheme. For base16/base24/ansi16 themes, contribute to their respective upstream repositories.
+Vogix themes are maintained in a separate repository: [vogix16-themes](https://github.com/i-am-logger/vogix16-themes).
 
-### Theme Requirements
+To contribute a new theme:
 
-1. **Follow the vogix16 Design System**: See [docs/vogix16-design-system.md](docs/vogix16-design-system.md)
-2. **Use Multi-Variant Format**: Define variants with polarity
-3. **Use Semantic Colors**: Assign functional colors by purpose, not aesthetics
-4. **Test Thoroughly**: Verify colors work across all supported applications
+1. Clone the themes repository
+2. Create your theme in TOML format following the [design system](https://github.com/i-am-logger/vogix16-themes/blob/main/docs/design-system.md)
+3. Validate using the provided scripts
+4. Submit a PR to vogix16-themes
 
-### Theme Submission Process
+See the [vogix16-themes contribution guide](https://github.com/i-am-logger/vogix16-themes/blob/main/README.md) for detailed instructions.
 
-1. **Create Theme File**
-
-```nix
-# themes/vogix16/your-theme-name.nix
-{
-  name = "your-theme-name";
-  variants = {
-    dark = {
-      polarity = "dark";
-      colors = {
-        # Base colors (monochromatic scale - darkest to lightest)
-        base00 = "#......";  # Background
-        base01 = "#......";  # Surface
-        base02 = "#......";  # Selection
-        base03 = "#......";  # Comments
-        base04 = "#......";  # Borders
-        base05 = "#......";  # Text
-        base06 = "#......";  # Headings
-        base07 = "#......";  # Bright
-
-        # Functional colors (semantic purpose)
-        base08 = "#......";  # Danger
-        base09 = "#......";  # Warning
-        base0A = "#......";  # Notice
-        base0B = "#......";  # Success
-        base0C = "#......";  # Active
-        base0D = "#......";  # Link
-        base0E = "#......";  # Highlight
-        base0F = "#......";  # Special
-      };
-    };
-    light = {
-      polarity = "light";
-      colors = {
-        # Light variant (reverse base colors, adjust functional colors)
-        base00 = "#......";  # Background (lightest)
-        # ... (all 16 colors)
-      };
-    };
-  };
-  defaults = {
-    dark = "dark";
-    light = "light";
-  };
-}
-```
-
-2. **Update Theme Catalog**
-
-Add your theme to `themes/README.md` in the appropriate category:
-- Natural (nature-inspired, organic palettes)
-- Hacker (tech, cyberpunk, terminal aesthetics)
-- Modern (contemporary, clean, minimalist)
-- Vintage (retro, nostalgic, classic)
-
-3. **Test Your Theme**
-
-```bash
-# Build with your theme
-nix flake check
-
-# Test in VM
-nix run .#vogix-vm
-
-# Inside VM, switch to your theme
-vogix -s vogix16 -t your-theme-name -v dark
-```
-
-4. **Submit Pull Request**
-
-Use conventional commit format:
-```
-feat(themes): add [Your Theme Name] with dark and light variants
-
-- Describe the theme's inspiration or purpose
-- Note any unique color choices or characteristics
-- Include screenshots if possible
-```
-
-### Theme Guidelines
-
-- **Monochromatic Base**: base00-base07 should form a cohesive progression
-  - Can be any color family (grayscale, sepia, green, blue, etc.)
-  - Must progress from darkest to lightest (dark variant) or lightest to darkest (light variant)
-
-- **Functional Colors**: base08-base0F should maintain semantic meaning
-  - base08 (Danger): Errors, destructive actions
-  - base09 (Warning): Cautions, important notifications
-  - base0A (Notice): Status, announcements
-  - base0B (Success): Completed, positive indicators
-  - base0C (Active): Current selection, focused elements
-  - base0D (Link): Interactive elements, informational content
-  - base0E (Highlight): Focus indicators, emphasized content
-  - base0F (Special): System messages, specialized elements
-
-- **Contrast**: Ensure sufficient contrast for accessibility
-- **Consistency**: Both variants should feel cohesive
+For base16/base24 themes, contribute to [tinted-schemes](https://github.com/tinted-theming/schemes).
+For ansi16 themes, contribute to [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
 ## Adding Application Support
 
-To add support for a new application, implement generators for all 4 color schemes. See [docs/vogix16-design-system.md](docs/vogix16-design-system.md) for detailed guidelines on when to use functional colors vs. monochromatic colors.
+To add support for a new application, implement generators for all 4 color schemes. See [docs/app-module-template.nix](docs/app-module-template.nix) for a complete template.
 
 ### Key Principle
 
@@ -250,46 +152,50 @@ See [nix/modules/applications/README.md](nix/modules/applications/README.md) for
 
 ```nix
 # nix/modules/applications/myapp.nix
-{ lib, appLib }:
+_:
 {
   configFile = "myapp/config.conf";
+  format = "toml";  # or "ini", "yaml", "text"
+  settingsPath = "programs.myapp.settings";
   reloadMethod = { method = "touch"; };
   
   schemes = {
-    vogix16 = colors: ''
+    vogix16 = colors: {
       # Use semantic names for vogix16
-      background = ${colors.background}
-      foreground = ${colors.foreground-text}
-      error-color = ${colors.danger}
-    '';
+      background = colors.background;
+      foreground = colors.foreground-text;
+      error-color = colors.danger;
+    };
     
-    base16 = colors: ''
+    base16 = colors: {
       # Use base16 names
-      background = ${colors.base00}
-      foreground = ${colors.base05}
-      red = ${colors.base08}
-    '';
+      background = colors.base00;
+      foreground = colors.base05;
+      red = colors.base08;
+    };
     
-    base24 = colors: ''
+    base24 = colors: {
       # Use base24 names (includes base12-base17)
-      background = ${colors.base00}
-      foreground = ${colors.base05}
-      bright-red = ${colors.base12}
-    '';
+      background = colors.base00;
+      foreground = colors.base05;
+      bright-red = colors.base12;
+    };
     
-    ansi16 = colors: ''
+    ansi16 = colors: {
       # Use ANSI names
-      background = ${colors.background}
-      foreground = ${colors.foreground}
-      red = ${colors.red}
-    '';
+      background = colors.background;
+      foreground = colors.foreground;
+      red = colors.red;
+    };
   };
 }
 ```
 
+Note: Use `_:` if the module doesn't need parameters, or `{ lib, ... }:` if it needs `lib`.
+
 ### 2. Define Reload Method
 
-Reload configuration is now part of the generator file:
+Reload configuration is part of the generator file:
 
 ```nix
 {
@@ -306,12 +212,13 @@ Reload configuration is now part of the generator file:
 ### 3. Test Integration
 
 ```bash
-# Add to test configuration
-programs.myapp.enable = true;
-programs.vogix.enable = true;
+# Run flake checks
+nix flake check
 
-# Rebuild and test
-home-manager switch
+# Test in VM
+nix run .#vogix-vm
+
+# Inside VM
 vogix status
 vogix -t aikido -v dark  # Test theme switching
 ```
@@ -353,7 +260,7 @@ vogix -t aikido -v dark  # Test theme switching
 
 All contributions must:
 
-1. **Pass existing tests**: `./test.sh` or `nix flake check`
+1. **Pass existing tests**: `nix flake check`
 2. **Add new tests**: For new features
 3. **Maintain coverage**: Don't reduce test coverage
 
@@ -364,10 +271,11 @@ All contributions must:
 cargo test
 
 # Full integration test suite
-./test.sh
-
-# Nix flake checks (includes all tests)
 nix flake check
+
+# Run specific test suites
+nix build .#checks.x86_64-linux.smoke
+nix build .#checks.x86_64-linux.theme-switching
 
 # VM testing
 nix run .#vogix-vm
@@ -376,16 +284,16 @@ nix run .#vogix-vm
 ### Writing Tests
 
 - Add Rust unit tests in the same file as the code
-- Add integration tests to `nix/vm/test.nix`
+- Add integration tests to `nix/vm/tests/`
 - Document test scenarios in TESTING.md
 
 ## Pull Request Process
 
 ### Before Submitting
 
-- [ ] All tests pass (`cargo test`, `./test.sh`)
+- [ ] All tests pass (`cargo test`, `nix flake check`)
 - [ ] Code is formatted (`cargo fmt`)
-- [ ] No clippy warnings (`cargo clippy`)
+- [ ] No clippy warnings (`cargo clippy -- -D warnings`)
 - [ ] Documentation is updated
 - [ ] Commit messages follow conventional format
 - [ ] CHANGELOG.md is NOT manually edited (automated by release-please)

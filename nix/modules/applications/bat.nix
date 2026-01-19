@@ -1,4 +1,4 @@
-{ lib, ... }:
+_:
 
 let
   # Helper to generate tmTheme XML for bat

@@ -1,4 +1,4 @@
-{ lib, appLib }:
+{ appLib, ... }:
 
 {
   # Config file path relative to ~/.config/ripgrep/

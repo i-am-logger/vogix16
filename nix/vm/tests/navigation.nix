@@ -3,22 +3,31 @@
 # Tests: darker/lighter navigation, catppuccin multi-variant, single-variant themes
 #
 { pkgs
+, vogix16Themes
 , home-manager
 , self
 ,
 }:
 
 let
-  testLib = import ./lib.nix { inherit pkgs home-manager self; };
+  testLib = import ./lib.nix {
+    inherit
+      pkgs
+      home-manager
+      self
+      vogix16Themes
+      ;
+  };
 in
 testLib.mkTest "navigation" ''
   print("=== Test: Darker/Lighter Navigation ===")
-  # Start from dark, try lighter
+  # Start from dark (aikido uses 'night'), try lighter
   machine.succeed("su - vogix -c 'vogix -v dark'")
   machine.succeed("su - vogix -c 'vogix -v lighter'")
   nav_status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "light" in nav_status.lower(), "Navigation to lighter failed!"
-  print("✓ 'vogix -v lighter' navigates from dark to light")
+  # aikido uses 'day' for light polarity, not 'light'
+  assert "day" in nav_status.lower(), "Navigation to lighter failed!"
+  print("✓ 'vogix -v lighter' navigates from night to day")
 
   # Try lighter again - should fail (already at lightest)
   machine.fail("su - vogix -c 'vogix -v lighter'")
@@ -27,8 +36,9 @@ testLib.mkTest "navigation" ''
   # Navigate back with darker
   machine.succeed("su - vogix -c 'vogix -v darker'")
   nav_back = machine.succeed("su - vogix -c 'vogix status'")
-  assert "dark" in nav_back.lower(), "Navigation to darker failed!"
-  print("✓ 'vogix -v darker' navigates from light to dark")
+  # aikido uses 'night' for dark polarity, not 'dark'
+  assert "night" in nav_back.lower(), "Navigation to darker failed!"
+  print("✓ 'vogix -v darker' navigates from day to night")
 
   # Try darker again - should fail (already at darkest)
   machine.fail("su - vogix -c 'vogix -v darker'")
@@ -36,36 +46,36 @@ testLib.mkTest "navigation" ''
 
   print("\n=== Test: Darker/Lighter from Different Starting Points ===")
 
-  # Start from dark, navigate to lighter
-  print("  --- Starting from dark, navigating lighter ---")
+  # Start from dark (night), navigate to lighter (day)
+  print("  --- Starting from dark (night), navigating lighter ---")
   machine.succeed("su - vogix -c 'vogix -t aikido -v dark'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "dark" in status.lower()
+  assert "night" in status.lower()
 
   machine.succeed("su - vogix -c 'vogix -v lighter'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "light" in status.lower(), "lighter from dark should go to light!"
-  print("    ✓ dark -> lighter = light")
+  assert "day" in status.lower(), "lighter from night should go to day!"
+  print("    ✓ night -> lighter = day")
 
   # Try lighter again (should fail - at lightest)
   result = machine.execute("su - vogix -c 'vogix -v lighter 2>&1'")
   assert result[0] != 0, "lighter from lightest should fail!"
-  print("    ✓ lighter from light fails (at boundary)")
+  print("    ✓ lighter from day fails (at boundary)")
 
-  # Start from light, navigate darker
-  print("  --- Starting from light, navigating darker ---")
+  # Start from light (day), navigate darker
+  print("  --- Starting from light (day), navigating darker ---")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "light" in status.lower()
+  assert "day" in status.lower()
 
   machine.succeed("su - vogix -c 'vogix -v darker'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "dark" in status.lower(), "darker from light should go to dark!"
-  print("    ✓ light -> darker = dark")
+  assert "night" in status.lower(), "darker from day should go to night!"
+  print("    ✓ day -> darker = night")
 
   # Try darker again (should fail - at darkest)
   result = machine.execute("su - vogix -c 'vogix -v darker 2>&1'")
   assert result[0] != 0, "darker from darkest should fail!"
-  print("    ✓ darker from dark fails (at boundary)")
+  print("    ✓ darker from night fails (at boundary)")
 
   print("\n✓ Darker/lighter navigation works correctly!")
 

@@ -4,9 +4,13 @@
 [![NixOS](https://img.shields.io/badge/NixOS-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
 [![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 
-> Runtime theme management for NixOS.
+> A NixOS UX subsystem for unified desktop appearance and behavior.
 
-Vogix is a runtime theme management system for NixOS with multi-scheme support. Switch themes without system rebuilds across 4 color schemes on Linux (macOS is untested).
+Vogix is a declarative UX layer for NixOS that unifies desktop configuration - define your appearance (colors, fonts, transparency, animations) and behavior (keybindings, window rules, gestures) once, and vogix generates configs for all your applications.
+
+**Currently implemented:** Runtime color theme switching across 4 schemes without system rebuilds.
+
+**Vision:** Full desktop UX management - see [roadmap](#roadmap).
 
 > [!WARNING]  
 > right now this runs and working in a vm.
@@ -15,16 +19,48 @@ Vogix is a runtime theme management system for NixOS with multi-scheme support. 
 > ```
 > vogix is alpha, it is not battlefield tested though i'm working on integrating it to my system. 
 
+## Roadmap
+
+Vogix is evolving from a color theming tool to a full NixOS UX subsystem. See [#149](https://github.com/i-am-logger/vogix/issues/149) for the complete vision.
+
+### Appearance (how things look)
+- [x] Colors - runtime theme switching
+- [ ] [Typography](https://github.com/i-am-logger/vogix/issues/141) - fonts, sizes, weights
+- [ ] [Transparency](https://github.com/i-am-logger/vogix/issues/142) - opacity, blur
+- [ ] [Backgrounds](https://github.com/i-am-logger/vogix/issues/143) - wallpapers
+- [ ] [Window chrome](https://github.com/i-am-logger/vogix/issues/144) - borders, gaps, radius
+- [ ] [Animations](https://github.com/i-am-logger/vogix/issues/151) - duration, easing
+- [ ] [Cursors](https://github.com/i-am-logger/vogix/issues/146) - theme, size
+- [ ] [Icons](https://github.com/i-am-logger/vogix/issues/152) - icon themes
+- [ ] [Notifications](https://github.com/i-am-logger/vogix/issues/150) - mako, dunst styling
+- [ ] [GTK/Qt](https://github.com/i-am-logger/vogix/issues/148) - toolkit theming
+- [ ] [HiDPI](https://github.com/i-am-logger/vogix/issues/153) - scaling
+- [ ] [Shaders](https://github.com/i-am-logger/vogix/issues/145) - CRT, bloom effects
+
+### Behavior (how things act)
+- [ ] [Keybindings](https://github.com/i-am-logger/vogix/issues/154) - unified across apps
+- [ ] [Window rules](https://github.com/i-am-logger/vogix/issues/155) - floating, positioning
+- [ ] [Focus](https://github.com/i-am-logger/vogix/issues/156) - follow mouse, click-to-focus
+- [ ] [Gestures](https://github.com/i-am-logger/vogix/issues/157) - touchpad, touchscreen
+
 ## Philosophy
 
-Vogix supports multiple color scheme philosophies:
+**Declarative.** Define your desktop experience once in a single config. Vogix generates the app-specific configs.
 
-- **vogix16**: Semantic design system - colors convey functional meaning (errors, warnings, success) The vogix16 scheme follows a "less is more" approach where functional colors convey information the user needs to know, while monochromatic colors provide structure. See [Vogix16 Design System](docs/vogix16-design-system.md) for detailed guidelines.
-- **ansi16**: Terminal standard - traditional ANSI color slot mappings
-- **base16**: Minimal palette standard for terminals and UI, widely used for syntax highlighting
-- **base24**: Expanded base16 palette with extra accents for richer UI and syntax groups
+**Reproducible.** Built on Nix. Same inputs = same outputs. Templates are immutable in the Nix store, rendering is deterministic.
 
+**Compositor-agnostic.** Works with Hyprland, Sway, i3, and others. Define your UX, vogix handles the translation.
 
+## Color Schemes
+
+Vogix supports 4 color schemes, each with its own philosophy:
+
+| Scheme | Themes | Philosophy |
+|--------|--------|------------|
+| **vogix16** | 19 | Semantic design - colors convey functional meaning. See [design system](https://github.com/i-am-logger/vogix16-themes/blob/main/docs/design-system.md). |
+| **base16** | ~300 | Minimal palette standard for syntax highlighting |
+| **base24** | ~180 | Extended base16 with extra accents |
+| **ansi16** | ~450 | Traditional ANSI terminal color mappings |
 
 ## Features
 
@@ -124,7 +160,7 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 - [CLI Reference](docs/cli.md) - Command-line interface guide
 - [Theming Guide](docs/theming.md) - Creating and customizing themes
 - [Reload Mechanisms](docs/reload.md) - Application reload methods
-- [Vogix16 Design System](docs/vogix16-design-system.md) - Default scheme philosophy and formats
+- [Vogix16 Design System](https://github.com/i-am-logger/vogix16-themes/blob/main/docs/design-system.md) - Default scheme philosophy and formats
 
 ## Defaults
 
@@ -134,11 +170,11 @@ Vogix ships with the vogix16 scheme as the default, using the `aikido` theme in 
 
 Vogix supports themes from multiple sources:
 
-- **vogix16**: Native themes in `themes/vogix16/` (aikido, forest, etc.)
+- **vogix16**: Native themes from [vogix16-themes](https://github.com/i-am-logger/vogix16-themes) (aikido, forest, etc.)
 - **ansi16**: Imported from [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes)
 - **base16/base24**: Imported from [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) (catppuccin, dracula, gruvbox, nord, etc.)
 
-Create custom vogix16 themes by following the format in `themes/vogix16/aikido.nix`.
+Create custom vogix16 themes by following the [vogix16-themes contribution guide](https://github.com/i-am-logger/vogix16-themes#contributing).
 
 
 ## Requirements

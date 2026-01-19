@@ -88,9 +88,6 @@ in
     config = {
       # Global exclusions
       settings.global.excludes = [
-        # Application modules have { lib, appLib } interface contract
-        # Not all modules use these params but they're part of the API
-        "nix/modules/applications/*.nix"
         # Devenv generated files
         ".devenv.flake.nix"
         ".devenv/"
@@ -99,7 +96,10 @@ in
       programs = {
         # Nix
         nixpkgs-fmt.enable = true;
-        deadnix.enable = true;
+        deadnix = {
+          enable = true;
+          no-underscore = true; # Don't warn about bindings starting with _
+        };
         statix.enable = true;
 
         # Rust
@@ -117,6 +117,15 @@ in
 
   # https://devenv.sh/git-hooks/
   git-hooks.settings.rust.cargoManifestPath = "./Cargo.toml";
+
+  # Use the same Rust toolchain for git-hooks as for development
+  # This ensures clippy/rustfmt versions match the devenv shell
+  # mkForce is needed to override the default from languages.rust module
+  git-hooks.tools = {
+    cargo = lib.mkForce config.languages.rust.toolchainPackage;
+    clippy = lib.mkForce config.languages.rust.toolchainPackage;
+    rustfmt = lib.mkForce config.languages.rust.toolchainPackage;
+  };
 
   git-hooks.hooks = {
     # Use treefmt for all formatting

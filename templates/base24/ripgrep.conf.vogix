@@ -1,0 +1,8 @@
+# Base24 theme for ripgrep
+--colors=path:fg:{{ colors.base05 | hex_to_rgb }}
+--colors=line:fg:{{ colors.base03 | hex_to_rgb }}
+--colors=line:style:bold
+--colors=column:fg:{{ colors.base03 | hex_to_rgb }}
+--colors=match:fg:{{ colors.base16 | hex_to_rgb }}
+--colors=match:style:bold
+--colors=highlight:fg:{{ colors.base17 | hex_to_rgb }}

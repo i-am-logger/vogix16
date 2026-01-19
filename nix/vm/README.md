@@ -9,7 +9,7 @@ This directory contains a NixOS VM configuration for testing Vogix functionality
 nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm
 
 # Or use the shorthand
-nix run .#nixosConfigurations.vogix-test-vm.config.system.build.vm
+nix run .#vogix-vm
 ```
 
 ## Running the VM
@@ -49,7 +49,7 @@ vogix status
 ### 2. List Available Themes
 ```bash
 vogix list
-# Should show: aikido, forest
+# Should show: aikido, forest, etc.
 ```
 
 ### 3. Switch Themes
@@ -58,7 +58,7 @@ vogix list
 vogix -t forest -s vogix16
 
 # Check alacritty config was updated
-cat ~/.config/alacritty/colors.yml
+cat ~/.config/alacritty/colors.toml
 
 # Switch back
 vogix -t aikido -s vogix16
@@ -104,6 +104,21 @@ source ~/.local/share/bash-completion/completions/vogix
 
 # Test tab completion
 vogix <TAB>
+```
+
+### 8. Check Paths
+```bash
+# System config
+cat /etc/vogix/config.toml
+
+# Theme packages
+ls -la ~/.local/share/vogix/themes/
+
+# Current theme symlink
+ls -la ~/.local/state/vogix/current-theme
+
+# User state
+cat ~/.local/state/vogix/state.toml
 ```
 
 ## Cleanup

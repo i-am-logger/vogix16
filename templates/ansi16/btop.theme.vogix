@@ -1,0 +1,54 @@
+# ANSI16 theme for btop
+theme[main_bg]="{{ colors.background }}"
+theme[main_fg]="{{ colors.foreground }}"
+theme[title]="{{ colors.color15 }}"
+theme[hi_fg]="{{ colors.color15 }}"
+theme[selected_bg]="{{ colors.selection_bg }}"
+theme[selected_fg]="{{ colors.color12 }}"
+theme[inactive_fg]="{{ colors.color08 }}"
+theme[proc_misc]="{{ colors.foreground }}"
+
+theme[cpu_box]="{{ colors.color08 }}"
+theme[mem_box]="{{ colors.color08 }}"
+theme[net_box]="{{ colors.color08 }}"
+theme[proc_box]="{{ colors.color08 }}"
+theme[div_line]="{{ colors.color08 }}"
+
+theme[graph_text]="{{ colors.foreground }}"
+theme[meter_bg]="{{ colors.color00 }}"
+
+theme[temp_start]="{{ colors.color10 }}"
+theme[temp_mid]="{{ colors.color11 }}"
+theme[temp_end]="{{ colors.color09 }}"
+
+theme[cpu_start]="{{ colors.color10 }}"
+theme[cpu_mid]="{{ colors.color11 }}"
+theme[cpu_end]="{{ colors.color09 }}"
+
+theme[used_start]="{{ colors.color10 }}"
+theme[used_mid]="{{ colors.color11 }}"
+theme[used_end]="{{ colors.color09 }}"
+
+theme[available_start]="{{ colors.color09 }}"
+theme[available_mid]="{{ colors.color11 }}"
+theme[available_end]="{{ colors.color10 }}"
+
+theme[free_start]="{{ colors.color09 }}"
+theme[free_mid]="{{ colors.color11 }}"
+theme[free_end]="{{ colors.color10 }}"
+
+theme[cached_start]="{{ colors.color14 }}"
+theme[cached_mid]="{{ colors.color12 }}"
+theme[cached_end]="{{ colors.color13 }}"
+
+theme[download_start]="{{ colors.color14 }}"
+theme[download_mid]="{{ colors.color12 }}"
+theme[download_end]="{{ colors.color13 }}"
+
+theme[upload_start]="{{ colors.color10 }}"
+theme[upload_mid]="{{ colors.color11 }}"
+theme[upload_end]="{{ colors.color01 }}"
+
+theme[process_start]="{{ colors.color10 }}"
+theme[process_mid]="{{ colors.color11 }}"
+theme[process_end]="{{ colors.color09 }}"

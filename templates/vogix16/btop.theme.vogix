@@ -1,0 +1,58 @@
+# Vogix16 theme for btop
+# Main interface - monochromatic base
+theme[main_bg]="{{ colors.background }}"
+theme[main_fg]="{{ colors.foreground_text }}"
+theme[title]="{{ colors.foreground_heading }}"
+theme[hi_fg]="{{ colors.foreground_bright }}"
+theme[selected_bg]="{{ colors.background_selection }}"
+theme[selected_fg]="{{ colors.active }}"
+theme[inactive_fg]="{{ colors.foreground_comment }}"
+theme[proc_misc]="{{ colors.foreground_text }}"
+
+# Box borders - all same color, no semantic meaning
+theme[cpu_box]="{{ colors.foreground_border }}"
+theme[mem_box]="{{ colors.foreground_border }}"
+theme[net_box]="{{ colors.foreground_border }}"
+theme[proc_box]="{{ colors.foreground_border }}"
+theme[div_line]="{{ colors.foreground_border }}"
+
+# Graphs - monochromatic base
+theme[graph_text]="{{ colors.foreground_text }}"
+theme[meter_bg]="{{ colors.background_surface }}"
+
+# Semantic gradients (low -> warning -> danger)
+theme[temp_start]="{{ colors.foreground_comment }}"
+theme[temp_mid]="{{ colors.warning }}"
+theme[temp_end]="{{ colors.danger }}"
+
+theme[cpu_start]="{{ colors.foreground_comment }}"
+theme[cpu_mid]="{{ colors.warning }}"
+theme[cpu_end]="{{ colors.danger }}"
+
+theme[used_start]="{{ colors.foreground_comment }}"
+theme[used_mid]="{{ colors.warning }}"
+theme[used_end]="{{ colors.danger }}"
+
+theme[available_start]="{{ colors.danger }}"
+theme[available_mid]="{{ colors.warning }}"
+theme[available_end]="{{ colors.foreground_comment }}"
+
+theme[free_start]="{{ colors.danger }}"
+theme[free_mid]="{{ colors.warning }}"
+theme[free_end]="{{ colors.foreground_comment }}"
+
+theme[cached_start]="{{ colors.foreground_comment }}"
+theme[cached_mid]="{{ colors.warning }}"
+theme[cached_end]="{{ colors.danger }}"
+
+theme[download_start]="{{ colors.foreground_comment }}"
+theme[download_mid]="{{ colors.warning }}"
+theme[download_end]="{{ colors.danger }}"
+
+theme[upload_start]="{{ colors.foreground_comment }}"
+theme[upload_mid]="{{ colors.warning }}"
+theme[upload_end]="{{ colors.danger }}"
+
+theme[process_start]="{{ colors.foreground_comment }}"
+theme[process_mid]="{{ colors.warning }}"
+theme[process_end]="{{ colors.danger }}"
