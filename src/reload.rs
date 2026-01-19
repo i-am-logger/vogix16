@@ -2,6 +2,23 @@ use crate::config::Config;
 use crate::errors::{Result, VogixError};
 use std::process::Command;
 
+/// Result of reloading applications
+#[derive(Debug)]
+pub struct ReloadResult {
+    pub success_count: usize,
+    pub total_count: usize,
+    pub failed_apps: Vec<(String, String)>, // (app_name, error_message)
+    #[allow(dead_code)] // Available for future verbose output
+    pub skipped_apps: Vec<String>,
+}
+
+impl ReloadResult {
+    /// Returns true if any applications failed to reload
+    pub fn has_failures(&self) -> bool {
+        !self.failed_apps.is_empty()
+    }
+}
+
 pub struct ReloadDispatcher;
 
 impl ReloadDispatcher {
@@ -10,12 +27,16 @@ impl ReloadDispatcher {
     }
 
     /// Reload all themed applications
-    /// This function continues processing all apps even if some fail,
-    /// reporting errors to stderr without crashing the program.
-    pub fn reload_apps(&self, config: &Config) -> Result<()> {
+    /// Returns a ReloadResult with details about successes and failures.
+    pub fn reload_apps(&self, config: &Config) -> ReloadResult {
         if config.apps.is_empty() {
             println!("No applications configured");
-            return Ok(());
+            return ReloadResult {
+                success_count: 0,
+                total_count: 0,
+                failed_apps: Vec::new(),
+                skipped_apps: Vec::new(),
+            };
         }
 
         let mut failed_apps = Vec::new();
@@ -52,8 +73,12 @@ impl ReloadDispatcher {
             }
         }
 
-        // Always succeed - vogix shouldn't crash if an app fails to reload
-        Ok(())
+        ReloadResult {
+            success_count,
+            total_count: total_reload,
+            failed_apps,
+            skipped_apps,
+        }
     }
 
     /// Reload a single application using metadata from manifest
@@ -204,5 +229,50 @@ mod tests {
         let result = dispatcher.reload_app("test", &metadata);
         assert!(result.is_ok());
         assert!(result.unwrap().contains("no reload needed"));
+    }
+
+    #[test]
+    fn test_reload_apps_returns_failure_count() {
+        use crate::config::AppMetadata;
+        use std::collections::HashMap;
+
+        let dispatcher = ReloadDispatcher::new();
+
+        // Create config with a command that will fail
+        let mut apps = HashMap::new();
+        apps.insert(
+            "failing_app".to_string(),
+            AppMetadata {
+                config_path: "/tmp/test.conf".to_string(),
+                reload_method: "command".to_string(),
+                reload_signal: None,
+                process_name: None,
+                reload_command: Some("exit 1".to_string()), // This will fail
+            },
+        );
+        apps.insert(
+            "skipped_app".to_string(),
+            AppMetadata {
+                config_path: "/tmp/test.conf".to_string(),
+                reload_method: "none".to_string(),
+                reload_signal: None,
+                process_name: None,
+                reload_command: None,
+            },
+        );
+
+        let config = Config {
+            default_theme: "test".to_string(),
+            default_variant: "dark".to_string(),
+            apps,
+        };
+
+        let result = dispatcher.reload_apps(&config);
+
+        // The result should indicate there was a failure
+        assert!(
+            result.has_failures(),
+            "reload_apps should report failures when apps fail to reload"
+        );
     }
 }

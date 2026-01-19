@@ -1,16 +1,114 @@
 # Theme Format and Structure
 
-Vogix16 uses Nix-based theme definitions and application generators to ensure consistency across applications while maintaining flexibility.
+Vogix supports multiple color schemes and uses Nix-based theme definitions with application generators to ensure consistency across applications.
+
+## Color Schemes
+
+Vogix supports 4 color schemes, each with its own philosophy:
+
+| Scheme | Philosophy | Source |
+|--------|------------|--------|
+| **vogix16** | Semantic design system - colors convey functional meaning | Native (`themes/vogix16/*.nix`) |
+| **base16** | Syntax highlighting - 16 colors for code categories | [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) |
+| **base24** | Extended base16 with 8 additional bright colors | [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) |
+| **ansi16** | Terminal standard - traditional ANSI color mappings | [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes) |
 
 ## Theme Definition Format
 
-A theme is a Nix file defining both dark and light variants:
+### New Multi-Variant Format
+
+Themes now support multiple variants with polarity and automatic ordering:
 
 ```nix
-# themes/aikido.nix
+# themes/vogix16/catppuccin.nix
+{
+  name = "catppuccin";
+  variants = {
+    latte = {
+      polarity = "light";
+      colors = {
+        base00 = "#eff1f5";  # Background
+        base01 = "#e6e9ef";
+        base02 = "#ccd0da";
+        base03 = "#bcc0cc";
+        base04 = "#acb0be";
+        base05 = "#4c4f69";  # Text
+        base06 = "#dc8a78";
+        base07 = "#7287fd";
+        base08 = "#d20f39";  # Danger
+        base09 = "#fe640b";  # Warning
+        base0A = "#df8e1d";  # Notice
+        base0B = "#40a02b";  # Success
+        base0C = "#179299";  # Active
+        base0D = "#1e66f5";  # Link
+        base0E = "#8839ef";  # Highlight
+        base0F = "#dd7878";  # Special
+      };
+    };
+    frappe = {
+      polarity = "dark";
+      colors = { /* ... */ };
+    };
+    macchiato = {
+      polarity = "dark";
+      colors = { /* ... */ };
+    };
+    mocha = {
+      polarity = "dark";
+      colors = { /* ... */ };
+    };
+  };
+  defaults = {
+    dark = "mocha";
+    light = "latte";
+  };
+}
+```
+
+### Theme Structure
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Theme identifier |
+| `variants` | Yes | Map of variant name → variant definition |
+| `variants.<name>.polarity` | Yes | `"dark"` or `"light"` |
+| `variants.<name>.colors` | Yes | Map of base00-base0F (or base00-base17 for base24) |
+| `defaults.dark` | No | Default variant for `-v dark` navigation |
+| `defaults.light` | No | Default variant for `-v light` navigation |
+
+### Automatic Variant Ordering
+
+Variants are automatically ordered by luminance (lightest to darkest) based on the `base00` (background) color. This enables the `vogix -v darker` and `vogix -v lighter` navigation commands.
+
+For catppuccin, the auto-derived order is: `latte → frappe → macchiato → mocha`
+
+### Single-Variant Themes
+
+Themes with only one variant (like dracula) work correctly:
+
+```nix
+{
+  name = "dracula";
+  variants = {
+    dracula = {
+      polarity = "dark";
+      colors = { /* ... */ };
+    };
+  };
+  # defaults not needed for single-variant themes
+}
+```
+
+All navigation commands (`-v dark`, `-v light`, `-v darker`, `-v lighter`) resolve to the only available variant.
+
+## Legacy Format (vogix16 only)
+
+For backward compatibility, vogix16 themes can use the simpler two-variant format:
+
+```nix
+# themes/vogix16/aikido.nix
 {
   dark = {
-    # Base colors (monochromatic scale) - darkest to lightest
     base00 = "#181818"; # Background
     base01 = "#282828"; # Surface
     base02 = "#383838"; # Selection
@@ -19,30 +117,6 @@ A theme is a Nix file defining both dark and light variants:
     base05 = "#D8D8D8"; # Text
     base06 = "#E8E8E8"; # Headings
     base07 = "#F8F8F8"; # Bright
-
-    # Functional colors (semantic purpose)
-    base08 = "#AB4642"; # Danger (errors, destructive actions)
-    base09 = "#DC9656"; # Warning (caution, important notifications)
-    base0A = "#F7CA88"; # Notice (status, announcements)
-    base0B = "#A1B56C"; # Success (completed, positive)
-    base0C = "#86C1B9"; # Active (current selection, focused)
-    base0D = "#7CAFC2"; # Link (interactive, informational)
-    base0E = "#BA8BAF"; # Highlight (focus indicators)
-    base0F = "#A16946"; # Special (system, specialized)
-  };
-
-  light = {
-    # Light variant reverses base colors - lightest to darkest
-    base00 = "#F8F8F8"; # Background (lightest)
-    base01 = "#E8E8E8";
-    base02 = "#D8D8D8";
-    base03 = "#B8B8B8";
-    base04 = "#585858";
-    base05 = "#383838";
-    base06 = "#282828";
-    base07 = "#181818"; # Bright (darkest)
-
-    # Functional colors maintain same semantic purpose
     base08 = "#AB4642"; # Danger
     base09 = "#DC9656"; # Warning
     base0A = "#F7CA88"; # Notice
@@ -52,166 +126,175 @@ A theme is a Nix file defining both dark and light variants:
     base0E = "#BA8BAF"; # Highlight
     base0F = "#A16946"; # Special
   };
+  light = {
+    base00 = "#F8F8F8"; # Background (lightest)
+    # ... reversed monochromatic scale
+    base08 = "#AB4642"; # Functional colors stay the same
+    # ...
+  };
 }
 ```
 
+This is automatically converted to the multi-variant format internally.
+
+## Imported Themes
+
+### base16 and base24
+
+Themes are imported from YAML files in the [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) repository:
+
+```
+tinted-schemes/
+├── base16/
+│   ├── catppuccin/
+│   │   ├── latte.yaml
+│   │   ├── frappe.yaml
+│   │   ├── macchiato.yaml
+│   │   └── mocha.yaml
+│   ├── dracula/
+│   │   └── dracula.yaml
+│   └── ...
+└── base24/
+    └── ...
+```
+
+Directory name = theme name, file name = variant name.
+
+### ansi16
+
+Themes are imported from TOML files in the [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes) repository.
+
 ## Application Generators
 
-Application generators are Nix functions that convert theme colors into application-specific configuration files. They're located in `nix/modules/applications/`.
-
-### Example: Alacritty Generator
+Application generators convert theme colors into application-specific configuration files. They support all 4 schemes through pattern matching:
 
 ```nix
 # nix/modules/applications/alacritty.nix
-{ lib }: colors: ''
-[colors.primary]
-background = "${colors.background}"
-foreground = "${colors.foreground-text}"
-
-[colors.cursor]
-text = "${colors.background}"
-cursor = "${colors.foreground-text}"
-
-[colors.normal]
-black = "${colors.background}"
-red = "${colors.danger}"
-green = "${colors.success}"
-yellow = "${colors.notice}"
-blue = "${colors.link}"
-magenta = "${colors.highlight}"
-cyan = "${colors.active}"
-white = "${colors.foreground-text}"
-
-[colors.bright]
-black = "${colors.foreground-comment}"
-red = "${colors.danger}"
-green = "${colors.success}"
-yellow = "${colors.notice}"
-blue = "${colors.link}"
-magenta = "${colors.highlight}"
-cyan = "${colors.active}"
-white = "${colors.foreground-bright}"
-''
+{ lib, appLib }:
+{
+  configFile = "alacritty.toml";
+  reloadMethod = { method = "touch"; };
+  
+  schemes = {
+    vogix16 = colors: {
+      # Semantic color usage
+      background = colors.background;
+      foreground = colors.foreground-text;
+      error = colors.danger;
+    };
+    
+    base16 = colors: {
+      # Base16 standard mapping
+      background = colors.base00;
+      foreground = colors.base05;
+      error = colors.base08;
+    };
+    
+    base24 = colors: {
+      # Base24 with bright colors
+      background = colors.base00;
+      foreground = colors.base05;
+      bright-red = colors.base12;
+    };
+    
+    ansi16 = colors: {
+      # ANSI standard mapping
+      background = colors.background;
+      foreground = colors.foreground;
+      red = colors.red;
+    };
+  };
+}
 ```
-
-**Key Points:**
-- Generators are pure Nix functions: `colors -> string`
-- Input `colors` has semantic names (background, danger, success, etc.)
-- Output is the complete config file content
-- No templating engine - just Nix string interpolation
 
 ## Theme Processing (Build Time)
 
 Theme processing happens entirely at **Nix build time**, not at runtime:
 
-1. **Discovery**: home-manager module discovers all themes in `themes/*.nix`
-2. **Semantic Mapping**: Converts baseXX colors to semantic names:
-   ```nix
-   semanticColors = baseColors: {
-     background = baseColors.base00;
-     danger = baseColors.base08;
-     success = baseColors.base0B;
-     # ... etc
-   };
-   ```
-3. **Generation**: For each (theme, variant, app) combination:
-   - Load theme definition: `themes/aikido.nix`
-   - Extract variant colors: `theme.dark` or `theme.light`
-   - Convert to semantic colors
-   - Apply generator: `alacrittyGenerator colors`
-   - Write to Nix store: `/nix/store/xxxx-vogix16-theme-aikido-dark/alacritty/colors.toml`
-4. **Package**: Create derivation containing all generated configs
-5. **Systemd**: On user login, symlink packages from `/nix/store` to `/run/user/UID/vogix16/themes/`
+1. **Discovery**: 
+   - Native themes from `themes/vogix16/*.nix`
+   - Imported themes from forked repos (base16, base24, ansi16)
 
-**Critical**: The vogix CLI never generates configs - it only manages the `current-theme` symlink.
+2. **Normalization**: All themes converted to multi-variant format
+
+3. **Generation**: For each (scheme, theme, variant, app) combination:
+   - Load theme definition
+   - Select the appropriate scheme generator
+   - Apply generator to produce config file
+   - Write to Nix store
+
+4. **Systemd**: On user login, symlink packages to `/run/user/UID/vogix/themes/`
 
 ## Directory Structure
 
 ```
 /nix/store/
-    ├── xxxx-vogix16-theme-aikido-dark/      # Immutable generated configs
-    │   ├── alacritty/colors.toml
-    │   ├── btop/themes/vogix.theme
-    │   └── console/palette
-    ├── yyyy-vogix16-theme-aikido-light/
-    ├── zzzz-vogix16-theme-forest-dark/
-    └── ...
+├── xxxx-vogix-base16-catppuccin-mocha/
+│   ├── alacritty/colors.toml
+│   ├── btop/themes/vogix.theme
+│   └── console/palette
+├── yyyy-vogix-base16-catppuccin-latte/
+├── zzzz-vogix-vogix16-aikido-dark/
+└── ...
 
-/run/user/1000/vogix16/
-    ├── themes/                              # Symlinks created by systemd service
-    │   ├── aikido-dark -> /nix/store/xxxx-vogix16-theme-aikido-dark
-    │   ├── aikido-light -> /nix/store/yyyy-vogix16-theme-aikido-light
-    │   ├── forest-dark -> /nix/store/zzzz-vogix16-theme-forest-dark
-    │   ├── current-theme -> aikido-dark     # Updated by vogix CLI
-    │   └── ...
-    ├── manifest.toml
-    └── state/state.toml
+/run/user/1000/vogix/
+├── themes/
+│   ├── base16-catppuccin-mocha -> /nix/store/xxxx-...
+│   ├── base16-catppuccin-latte -> /nix/store/yyyy-...
+│   ├── vogix16-aikido-dark -> /nix/store/zzzz-...
+│   ├── current-theme -> base16-catppuccin-mocha
+│   └── ...
+├── manifest.toml
+└── state/state.toml
 
-~/.config/                                   # App configs point to current-theme
-    ├── alacritty/colors.toml -> /run/user/1000/vogix16/themes/current-theme/alacritty/colors.toml
-    └── ...
+~/.config/
+├── alacritty/colors.toml -> /run/user/1000/vogix/themes/current-theme/alacritty/colors.toml
+└── ...
 ```
 
 ## Adding New Themes
 
-To add a custom theme:
+### Native vogix16 Theme
 
-1. **Create theme file** in your flake or locally:
+1. **Create theme file**:
    ```nix
-   # themes/my-theme.nix
+   # themes/vogix16/my-theme.nix
    {
-     dark = {
-       base00 = "#1a1a1a";
-       # ... define all 16 colors
+     name = "my-theme";
+     variants = {
+       dark = {
+         polarity = "dark";
+         colors = {
+           base00 = "#1a1a1a";
+           # ... all 16 colors
+         };
+       };
+       light = {
+         polarity = "light";
+         colors = {
+           base00 = "#f5f5f5";
+           # ... all 16 colors
+         };
+       };
      };
-     light = {
-       base00 = "#f5f5f5";
-       # ... define all 16 colors
-     };
+     defaults = { dark = "dark"; light = "light"; };
    }
    ```
 
-2. **Add to home-manager config**:
-   ```nix
-   programs.vogix16 = {
-     enable = true;
-     themes.my-theme = ./themes/my-theme.nix;  # Register custom theme
-     defaultTheme = "my-theme";
-   };
-   ```
+2. **Rebuild**: Run `home-manager switch`
+3. **Verify**: Run `vogix list -s vogix16`
+4. **Apply**: Run `vogix -s vogix16 -t my-theme -v dark`
 
-3. **Rebuild**: Run `home-manager switch` to generate configs
-4. **Verify**: Run `vogix list` to see your theme
-5. **Apply**: Run `vogix theme my-theme`
+### Contributing to Upstream
 
-## Adding New Application Generators
-
-To add support for a new application:
-
-1. **Create generator** in your module:
-   ```nix
-   # In your home-manager config or custom module
-   programs.vogix16.myapp-generator = { lib }: colors: ''
-     # Generate app config using semantic color names
-     background-color: ${colors.background}
-     text-color: ${colors.foreground-text}
-     error-color: ${colors.danger}
-   '';
-   ```
-
-2. **Enable the app**:
-   ```nix
-   programs.myapp.enable = true;  # Vogix16 auto-detects and themes it
-   ```
-
-See existing generators in `nix/modules/applications/` for examples.
+For base16/base24 themes, contribute to [tinted-schemes](https://github.com/tinted-theming/schemes).
+For ansi16 themes, contribute to [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes).
 
 ## Theme Validation
 
 The system ensures at build time:
 
-1. All 16 colors (base00-base0F) are defined
+1. All required colors are defined (16 for base16/vogix16/ansi16, 24 for base24)
 2. Color values are valid hex format (#RRGGBB)
-3. Both dark and light variants exist
+3. Polarity is specified for each variant
 4. Generators produce valid configs
-

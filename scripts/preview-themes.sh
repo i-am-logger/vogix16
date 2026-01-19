@@ -5,7 +5,7 @@ set -e
 
 THEMES_DIR="./themes"
 
-echo "🎨 Vogix16 Theme Color Preview"
+echo "Vogix Theme Color Preview"
 echo "================================"
 echo ""
 

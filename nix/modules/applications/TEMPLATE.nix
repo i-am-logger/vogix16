@@ -1,11 +1,11 @@
-# Template for Vogix16 application theme modules
+# Template for Vogix application theme modules
 # Copy this template when creating new application themes
 #
 # Each module exports an attribute set with:
 # - configFile: Where the config should be placed (relative to ~/.config/app/)
 # - format: Config file format (toml, yaml, json, etc.)
 # - settingsPath: Path to settings in home-manager config
-# - generate: Function that takes colors and returns settings overrides
+# - schemes: Generators for each color scheme (vogix16, base16, base24, ansi16)
 # - reloadMethod: How to reload the app (optional)
 #
 # Parameters:
@@ -36,30 +36,16 @@
   #   "programs.app.extraConfig"
   settingsPath = "programs.app.settings";
 
-  # REQUIRED: Generator function that returns settings overrides
-  # Takes: colors attribute set with semantic color names
-  # Returns: attribute set that will be MERGED with user's settings
-  #
-  # IMPORTANT: This returns an attribute set, NOT a string!
+  # REQUIRED: Generators for each color scheme
+  # Each generator takes a colors attribute set and returns settings overrides
   # The attribute set gets merged with user's programs.<app>.settings
-  generate = colors: {
-    # Your theme configuration here as Nix attribute set
-    # This will be merged with user's existing settings
-    colors = {
-      inherit (colors) background;
-      foreground = colors.foreground-text;
-    };
-
+  schemes = {
+    # vogix16: semantic color names
     # Available monochromatic colors:
-    # - colors.background
-    # - colors.background-surface
-    # - colors.background-selection
-    # - colors.foreground-comment
-    # - colors.foreground-border
-    # - colors.foreground-text
-    # - colors.foreground-heading
-    # - colors.foreground-bright
-
+    # - colors.background, background-surface, background-selection
+    # - colors.foreground-comment, foreground-border, foreground-text
+    # - colors.foreground-heading, foreground-bright
+    #
     # Available functional colors (use ONLY for semantic meaning):
     # - colors.danger      (errors, deletions, critical)
     # - colors.warning     (warnings, cautions, high usage)
@@ -69,6 +55,56 @@
     # - colors.link        (links, interactive, informational)
     # - colors.highlight   (highlights, focus, important)
     # - colors.special     (special, system, tertiary)
+    vogix16 = colors: {
+      theme = {
+        background = colors.background;
+        foreground = colors.foreground-text;
+        error = colors.danger;
+        warning = colors.warning;
+        success = colors.success;
+      };
+    };
+
+    # Base16: raw base00-base0F colors
+    # - base00-base07: monochromatic scale (dark to light)
+    # - base08-base0F: accent colors (red, orange, yellow, green, cyan, blue, magenta, brown)
+    base16 = colors: {
+      theme = {
+        background = colors.base00;
+        foreground = colors.base05;
+        error = colors.base08;
+        warning = colors.base0A;
+        success = colors.base0B;
+      };
+    };
+
+    # Base24: base00-base17 with true bright colors
+    # - base00-base0F: same as base16
+    # - base12: bright red, base13: bright yellow, base14: bright green
+    # - base15: bright cyan, base16: bright blue, base17: bright magenta
+    base24 = colors: {
+      theme = {
+        background = colors.base00;
+        foreground = colors.base05;
+        error = colors.base12; # bright red
+        warning = colors.base13; # bright yellow
+        success = colors.base14; # bright green
+      };
+    };
+
+    # ANSI16: direct terminal colors
+    # - color00-color07: normal colors (black, red, green, yellow, blue, magenta, cyan, white)
+    # - color08-color15: bright colors
+    # - background, foreground, cursor_bg, cursor_fg, selection_bg, selection_fg
+    ansi16 = colors: {
+      theme = {
+        background = colors.background;
+        foreground = colors.foreground;
+        error = colors.color09; # bright red
+        warning = colors.color11; # bright yellow
+        success = colors.color10; # bright green
+      };
+    };
   };
 
   # OPTIONAL: Reload method for the application

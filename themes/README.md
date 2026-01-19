@@ -1,12 +1,42 @@
-# Vogix16 Themes
+# Vogix Themes
 
 > Functional colors for minimalist minds.
 
-This document contains the complete catalog of Vogix16 themes, organized by category. Each theme maintains the Vogix16 philosophy while offering a unique color palette for different moods and applications.
+Vogix supports 4 color schemes. This document catalogs the native vogix16 themes and describes imported theme sources.
 
-## Theme Categories
+## Theme Sources
 
-Vogix16 themes are organized into the following categories:
+| Scheme | Count | Source |
+|--------|-------|--------|
+| **vogix16** | 19 | Native themes in `themes/vogix16/*.nix` |
+| **base16** | ~300 | [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) (forked) |
+| **base24** | ~180 | [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) (forked) |
+| **ansi16** | ~450 | [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes) (forked) |
+
+## Imported Themes
+
+### base16 and base24
+
+Imported from the [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) repository. Popular themes include:
+
+- **catppuccin** (4 variants: latte, frappe, macchiato, mocha)
+- **dracula** (1 variant)
+- **gruvbox** (multiple variants)
+- **nord** (1 variant)
+- **solarized** (2 variants: light, dark)
+- **tokyo-night** (multiple variants)
+
+Use `vogix list -s base16` or `vogix list -s base24` to see all available themes.
+
+### ansi16
+
+Imported from the [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes) repository. These follow the traditional ANSI terminal color standard.
+
+Use `vogix list -s ansi16` to see all available themes.
+
+## Native vogix16 Themes
+
+The vogix16 scheme themes follow the semantic design philosophy where colors convey functional meaning.
 
 ### Natural Themes
 
@@ -46,7 +76,7 @@ Vogix16 themes are organized into the following categories:
 
 #### Volcanic Theme
 <img src="../assets/vogix16_volcanic.svg" width="50%" alt="Vogix16 Volcanic Theme Examples">
-*A geologically-inspired theme with obsidian black to volcanic ash progression, featuring magma red for errors, sulfur yellow for warnings, mineral blue for success states, and geothermal steam blue-grey for information, evoking the powerful elemental forces found in volcanic landscapes.*
+*A geologically-inspired theme with obsidian black to volcanic ash progression, featuring magma red for errors, sulfur yellow for warnings, mineral blue for success states, and geothermal steam blue-grey for information.*
 
 #### Crystal Cave Theme
 <img src="../assets/vogix16_crystal_cave.svg" width="50%" alt="Vogix16 Crystal Cave Theme Examples">
@@ -86,7 +116,7 @@ Vogix16 themes are organized into the following categories:
 
 #### Futuristic Theme
 <img src="../assets/vogix16_futuristic.svg" width="50%" alt="Vogix16 Futuristic Theme Examples">
-*Bold cyan and electric blue tones with high-tech neon accents for a cutting-edge interface experience.*
+*Cyan and electric blue tones with neon accents for a futuristic interface.*
 
 ### Vintage Themes
 
@@ -102,11 +132,11 @@ Vogix16 themes are organized into the following categories:
 
 ## Creating Custom Themes
 
-To create your own Vogix16 theme, follow these guidelines:
+To create your own vogix16 theme:
 
-1. Start with a monochromatic base (base00-base07)
-2. Assign functional colors (base08-base0F) based on semantic purpose
-3. Ensure both dark and light variants maintain the same semantic meaning
+1. Create a file in `themes/vogix16/my-theme.nix`
+2. Define variants with polarity and colors
+3. Assign functional colors (base08-base0F) based on semantic purpose
+4. Rebuild with `home-manager switch`
 
-Remember that Vogix16 allows for creative use of colors as long as their functional purpose remains clear and consistent.
-
+See [Theming Guide](../docs/theming.md) for the complete theme format specification.

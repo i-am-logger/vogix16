@@ -28,3 +28,7 @@ AGENTS.md
 
 # Qemu
 *.qcow2
+
+# Internal tracking
+todo.md
+TODO.md

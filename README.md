@@ -1,12 +1,12 @@
-# Vogix16
-[![CI and Release](https://github.com/i-am-logger/vogix16/actions/workflows/ci-and-release.yml/badge.svg?branch=master)](https://github.com/i-am-logger/vogix16/actions/workflows/ci-and-release.yml)
+# Vogix
+[![CI](https://github.com/i-am-logger/vogix/actions/workflows/ci-and-release.yml/badge.svg?branch=master)](https://github.com/i-am-logger/vogix/actions/workflows/ci-and-release.yml)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![NixOS](https://img.shields.io/badge/NixOS-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
 [![Rust](https://img.shields.io/badge/Rust-2024-orange?logo=rust&logoColor=white)](https://www.rust-lang.org/)
 
-> Functional colors for minimalist minds.
+> Runtime theme management for NixOS.
 
-A minimalist design system and runtime theme management system for NixOS. Vogix16 combines a 16-color palette with functional semantic meaning, providing dynamic theme switching without requiring system rebuilds.
+Vogix is a runtime theme management system for NixOS with multi-scheme support. Switch themes without system rebuilds across 4 color schemes on Linux (macOS is untested).
 
 > [!WARNING]  
 > right now this runs and working in a vm.
@@ -15,17 +15,32 @@ A minimalist design system and runtime theme management system for NixOS. Vogix1
 > ```
 > vogix is alpha, it is not battlefield tested though i'm working on integrating it to my system. 
 
+## Philosophy
+
+Vogix supports multiple color scheme philosophies:
+
+- **vogix16**: Semantic design system - colors convey functional meaning (errors, warnings, success) The vogix16 scheme follows a "less is more" approach where functional colors convey information the user needs to know, while monochromatic colors provide structure. See [Vogix16 Design System](docs/vogix16-design-system.md) for detailed guidelines.
+- **ansi16**: Terminal standard - traditional ANSI color slot mappings
+- **base16**: Minimal palette standard for terminals and UI, widely used for syntax highlighting
+- **base24**: Expanded base16 palette with extra accents for richer UI and syntax groups
+
+
+
 ## Features
 
-- **16-Color Design System**: Monochromatic base (base00-base07) + functional colors (base08-base0F)
+- **Multi-Scheme Support**: 4 color schemes (vogix16, ansi16, base16, base24)
+  - **vogix16** (default) - Semantic design system focused on functional colors (19 native themes)
+  - **ansi16** - Terminal ANSI standard (~450 themes)
+  - **base16** - Minimal palette standard, widely used for UI and syntax highlighting (~300 themes)
+  - **base24** - Expanded base16 palette with extra accents (~180 themes)
 - **Runtime Theme Switching**: Change themes without NixOS rebuilds
-- **Dark/Light Variants**: Automatic variant switching with maintained semantic meaning
-- **Application-Specific Configs**: Direct Vogix16 integration for [supported applications](https://github.com/i-am-logger/vogix16/tree/master/nix/modules/applications)
-- **Minimal ANSI Support**: Terminal emulators provide minimal ANSI passthrough (not an ANSI color scheme)
+- **Multi-Variant Themes**: Themes can have multiple variants (e.g., catppuccin: latte, frappe, macchiato, mocha)
+- **Polarity Navigation**: Switch between lighter/darker variants with `vogix -v lighter` / `vogix -v darker`
+- **Application-Specific Configs**: Direct integration for [supported applications](https://github.com/i-am-logger/vogix/tree/master/nix/modules/applications)
 - **Multiple Reload Methods**: DBus, Unix signals, Sway IPC, filesystem watching
 - **Nix-Based Theme Generation**: All theme configurations pre-generated at build time
 - **NixOS Integration**: Home Manager module with systemd service
-- **Shell Completions**: Support for Bash, Zsh, Fish, PowerShell, Elvish
+- **Shell Completions**: Support for Bash, Zsh, Fish, and Elvish
 
 ## Quick Start
 
@@ -35,20 +50,21 @@ Add to your `flake.nix`:
 
 ```nix
 {
-  inputs.vogix16.url = "github:i-am-logger/vogix16";
+  inputs.vogix.url = "github:i-am-logger/vogix";
 
-  outputs = { nixpkgs, home-manager, vogix16, ... }: {
+  outputs = { nixpkgs, home-manager, vogix, ... }: {
     homeConfigurations.youruser = home-manager.lib.homeManagerConfiguration {
       modules = [
-        vogix16.homeManagerModules.default
+        vogix.homeManagerModules.default
         {
           # Enable applications you want to theme
           programs.alacritty.enable = true;
           programs.btop.enable = true;
 
-          # Configure vogix16
-          programs.vogix16 = {
+          # Configure vogix
+          programs.vogix = {
             enable = true;
+            defaultScheme = "vogix16";
             defaultTheme = "aikido";
             defaultVariant = "dark";
           };
@@ -62,17 +78,27 @@ Add to your `flake.nix`:
 ### Usage
 
 ```bash
-# Check current theme and variant
+# Show current theme state
 vogix status
 
-# List available themes
+# List all schemes with theme counts
 vogix list
 
-# Switch themes
-vogix theme forest
+# List themes in a specific scheme
+vogix list -s base16
 
-# Toggle between dark and light variants
-vogix switch
+# Set scheme, theme, and variant
+vogix -s base16 -t catppuccin -v mocha
+
+# Navigate to a darker variant
+vogix -v darker
+
+# Navigate to a lighter variant
+vogix -v lighter
+
+# Switch to default dark/light variant
+vogix -v dark
+vogix -v light
 
 # Generate shell completions
 vogix completions bash > ~/.local/share/bash-completion/completions/vogix
@@ -80,7 +106,7 @@ vogix completions bash > ~/.local/share/bash-completion/completions/vogix
 
 ## Testing
 
-Vogix16 includes comprehensive automated integration tests:
+Vogix includes automated integration tests:
 
 ```bash
 # Run all tests
@@ -94,44 +120,26 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 
 ## Documentation
 
-- [Design System](docs/design-system.md) - Color philosophy and Vogix16 format
 - [Architecture](docs/architecture.md) - System architecture and integration
 - [CLI Reference](docs/cli.md) - Command-line interface guide
 - [Theming Guide](docs/theming.md) - Creating and customizing themes
 - [Reload Mechanisms](docs/reload.md) - Application reload methods
-- [Contributing Guide](CONTRIBUTING.md) - How to contribute to Vogix16
-- [Development Guide](DEVELOPMENT.md) - Setting up development environment
-- [Testing Guide](TESTING.md) - Automated testing documentation
-- [Implementation](IMPLEMENTATION.md) - Complete implementation details
+- [Vogix16 Design System](docs/vogix16-design-system.md) - Default scheme philosophy and formats
+
+## Defaults
+
+Vogix ships with the vogix16 scheme as the default, using the `aikido` theme in `dark` mode unless configured otherwise.
 
 ## Example Themes
 
-Vogix16 includes example themes demonstrating the design system:
+Vogix supports themes from multiple sources:
 
-- **Aikido** - Grayscale monochromatic (default)
-- **Forest** - Green monochromatic
+- **vogix16**: Native themes in `themes/vogix16/` (aikido, forest, etc.)
+- **ansi16**: Imported from [iTerm2-Color-Schemes](https://github.com/i-am-logger/iTerm2-Color-Schemes)
+- **base16/base24**: Imported from [tinted-schemes](https://github.com/i-am-logger/tinted-schemes) (catppuccin, dracula, gruvbox, nord, etc.)
 
-Create custom themes by following the format in `themes/aikido.nix`.
+Create custom vogix16 themes by following the format in `themes/vogix16/aikido.nix`.
 
-## Philosophy
-
-Vogix16 follows a "less is more" approach:
-
-- Colors used intentionally for functional value only
-- Interface surfaces use monochromatic scales
-- True distinct colors reserved for functional elements
-- Dark and light variants maintain semantic consistency
-
-Functional colors convey information the user needs to know (errors, warnings, resource levels), while monochromatic colors provide structure. See [Design System](docs/design-system.md) for detailed guidelines on semantic color usage.
-
-### Not an ANSI Color Scheme
-
-Vogix16 is a **design system with semantic color meanings**, not an ANSI color scheme:
-
-- Applications should use Vogix16 directly through their own configuration files
-- Terminal emulators provide **minimal ANSI mappings** (monochromatic + semantic colors only)
-- ANSI passthrough is deliberately minimal to maintain the design philosophy
-- Each supported application gets a thoughtfully designed Vogix16 configuration
 
 ## Requirements
 
@@ -148,14 +156,16 @@ See [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
-
-- Submitting themes
-- Adding application support
-- Code style and conventions
-- Testing requirements
-- Pull request process
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute to Vogix
+- [Development Guide](DEVELOPMENT.md) - Setting up development environment
+- [Testing Guide](TESTING.md) - Automated testing documentation
 
 ## Acknowledgments
 
-Vogix16 builds on the shoulders of [Base16](https://github.com/chriskempson/base16), which proved a 16-color palette could unify a system; [Stylix](https://github.com/nix-community/stylix), which made theming native to NixOS; and [Omarchy](https://github.com/basecamp/omarchy), which showed how seamless runtime theme switching could be. Each shaped what Vogix16 became.
+Vogix is inspired by projects in the theme ecosystem and incorporates scheme data from upstream sources:
+
+- [tinted-theming/schemes](https://github.com/tinted-theming/schemes) - Source for base16/base24 schemes (via [fork](https://github.com/i-am-logger/tinted-schemes))
+- [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) - Source for ansi16 schemes (via [fork](https://github.com/i-am-logger/iTerm2-Color-Schemes))
+- [Base16](https://github.com/chriskempson/base16) - Palette standard that informed scheme conventions
+- [Stylix](https://github.com/nix-community/stylix) - NixOS theming inspiration
+- [Omarchy](https://github.com/basecamp/omarchy) - Runtime theme switching inspiration

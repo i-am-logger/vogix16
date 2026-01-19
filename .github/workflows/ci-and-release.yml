@@ -1,4 +1,4 @@
-name: CI and Release
+name: CI
 
 on:
   pull_request:
@@ -9,10 +9,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   devenv-checks:
-    name: Format & Lint (treefmt)
+    name: Lint/UT
     runs-on: ubuntu-latest
     # Skip CI for release-please PRs and release merges (only version bumps)
     if: |
@@ -31,6 +32,19 @@ jobs:
             extra-substituters = https://nix-community.cachix.org https://cache.nixos.org https://devenv.cachix.org
             extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
 
+      - name: Restore and save Nix store
+        uses: nix-community/cache-nix-action@v6
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          # Limit store size to 2GB before saving
+          gc-max-store-size-linux: 2G
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+
       - name: Install devenv
         run: nix profile install nixpkgs#devenv
 
@@ -38,14 +52,9 @@ jobs:
         run: devenv test
 
   nix-checks:
-    name: Nix Flake Check
+    name: Integration
     runs-on: ubuntu-latest
-    # Skip CI for release-please PRs and release merges (only version bumps)
-    if: |
-      !(
-        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
-        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
-      )
+    needs: devenv-checks
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,28 +66,22 @@ jobs:
             extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
             extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 
-      - name: Run nix flake check
-        run: nix flake check --print-build-logs
-
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    # Skip CI for release-please PRs and release merges (only version bumps)
-    if: |
-      !(
-        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, 'chore(master): release')) ||
-        (github.event_name == 'push' && contains(github.event.head_commit.message, 'release-please--branches--master'))
-      )
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
+      - name: Restore and save Nix store
+        uses: nix-community/cache-nix-action@v6
         with:
-          extra-conf: |
-            extra-substituters = https://nix-community.cachix.org https://cache.nixos.org
-            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          # Limit store size to 2GB before saving
+          gc-max-store-size-linux: 2G
+          # Purge caches older than 7 days
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-
+          purge-created: 604800
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
 
       - name: Enable KVM (for VM tests)
         run: |
@@ -86,20 +89,19 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run integration tests
-        run: ./test.sh
+      - name: Run nix flake check
+        run: nix flake check --print-build-logs
 
   release-please:
-    name: Release Please
+    name: Release
     runs-on: ubuntu-latest
     # Run on push to master, regardless of whether CI was skipped (release merges) or passed (regular merges)
     if: |
       github.event_name == 'push' &&
       github.ref == 'refs/heads/master' &&
       (needs.devenv-checks.result == 'success' || needs.devenv-checks.result == 'skipped') &&
-      (needs.nix-checks.result == 'success' || needs.nix-checks.result == 'skipped') &&
-      (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped')
-    needs: [devenv-checks, nix-checks, integration-tests]
+      (needs.nix-checks.result == 'success' || needs.nix-checks.result == 'skipped')
+    needs: [devenv-checks, nix-checks]
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}

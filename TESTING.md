@@ -1,8 +1,8 @@
-# Vogix16 Automated Testing
+# Vogix Automated Testing
 
 ## Overview
 
-Vogix16 includes comprehensive automated integration tests using the NixOS testing framework. The tests verify all features work correctly in an isolated VM environment.
+Vogix includes automated integration tests using the NixOS testing framework. The tests verify features work correctly in an isolated VM environment.
 
 ## Running Tests
 
@@ -18,17 +18,17 @@ nix build .#checks.x86_64-linux.integration
 
 ### What Gets Tested
 
-The automated test suite verifies **16 comprehensive test scenarios**:
+The automated test suite verifies **18 test scenarios**:
 
-1. **Binary Installation** - Vogix16 binary is installed and accessible
-2. **Status Command** - `vogix16 status` shows current theme and variant
-3. **List Command** - `vogix16 list` displays available themes
+1. **Binary Installation** - Vogix binary is installed and accessible
+2. **Status Command** - `vogix status` shows current scheme, theme and variant
+3. **List Command** - `vogix list` displays available schemes and themes
 4. **Config File** - Configuration file created with correct settings
 5. **Theme Files** - Theme definitions installed correctly
 6. **State Management** - State file created and persists changes
-7. **Variant Switching with Config Updates** - `vogix16 switch light/dark` works and updates app configs with reversed colors
-8. **Theme Switching with Config Updates** - `vogix16 theme <name>` switches themes and regenerates app configs with new colors
-9. **Symlink Architecture** - Verifies ~/.config symlinks point to vogix16-managed themed configs
+7. **Variant Navigation** - `vogix -v darker/lighter/dark/light` works correctly
+8. **Theme Switching with Config Updates** - `vogix -t <name>` switches themes and regenerates app configs
+9. **Symlink Architecture** - Verifies ~/.config symlinks point to vogix-managed themed configs
 10. **Template Bundling** - Templates bundled in Nix package
 11. **Systemd Service** - Daemon service defined and can start
 12. **Shell Completions** - Completion generation works for all shells
@@ -36,27 +36,29 @@ The automated test suite verifies **16 comprehensive test scenarios**:
 14. **Theme Validation** - Theme files are valid Nix expressions
 15. **Error Handling** - Invalid inputs rejected gracefully
 16. **Version Check** - `--version` flag works
+17. **Multi-Scheme Support** - All 4 schemes (vogix16, base16, base24, ansi16) work
+18. **Catppuccin Navigation** - darker/lighter navigation through catppuccin variants
 
 ## Test Output
 
 When tests pass, you'll see:
 
 ```
-=== Test 1: Vogix16 Binary Exists ===
-✓ vogix16 binary found
+=== Test 1: Vogix Binary Exists ===
+✓ vogix binary found
 
 === Test 2: Check Status Command ===
 ✓ Status command works
 Output: Current theme: aikido
 Current variant: dark
 
-=== Test 7: Switch Variant and Verify Config Updates ===
-✓ Successfully switched from dark to light
-✓ Alacritty config updated after variant switch (colors reversed)
-✓ Switched back to dark variant
+=== Test 7: Variant Navigation ===
+✓ Successfully navigated to darker variant
+✓ Successfully navigated to lighter variant
+✓ Successfully jumped to default dark variant
 
 === Test 8: Switch Theme and Verify Config Updates ===
-✓ Successfully switched to forest theme
+✓ Successfully switched to catppuccin theme
 ✓ Alacritty config updated after theme switch
 
 === Test 13: Application Config Generation ===
@@ -74,11 +76,12 @@ Current variant: dark
 
 Test Summary:
 ✓ Binary installation
-✓ CLI commands (status, list, switch, theme)
+✓ CLI commands (status, list, -s, -t, -v)
 ✓ Configuration management
 ✓ State persistence
-✓ Variant switching with config updates
+✓ Variant navigation (darker/lighter/dark/light)
 ✓ Theme switching with config updates
+✓ Multi-scheme support (vogix16, base16, base24, ansi16)
 ✓ Symlink architecture verification
 ✓ Application config generation (alacritty, btop)
 ✓ Template bundling
@@ -125,16 +128,19 @@ If you want to manually explore the test environment:
 
 ```bash
 # Build the VM
-nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm
+nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm
 
 # Run it
-./result/bin/run-vogix16-test-vm-vm
+./result/bin/run-vogix-test-vm-vm
 
 # Inside VM, run commands manually:
-vogix16 status
-vogix16 list
-vogix16 theme forest
-vogix16 switch light
+vogix status
+vogix list
+vogix list -s base16
+vogix -s base16 -t catppuccin -v mocha
+vogix -v darker
+vogix -v lighter
+vogix -v dark
 ```
 
 ## Continuous Integration
@@ -184,8 +190,8 @@ print("✓ Your test passed")
 nix build .#checks.x86_64-linux.integration --print-build-logs
 
 # Access the test VM interactively
-nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.vm
-./result/bin/run-vogix16-test-vm-vm
+nix build .#nixosConfigurations.vogix-test-vm.config.system.build.vm
+./result/bin/run-vogix-test-vm-vm
 ```
 
 ## Performance
@@ -203,6 +209,8 @@ The automated tests cover:
 ✅ Configuration management
 ✅ State persistence
 ✅ Theme and variant switching
+✅ Variant navigation (darker/lighter)
+✅ Multi-scheme support
 ✅ **Application config generation** (alacritty, btop)
 ✅ **Config updates on theme/variant changes**
 ✅ **Hex color validation in generated configs**
@@ -222,18 +230,18 @@ These require manual testing on a real system, but the core functionality - conf
 
 ## Troubleshooting
 
-### Test fails with "vogix16: command not found"
+### Test fails with "vogix: command not found"
 
 Check package installation in `test-vm.nix`:
 ```nix
-services.vogix16.enable = true;
+services.vogix.enable = true;
 ```
 
 ### Test fails with "theme not found"
 
 Check themes are installed in `home.nix`:
 ```nix
-programs.vogix16.themes = {
+programs.vogix.themes = {
   aikido = ../../themes/aikido.nix;
 };
 ```
@@ -242,7 +250,7 @@ programs.vogix16.themes = {
 
 ```bash
 # Check VM build
-nix build .#nixosConfigurations.vogix16-test-vm.config.system.build.toplevel
+nix build .#nixosConfigurations.vogix-test-vm.config.system.build.toplevel
 
 # Check for errors
 nix flake check --print-build-logs
@@ -268,4 +276,4 @@ After tests pass:
 
 - [NixOS Testing](https://nixos.org/manual/nixos/stable/#sec-nixos-tests)
 - [VM Testing Examples](https://github.com/NixOS/nixpkgs/tree/master/nixos/tests)
-- [Vogix16 Docs](../docs/)
+- [Vogix Docs](../docs/)

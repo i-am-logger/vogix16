@@ -1,3 +1,10 @@
+# Home Manager module for Vogix
+#
+# Accepts scheme sources for theme import:
+# - tintedSchemes: base16/base24 from tinted-theming/schemes
+# - iterm2Schemes: ansi16 from iTerm2-Color-Schemes
+{ tintedSchemes, iterm2Schemes }:
+
 { config
 , lib
 , pkgs
@@ -7,41 +14,82 @@
 with lib;
 
 let
-  cfg = config.programs.vogix16;
+  cfg = config.programs.vogix;
 
   # Import the vogix package
-  vogix16 = pkgs.callPackage ../packages/vogix.nix { };
+  vogix = pkgs.callPackage ../packages/vogix.nix { };
 
-  # Auto-discover all theme files from themes directory
+  # Import base16 and base24 themes from tinted-theming/schemes
+  base16Import = import ./base16-import.nix {
+    inherit lib tintedSchemes;
+    scheme = "base16";
+  };
+  base24Import = import ./base16-import.nix {
+    inherit lib tintedSchemes;
+    scheme = "base24";
+  };
+
+  # Import ansi16 themes from iTerm2-Color-Schemes
+  ansi16Import = import ./ansi16-import.nix {
+    inherit lib iterm2Schemes;
+  };
+
+  # Auto-discover vogix16 theme files from themes directory
   themesDir = ../../themes;
-  themeFiles = builtins.readDir themesDir;
-  nixThemeFiles = builtins.filter (f: lib.hasSuffix ".nix" f) (builtins.attrNames themeFiles);
-  autoDiscoveredThemes = lib.listToAttrs (
-    map
-      (
-        filename:
-        let
-          name = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
-        in
-        lib.nameValuePair name (themesDir + ("/" + filename))
-      )
-      nixThemeFiles
-  );
 
-  # Merge auto-discovered themes with user-provided themes (user themes override)
-  allThemes = autoDiscoveredThemes // cfg.themes;
+  # Discover vogix16 themes (native Nix format with multi-variant support)
+  discoverVogix16Themes =
+    let
+      schemeDir = themesDir + "/vogix16";
+      dirContents = builtins.readDir schemeDir;
+      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f) (builtins.attrNames dirContents);
+    in
+    lib.listToAttrs (
+      map
+        (
+          filename:
+          let
+            themeName = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
+            theme = import (schemeDir + "/${filename}");
+          in
+          lib.nameValuePair themeName (theme // { scheme = "vogix16"; })
+        )
+        nixFiles
+    );
+
+  # All vogix16 themes (native format, already multi-variant)
+  vogix16Themes = discoverVogix16Themes;
+
+  # All base16 themes (imported from tinted-theming)
+  base16Themes = base16Import.themes;
+
+  # All base24 themes (imported from tinted-theming)
+  base24Themes = base24Import.themes;
+
+  # All ansi16 themes (imported from iTerm2-Color-Schemes)
+  ansi16Themes = ansi16Import.themes;
+
+  # Combined themes: vogix16 > base16 > base24 > ansi16 (precedence order)
+  # User themes override all
+  allThemes = ansi16Themes // base24Themes // base16Themes // vogix16Themes // cfg.themes;
 
   # Helper to get theme for each app (with per-app override support)
   getAppTheme = app: if cfg.${app}.theme != null then cfg.${app}.theme else cfg.defaultTheme;
 
   # Helper to get variant for each app (with per-app override support)
+  # Returns the polarity (dark/light), not the variant name
   getAppVariant = app: if cfg.${app}.variant != null then cfg.${app}.variant else cfg.defaultVariant;
 
-  # Load all theme files
-  loadedThemes = mapAttrs (_name: import) allThemes;
+  # Helper to get the actual variant name for a theme given a polarity
+  # Uses theme.defaults to map polarity -> variant name
+  # Falls back to polarity if defaults doesn't exist or doesn't have the polarity
+  getVariantName = theme: polarity: theme.defaults.${polarity} or polarity;
+
+  # allThemes contains all loaded themes following the multi-variant format:
+  # { name, scheme, variants = { <variantName> = { polarity, colors }; }; defaults = { dark, light }; }
 
   # Create semantic color mapping from baseXX colors
-  # This provides a clean API for application modules
+  # This provides a clean API for application modules (vogix16 semantic names)
   semanticColors = baseColors: {
     # Monochromatic base (base00-07)
     background = baseColors.base00;
@@ -65,8 +113,11 @@ let
   };
 
   # Get colors for the selected theme and variant
-  selectedTheme = loadedThemes.${cfg.defaultTheme};
-  selectedColors = if cfg.defaultVariant == "dark" then selectedTheme.dark else selectedTheme.light;
+  # New multi-variant format: theme.variants.<variantName>.colors
+  selectedTheme = allThemes.${cfg.defaultTheme};
+  # Find the variant name for the requested polarity (dark/light)
+  selectedVariantName = selectedTheme.defaults.${cfg.defaultVariant} or cfg.defaultVariant;
+  selectedColors = selectedTheme.variants.${selectedVariantName}.colors;
 
   # Auto-discover all application generators from ./applications/ directory
   applicationsDir = ./applications;
@@ -97,29 +148,26 @@ let
   # Helper: Check if an app should be themed
   # Only theme apps where:
   #   1. programs.<app>.enable = true (program is actually enabled)
-  #   2. vogix16.<app>.enable = true (user hasn't disabled theming for this app)
-  # Exception: Some apps (like console) don't have programs.<app>, so we just check vogix16.<app>.enable
+  #   2. vogix.<app>.enable = true (user hasn't disabled theming for this app)
+  # Exception: Some apps (like console) don't have programs.<app>, so we just check vogix.<app>.enable
   isAppEnabled =
     appName:
     let
       # Check if programs.<appName>.enable exists and is true
       programEnabled = config.programs.${appName}.enable or null;
-      # Check vogix16.<appName>.enable (defaults to true)
+      # Check vogix.<appName>.enable (defaults to true)
       vogixEnabled = cfg.${appName}.enable or true;
     in
-    # If programs.X doesn't exist (like console), only check vogix16.X.enable
-      # If programs.X exists, require BOTH programs.X.enable AND vogix16.X.enable
+    # If programs.X doesn't exist (like console), only check vogix.X.enable
+      # If programs.X exists, require BOTH programs.X.enable AND vogix.X.enable
     if programEnabled == null then
-      vogixEnabled # No programs.<app>, just check vogix16.<app>.enable
+      vogixEnabled # No programs.<app>, just check vogix.<app>.enable
     else
       programEnabled && vogixEnabled; # Require both
 
   # Auto-detect enabled applications
-  # Only includes apps where the program is enabled AND theming is enabled
-  autoDetectedApps = builtins.filter isAppEnabled availableApps;
-
-  # Final list of apps to theme
-  themedApps = autoDetectedApps;
+  # Final list of apps to theme (apps where the program is enabled AND theming is enabled)
+  themedApps = builtins.filter isAppEnabled availableApps;
 
   # Helper: Generate theme-variant packages using merged settings
   # This is called from config section where we have access to merged config.programs.<app>.settings
@@ -131,10 +179,17 @@ let
         themeName: theme:
         mapAttrs
           (
-            variant: baseColors:
+            variantName: variantData:
             let
-              colors = semanticColors baseColors;
-              variantName = "${themeName}-${variant}";
+              # Get raw colors and scheme from theme
+              rawColors = variantData.colors;
+              scheme = theme.scheme or "vogix16";
+
+              # For vogix16 scheme, create semantic color mapping
+              # For other schemes, pass raw colors directly
+              colors = if scheme == "vogix16" then semanticColors rawColors else rawColors;
+
+              themeVariantName = "${themeName}-${variantName}";
 
               # Helper to get format generator for an app
               getFormatGen =
@@ -184,20 +239,31 @@ let
 
               # Helper to get merged settings for an app with theme colors
             in
-            pkgs.runCommand "vogix16-theme-${variantName}" { } ''
+            pkgs.runCommand "vogix-theme-${themeVariantName}" { } ''
               mkdir -p $out
               ${concatMapStringsSep "\n" (
                 app:
                 let
                   appModule = appGenerators.${app} or null;
-                  generator = if appModule != null then appModule.generate or null else null;
+                  # Support both new API (schemes) and old API (generate)
+                  # New API: schemes = { vogix16 = ...; base16 = ...; base24 = ...; ansi16 = ...; }
+                  # Old API: generate = colors: ... (treated as vogix16)
+                  appSchemes = if appModule != null then appModule.schemes or null else null;
+                  legacyGenerator = if appModule != null then appModule.generate or null else null;
+                  generator =
+                    if appSchemes != null && appSchemes ? ${scheme} then
+                      appSchemes.${scheme}
+                    else if legacyGenerator != null && scheme == "vogix16" then
+                      legacyGenerator
+                    else
+                      null;
                   settingsPath = if appModule != null then appModule.settingsPath or null else null;
                   configFileName = if appModule != null then appModule.configFile or "config" else "config";
                   configDir = dirOf configFileName;
                 in
-                optionalString (appModule != null) (
+                optionalString (appModule != null && generator != null) (
                   let
-                    generatedOutput = if generator != null then generator colors else null;
+                    generatedOutput = generator colors;
                     isHybrid = builtins.isAttrs generatedOutput && generatedOutput ? themeFile;
                     isSettingsBased = settingsPath != null && !isHybrid;
                     themeFileName = if appModule != null then appModule.themeFile or null else null;
@@ -209,25 +275,30 @@ let
                       # Generate theme file
                       themeFileDir = dirOf themeFileName;
 
-                      # Merge settings with user's settings
+                      # Get global settings from app module (shared across all schemes)
+                      globalSettings = if appModule != null then appModule.settings or { } else { };
+                      # Get scheme-specific settings (if any)
+                      schemeSettings = generatedOutput.settings or { };
+
+                      # Merge: user settings <- global settings <- scheme settings
                       pathParts = if settingsPath != null then lib.splitString "." settingsPath else [ ];
                       userSettings = lib.attrByPath pathParts { } config;
-                      mergedSettings = lib.recursiveUpdate userSettings generatedOutput.settings;
+                      mergedSettings = lib.recursiveUpdate (lib.recursiveUpdate userSettings globalSettings) schemeSettings;
 
                       # Get format generator for config file
                       formatGen = getFormatGen app;
-                      configFile = formatGen.generate "vogix16-${app}-config" mergedSettings;
+                      configFile = formatGen.generate "vogix-${app}-config" mergedSettings;
                     in
                     ''
-                                                  # Generate theme file
-                                                  mkdir -p "$out/${app}/${themeFileDir}"
-                                                  cat > "$out/${app}/${themeFileName}" <<'EOF'
+                                                      # Generate theme file
+                                                      mkdir -p "$out/${app}/${themeFileDir}"
+                                                      cat > "$out/${app}/${themeFileName}" <<'EOF'
                       ${generatedOutput.themeFile}
                       EOF
 
-                                                  # Generate config file with merged settings
-                                                  mkdir -p "$out/${app}/${configDir}"
-                                                  cp "${configFile}" "$out/${app}/${configFileName}"
+                                                      # Generate config file with merged settings
+                                                      mkdir -p "$out/${app}/${configDir}"
+                                                      cp "${configFile}" "$out/${app}/${configFileName}"
                     ''
                   else if isSettingsBased then
                     # SETTINGS-ONLY app (alacritty): merge user settings with theme colors
@@ -237,7 +308,7 @@ let
                       userSettings = lib.attrByPath pathParts { } config;
                       mergedSettings = lib.recursiveUpdate userSettings generatedOutput;
                       formatGen = getFormatGen app;
-                      configFile = formatGen.generate "vogix16-${app}-config" mergedSettings;
+                      configFile = formatGen.generate "vogix-${app}-config" mergedSettings;
                     in
                     ''
                       mkdir -p "$out/${app}/${configDir}"
@@ -255,23 +326,24 @@ let
               ) themedApps}
             ''
           )
-          { inherit (theme) dark light; }
+          # Map over all variants in the theme
+          # Each variant has: { polarity, colors }
+          theme.variants
       )
-      loadedThemes;
-
+      allThemes;
 in
 {
   # No module imports needed - we use the generators directly
   # imports = [];
 
-  options.programs.vogix16 = {
-    enable = mkEnableOption "vogix16 runtime theme management";
+  options.programs.vogix = {
+    enable = mkEnableOption "vogix runtime theme management";
 
     package = mkOption {
       type = types.package;
-      default = vogix16;
-      defaultText = literalExpression "pkgs.vogix16";
-      description = "The vogix16 package to use.";
+      default = vogix;
+      defaultText = literalExpression "pkgs.vogix";
+      description = "The vogix package to use.";
     };
 
     defaultTheme = mkOption {
@@ -290,16 +362,18 @@ in
     };
 
     # Per-app enable/disable options (dynamically generated from available generators)
-    # Creates options like: programs.vogix16.alacritty.enable = true;
+    # Creates options like: programs.vogix.alacritty.enable = true;
   }
   // (
     # Dynamically create enable options for each discovered application generator
     let
       applicationsDir = ./applications;
       applicationFiles = builtins.readDir applicationsDir;
-      nixApplicationFiles = builtins.filter (f: lib.hasSuffix ".nix" f) (
-        builtins.attrNames applicationFiles
-      );
+      nixApplicationFiles = builtins.filter
+        (
+          f: lib.hasSuffix ".nix" f && f != "lib.nix" && f != "TEMPLATE.nix"
+        )
+        (builtins.attrNames applicationFiles);
       availableApps = map
         (
           filename: builtins.replaceStrings [ ".nix" ] [ "" ] filename
@@ -314,8 +388,9 @@ in
             enable = mkOption {
               type = types.bool;
               default = true;
-              description = "Enable vogix16 theming for ${appName}";
+              description = "Enable vogix theming for ${appName}";
             };
+
             theme = mkOption {
               type = types.nullOr types.str;
               default = null;
@@ -354,7 +429,7 @@ in
     enableDaemon = mkOption {
       type = types.bool;
       default = false;
-      description = "Enable the vogix16 daemon for auto-regeneration (requires XDG_RUNTIME_DIR/home-manager/.config watch path).";
+      description = "Enable the vogix daemon for auto-regeneration (requires XDG_RUNTIME_DIR/home-manager/.config watch path).";
     };
 
     colors = mkOption {
@@ -367,11 +442,11 @@ in
 
   config = mkIf cfg.enable (mkMerge [
     {
-      # Install vogix16 binary
+      # Install vogix binary
       home.packages = [ cfg.package ];
 
       # Expose semantic color API for application modules
-      programs.vogix16.colors = semanticColors selectedColors;
+      programs.vogix.colors = semanticColors selectedColors;
     }
 
     # Note: We DON'T merge settings here because we need to prevent home-manager
@@ -386,72 +461,130 @@ in
       in
       {
 
-        # No config files in ~/.config/vogix16/ - everything is in /run and Nix store
-        # The vogix16 CLI discovers themes by reading /run/user/UID/vogix16/themes/
-        # and reads/writes state in /run/user/UID/vogix16/state/
+        # No config files in ~/.config/vogix/ - everything is in /run and Nix store
+        # The vogix CLI discovers themes by reading /run/user/UID/vogix/themes/
+        # and reads/writes state in /run/user/UID/vogix/state/
 
-        # Set up vogix16 runtime directories using systemd service
+        # Set up vogix runtime directories using systemd service
         # This runs at user login, after /run/user/UID is created by PAM
-        systemd.user.services.vogix16-setup = {
+        systemd.user.services.vogix-setup = {
           Unit = {
-            Description = "Set up vogix16 theme runtime directories and symlinks";
+            Description = "Set up vogix theme runtime directories and symlinks";
             After = [ "default.target" ];
           };
 
           Service = {
             Type = "oneshot";
             RemainAfterExit = true; # Keep service "active" after script exits
-            RuntimeDirectory = "vogix16/themes"; # Creates /run/user/UID/vogix16/themes/
+            RuntimeDirectory = "vogix/themes"; # Creates /run/user/UID/vogix/themes/
 
-            ExecStart = pkgs.writeShellScript "vogix16-setup.sh" ''
+            ExecStart = pkgs.writeShellScript "vogix-setup.sh" ''
                         set -e
                         PATH=${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:$PATH
 
                         # Determine runtime directory
-                        VOGIX_RUNTIME="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}/vogix16"
+                        VOGIX_RUNTIME="''${XDG_RUNTIME_DIR:-/run/user/$(${pkgs.coreutils}/bin/id -u)}/vogix"
                         THEMES_DIR="$VOGIX_RUNTIME/themes"
 
-                        ${pkgs.coreutils}/bin/echo "Setting up vogix16 themes in $THEMES_DIR"
+                        ${pkgs.coreutils}/bin/echo "Setting up vogix themes in $THEMES_DIR"
 
                         # Create symlinks for each theme-variant pointing to Nix store packages
                         ${concatMapStringsSep "\n" (
                           themeName:
-                          concatMapStringsSep "\n"
-                            (
-                              variant:
-                              let
-                                variantName = "${themeName}-${variant}";
-                                themePackage = themeVariantPackages.${themeName}.${variant};
-                              in
-                              ''
-                                ${pkgs.coreutils}/bin/echo "  Creating symlink: ${variantName} -> ${themePackage}"
-                                ${pkgs.coreutils}/bin/ln -sfT "${themePackage}" "$THEMES_DIR/${variantName}"
-                              ''
-                            )
-                            [
-                              "dark"
-                              "light"
-                            ]
+                          let
+                            theme = allThemes.${themeName};
+                            variants = builtins.attrNames theme.variants;
+                          in
+                          concatMapStringsSep "\n" (
+                            variant:
+                            let
+                              variantName = "${themeName}-${variant}";
+                              themePackage = themeVariantPackages.${themeName}.${variant};
+                            in
+                            ''
+                              ${pkgs.coreutils}/bin/echo "  Creating symlink: ${variantName} -> ${themePackage}"
+                              ${pkgs.coreutils}/bin/ln -sfT "${themePackage}" "$THEMES_DIR/${variantName}"
+                            ''
+                          ) variants
                         ) (builtins.attrNames themeVariantPackages)}
 
                         # Create 'current-theme' symlink pointing to default theme-variant
-                        ${pkgs.coreutils}/bin/echo "  Creating current-theme symlink -> ${cfg.defaultTheme}-${cfg.defaultVariant}"
-                        ${pkgs.coreutils}/bin/ln -sfT "${cfg.defaultTheme}-${cfg.defaultVariant}" "$THEMES_DIR/current-theme"
+                        # Map polarity (dark/light) to actual variant name using theme.defaults
+                        ${
+                          let
+                            defaultTheme = allThemes.${cfg.defaultTheme};
+                            defaultVariantName = getVariantName defaultTheme cfg.defaultVariant;
+                          in
+                          ''
+                            ${pkgs.coreutils}/bin/echo "  Creating current-theme symlink -> ${cfg.defaultTheme}-${defaultVariantName}"
+                            ${pkgs.coreutils}/bin/ln -sfT "${cfg.defaultTheme}-${defaultVariantName}" "$THEMES_DIR/current-theme"
+                          ''
+                        }
 
                         # Generate config.toml listing all available themes and app metadata
                         ${pkgs.coreutils}/bin/echo "  Generating config.toml"
                         ${pkgs.coreutils}/bin/cat > "$VOGIX_RUNTIME/config.toml" <<'MANIFEST_EOF'
-              # Vogix16 Theme Manifest
+              # Vogix Theme Manifest
               # Auto-generated by home-manager systemd service
 
               [default]
               theme = "${cfg.defaultTheme}"
-              variant = "${cfg.defaultVariant}"
+              variant = "${getVariantName allThemes.${cfg.defaultTheme} cfg.defaultVariant}"
 
               [themes]
-              ${concatMapStringsSep "\n" (themeName: "${themeName} = [\"dark\", \"light\"]") (
-                builtins.attrNames themeVariantPackages
-              )}
+              ${concatMapStringsSep "\n\n" (
+                themeName:
+                let
+                  theme = allThemes.${themeName};
+                  scheme = theme.scheme or "vogix16";
+                  inherit (theme) variants;
+                  variantNames = builtins.attrNames variants;
+
+                  # Calculate luminance for sorting (sRGB to linear, then ITU-R BT.709)
+                  hexToLuminance =
+                    hex:
+                    let
+                      # Remove # prefix and parse RGB
+                      h = lib.removePrefix "#" hex;
+                      r = (lib.trivial.fromHexString (builtins.substring 0 2 h)) / 255.0;
+                      g = (lib.trivial.fromHexString (builtins.substring 2 2 h)) / 255.0;
+                      b = (lib.trivial.fromHexString (builtins.substring 4 2 h)) / 255.0;
+                      # sRGB to linear (simplified: just use value directly, close enough for ordering)
+                    in
+                    0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+                  # Get luminance for each variant
+                  variantLuminance =
+                    variantName:
+                    let
+                      inherit (variants.${variantName}) colors;
+                      bg = colors.base00 or colors.background or "#000000";
+                    in
+                    hexToLuminance bg;
+
+                  # Sort variants by luminance (lightest first = order 0)
+                  sortedVariants = builtins.sort (a: b: variantLuminance a > variantLuminance b) variantNames;
+
+                  # Get order for a variant (0 = lightest)
+                  variantOrder = variantName: lib.lists.findFirstIndex (v: v == variantName) 0 sortedVariants;
+
+                  # Generate variant details with polarity and order
+                  variantDetails = lib.concatMapStringsSep "\n" (
+                    variantName:
+                    let
+                      variant = variants.${variantName};
+                      polarity = variant.polarity or "dark";
+                      order = variantOrder variantName;
+                    in
+                    "${variantName} = { polarity = \"${polarity}\", order = ${toString order} }"
+                  ) variantNames;
+                in
+                ''
+                  [themes."${themeName}"]
+                  scheme = "${scheme}"
+                  variants = [${lib.concatMapStringsSep ", " (v: "\"${v}\"") variantNames}]
+                  ${variantDetails}''
+              ) (builtins.attrNames themeVariantPackages)}
 
               # Application configuration and reload methods
               ${concatMapStringsSep "\n\n" (
@@ -465,14 +598,16 @@ in
                   themeFilePath =
                     if themeFileName != null then "${config.xdg.configHome}/${app}/${themeFileName}" else null;
                   appTheme = getAppTheme app;
-                  appVariant = getAppVariant app;
+                  appPolarity = getAppVariant app;
+                  appThemeData = allThemes.${appTheme};
+                  appVariantName = getVariantName appThemeData appPolarity;
                 in
                 ''
                   [apps."${app}"]
                   config_path = "${configPath}"
                   ${optionalString (themeFilePath != null) "theme_file_path = \"${themeFilePath}\""}
                   theme = "${appTheme}"
-                  variant = "${appVariant}"
+                  variant = "${appVariantName}"
                   ${optionalString (reloadMethod != null) "reload_method = \"${reloadMethod.method}\""}
                   ${optionalString (
                     reloadMethod != null && reloadMethod ? signal
@@ -497,8 +632,10 @@ in
                             # Check if app has explicit theme/variant override
                             hasOverride = cfg.${app}.theme != null || cfg.${app}.variant != null;
                             appTheme = getAppTheme app;
-                            appVariant = getAppVariant app;
-                            themeVariant = "${appTheme}-${appVariant}";
+                            appPolarity = getAppVariant app;
+                            appThemeData = allThemes.${appTheme};
+                            appVariantName = getVariantName appThemeData appPolarity;
+                            themeVariant = "${appTheme}-${appVariantName}";
                             # Base path for theme in /run
                             themeBasePath =
                               if hasOverride then
@@ -588,7 +725,7 @@ in
                           ''
                         ) themedApps}
 
-                        ${pkgs.coreutils}/bin/echo "Vogix16 setup complete"
+                        ${pkgs.coreutils}/bin/echo "Vogix setup complete"
             '';
           };
 
@@ -598,15 +735,15 @@ in
         };
 
         # Enable daemon as systemd user service (optional, disabled by default)
-        systemd.user.services.vogix16-daemon = mkIf cfg.enableDaemon {
+        systemd.user.services.vogix-daemon = mkIf cfg.enableDaemon {
           Unit = {
-            Description = "Vogix16 Theme Management Daemon";
+            Description = "Vogix Theme Management Daemon";
             After = [ "graphical-session.target" ];
           };
 
           Service = {
             Type = "simple";
-            ExecStart = "${cfg.package}/bin/vogix16 daemon";
+            ExecStart = "${cfg.package}/bin/vogix daemon";
             Restart = "on-failure";
             RestartSec = 5;
           };
