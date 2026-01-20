@@ -5,6 +5,13 @@ All notable changes to Vogix will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0](https://github.com/i-am-logger/vogix/compare/vogix-v0.5.1...vogix-v0.6.0) (2026-01-20)
+
+
+### Features
+
+* **architecture:** implement template-based theme system ([#140](https://github.com/i-am-logger/vogix/issues/140)) ([9de7493](https://github.com/i-am-logger/vogix/commit/9de749349c39010d4ebd297990ff3ef4c1e32162))
+
 ## [0.5.1](https://github.com/i-am-logger/vogix/compare/vogix-v0.5.0...vogix-v0.5.1) (2026-01-19)
 
 
