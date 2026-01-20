@@ -1,0 +1,41 @@
+# Alacritty color configuration - vogix16 scheme
+# Template uses semantic color names from vogix16 design system
+#
+# User settings should be placed above this section in the merged config
+
+[colors.primary]
+background = "{{ colors.background }}"
+foreground = "{{ colors.foreground_text }}"
+bright_foreground = "{{ colors.foreground_bright }}"
+
+[colors.selection]
+text = "{{ colors.foreground_text }}"
+background = "{{ colors.background_selection }}"
+
+[colors.cursor]
+text = "{{ colors.background }}"
+cursor = "{{ colors.active }}"
+
+[colors.vi_mode_cursor]
+text = "{{ colors.background }}"
+cursor = "{{ colors.highlight }}"
+
+[colors.normal]
+black = "{{ colors.background }}"
+red = "{{ colors.danger }}"
+green = "{{ colors.success }}"
+yellow = "{{ colors.warning }}"
+blue = "{{ colors.link }}"
+magenta = "{{ colors.highlight }}"
+cyan = "{{ colors.active }}"
+white = "{{ colors.foreground_text }}"
+
+[colors.bright]
+black = "{{ colors.foreground_comment }}"
+red = "{{ colors.danger }}"
+green = "{{ colors.success }}"
+yellow = "{{ colors.warning }}"
+blue = "{{ colors.link }}"
+magenta = "{{ colors.highlight }}"
+cyan = "{{ colors.active }}"
+white = "{{ colors.foreground_bright }}"

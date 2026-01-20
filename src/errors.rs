@@ -1,39 +1,101 @@
+//! Error types for vogix
+//!
+//! Uses thiserror for clean, idiomatic error handling with proper error chaining.
+
 use std::io;
 use std::path::PathBuf;
+use thiserror::Error;
 
-#[derive(Debug)]
+/// All possible errors in vogix
+#[derive(Debug, Error)]
 pub enum VogixError {
-    Io(io::Error),
+    /// IO operation failed
+    #[error("IO error: {0}")]
+    Io(#[from] io::Error),
+
+    /// Configuration file not found at expected path
+    #[error("config file not found: {}", .0.display())]
     ConfigNotFound(PathBuf),
-    ParseError(String),
+
+    /// Configuration is invalid or missing required fields
+    #[error("config error: {0}")]
+    Config(String),
+
+    /// Failed to parse TOML file
+    #[error("failed to parse TOML")]
+    TomlParse(#[source] toml::de::Error),
+
+    /// Failed to serialize TOML
+    #[error("failed to serialize TOML")]
+    TomlSerialize(#[source] toml::ser::Error),
+
+    /// Failed to parse YAML file
+    #[error("failed to parse YAML")]
+    YamlParse(#[source] serde_yaml::Error),
+
+    /// Theme specification is invalid
+    #[error("invalid theme: {0}")]
     InvalidTheme(String),
+
+    /// Requested theme does not exist
+    #[error("theme not found: {0}")]
     ThemeNotFound(String),
-    SymlinkError(String),
-    ReloadError(String),
+
+    /// Symlink operation failed
+    #[error("symlink error: {message}")]
+    Symlink {
+        message: String,
+        #[source]
+        source: Option<io::Error>,
+    },
+
+    /// Application reload failed
+    #[error("reload error: {message}")]
+    Reload {
+        message: String,
+        #[source]
+        source: Option<io::Error>,
+    },
+
+    /// Template rendering failed
+    #[error("template error: {0}")]
+    Template(#[source] tera::Error),
 }
 
-impl std::fmt::Display for VogixError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            VogixError::Io(err) => write!(f, "IO error: {}", err),
-            VogixError::ConfigNotFound(path) => {
-                write!(f, "Config file not found: {}", path.display())
-            }
-            VogixError::ParseError(msg) => write!(f, "Parse error: {}", msg),
-            VogixError::InvalidTheme(msg) => write!(f, "Invalid theme: {}", msg),
-            VogixError::ThemeNotFound(name) => write!(f, "Theme not found: {}", name),
-            VogixError::SymlinkError(msg) => write!(f, "Symlink error: {}", msg),
-            VogixError::ReloadError(msg) => write!(f, "Reload error: {}", msg),
+// Convenience constructors for structured errors
+impl VogixError {
+    /// Create a symlink error with just a message
+    pub fn symlink(message: impl Into<String>) -> Self {
+        Self::Symlink {
+            message: message.into(),
+            source: None,
+        }
+    }
+
+    /// Create a symlink error with a source
+    pub fn symlink_with_source(message: impl Into<String>, source: io::Error) -> Self {
+        Self::Symlink {
+            message: message.into(),
+            source: Some(source),
+        }
+    }
+
+    /// Create a reload error with just a message
+    pub fn reload(message: impl Into<String>) -> Self {
+        Self::Reload {
+            message: message.into(),
+            source: None,
+        }
+    }
+
+    /// Create a reload error with a source
+    pub fn reload_with_source(message: impl Into<String>, source: io::Error) -> Self {
+        Self::Reload {
+            message: message.into(),
+            source: Some(source),
         }
     }
 }
 
-impl std::error::Error for VogixError {}
-
-impl From<io::Error> for VogixError {
-    fn from(err: io::Error) -> Self {
-        VogixError::Io(err)
-    }
-}
-
+/// Result type alias using VogixError
 pub type Result<T> = std::result::Result<T, VogixError>;

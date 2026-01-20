@@ -1,0 +1,8 @@
+# ANSI16 theme for ripgrep
+--colors=path:fg:{{ colors.foreground | hex_to_rgb }}
+--colors=line:fg:{{ colors.color08 | hex_to_rgb }}
+--colors=line:style:bold
+--colors=column:fg:{{ colors.color08 | hex_to_rgb }}
+--colors=match:fg:{{ colors.color12 | hex_to_rgb }}
+--colors=match:style:bold
+--colors=highlight:fg:{{ colors.color13 | hex_to_rgb }}

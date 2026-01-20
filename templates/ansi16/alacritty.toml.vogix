@@ -1,0 +1,40 @@
+# Alacritty color configuration - ansi16 scheme
+# Template uses traditional ANSI terminal color names
+#
+# User settings should be placed above this section in the merged config
+
+[colors.primary]
+background = "{{ colors.background }}"
+foreground = "{{ colors.foreground }}"
+
+[colors.selection]
+text = "{{ colors.selection_fg }}"
+background = "{{ colors.selection_bg }}"
+
+[colors.cursor]
+text = "{{ colors.cursor_fg }}"
+cursor = "{{ colors.cursor_bg }}"
+
+[colors.vi_mode_cursor]
+text = "{{ colors.cursor_fg }}"
+cursor = "{{ colors.cursor_bg }}"
+
+[colors.normal]
+black = "{{ colors.color00 }}"
+red = "{{ colors.color01 }}"
+green = "{{ colors.color02 }}"
+yellow = "{{ colors.color03 }}"
+blue = "{{ colors.color04 }}"
+magenta = "{{ colors.color05 }}"
+cyan = "{{ colors.color06 }}"
+white = "{{ colors.color07 }}"
+
+[colors.bright]
+black = "{{ colors.color08 }}"
+red = "{{ colors.color09 }}"
+green = "{{ colors.color10 }}"
+yellow = "{{ colors.color11 }}"
+blue = "{{ colors.color12 }}"
+magenta = "{{ colors.color13 }}"
+cyan = "{{ colors.color14 }}"
+white = "{{ colors.color15 }}"

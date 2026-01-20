@@ -19,11 +19,17 @@ env_logger = "0.11"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 toml = "0.8"
+serde_yaml = "0.9"
+
+# Template rendering
+tera = "1.20"
 
 # System utilities
 dirs = "5.0"
 glob = "0.3"
-libc = "0.2"
+
+# Error handling
+thiserror = "2.0"
 
 # Date/time for state timestamps
 chrono = "0.4"
@@ -33,7 +39,6 @@ swayipc = { version = "3.0", optional = true }
 
 [dev-dependencies]
 tempfile = "3.10"
-serial_test = "3.1"
 
 [features]
 default = []

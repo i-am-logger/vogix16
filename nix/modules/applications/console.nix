@@ -14,7 +14,8 @@
     # Use setvtrgb to load palette, then switch VTs to force refresh
     # Note: Requires security.wrappers from vogix NixOS module for non-root access
     # Only runs on actual VT consoles (not in PTY/SSH sessions)
-    command = "if [ -c /dev/console ] && fgconsole >/dev/null 2>&1; then setvtrgb \${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/vogix/themes/current-theme/console/palette && { CURRENT_VT=$(fgconsole); NEXT_VT=$((CURRENT_VT % 6 + 1)); [ \"\$NEXT_VT\" = \"\$CURRENT_VT\" ] && NEXT_VT=1; chvt $NEXT_VT && sleep 0.05 && chvt $CURRENT_VT; }; fi";
+    # Palette is at ~/.local/state/vogix/current-theme/console/palette
+    command = "if [ -c /dev/console ] && fgconsole >/dev/null 2>&1; then setvtrgb \${XDG_STATE_HOME:-$HOME/.local/state}/vogix/current-theme/console/palette && { CURRENT_VT=$(fgconsole); NEXT_VT=$((CURRENT_VT % 6 + 1)); [ \"\$NEXT_VT\" = \"\$CURRENT_VT\" ] && NEXT_VT=1; chvt $NEXT_VT && sleep 0.05 && chvt $CURRENT_VT; }; fi";
   };
 
   # Generators for each color scheme
@@ -22,7 +23,8 @@
   # Format: 16 lines with hex colors (e.g., #000000)
   schemes = {
     # Vogix16: semantic color names mapped to ANSI
-    vogix16 = colors:
+    vogix16 =
+      colors:
       let
         palette = [
           colors.background # 0: Black
@@ -46,7 +48,8 @@
       lib.concatStringsSep "\n" palette;
 
     # Base16: raw base00-base0F colors
-    base16 = colors:
+    base16 =
+      colors:
       let
         palette = [
           colors.base00 # 0: Black
@@ -70,7 +73,8 @@
       lib.concatStringsSep "\n" palette;
 
     # Base24: base00-base17 with true bright colors
-    base24 = colors:
+    base24 =
+      colors:
       let
         palette = [
           colors.base00 # 0: Black
@@ -94,7 +98,8 @@
       lib.concatStringsSep "\n" palette;
 
     # ANSI16: direct terminal colors
-    ansi16 = colors:
+    ansi16 =
+      colors:
       let
         palette = [
           colors.color00 # 0: Black

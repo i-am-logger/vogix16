@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>author</key>
+    <string>vogix</string>
+    <key>name</key>
+    <string>vogix</string>
+    <key>colorSpaceName</key>
+    <string>sRGB</string>
+    <key>settings</key>
+    <array>
+        <dict>
+            <key>settings</key>
+            <dict>
+                <key>background</key>
+                <string>{{ colors.base00 }}</string>
+                <key>foreground</key>
+                <string>{{ colors.base05 }}</string>
+                <key>caret</key>
+                <string>{{ colors.base07 }}</string>
+                <key>lineHighlight</key>
+                <string>{{ colors.base02 }}</string>
+                <key>selection</key>
+                <string>{{ colors.base02 }}</string>
+                <key>gutter</key>
+                <string>{{ colors.base01 }}</string>
+                <key>gutterForeground</key>
+                <string>{{ colors.base03 }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Comments</string>
+            <key>scope</key>
+            <string>comment, punctuation.definition.comment</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base03 }}</string>
+                <key>fontStyle</key>
+                <string>italic</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Code</string>
+            <key>scope</key>
+            <string>keyword, storage, variable, constant, string, number, entity, support, meta</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base05 }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Operators</string>
+            <key>scope</key>
+            <string>keyword.operator, punctuation</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base04 }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Definitions</string>
+            <key>scope</key>
+            <string>entity.name.function, entity.name.class, entity.name.type</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base06 }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Diff Inserted</string>
+            <key>scope</key>
+            <string>markup.inserted, markup.inserted.diff</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base0B }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Diff Deleted</string>
+            <key>scope</key>
+            <string>markup.deleted, markup.deleted.diff</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base08 }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Diff Changed</string>
+            <key>scope</key>
+            <string>markup.changed, markup.changed.diff</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base0A }}</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Diff Header</string>
+            <key>scope</key>
+            <string>meta.diff.header, meta.diff.range</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base0C }}</string>
+                <key>fontStyle</key>
+                <string>bold</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>name</key>
+            <string>Invalid</string>
+            <key>scope</key>
+            <string>invalid, invalid.illegal</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key>
+                <string>{{ colors.base08 }}</string>
+                <key>fontStyle</key>
+                <string>bold</string>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>

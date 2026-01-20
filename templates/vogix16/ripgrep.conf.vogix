@@ -1,0 +1,8 @@
+# Vogix16 theme for ripgrep
+--colors=path:fg:{{ colors.foreground_text | hex_to_rgb }}
+--colors=line:fg:{{ colors.foreground_comment | hex_to_rgb }}
+--colors=line:style:bold
+--colors=column:fg:{{ colors.foreground_comment | hex_to_rgb }}
+--colors=match:fg:{{ colors.active | hex_to_rgb }}
+--colors=match:style:bold
+--colors=highlight:fg:{{ colors.highlight | hex_to_rgb }}

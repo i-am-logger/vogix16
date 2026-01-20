@@ -1,0 +1,41 @@
+# Alacritty color configuration - base24 scheme
+# Template uses base00-base17 color names (extended base16 with true bright colors)
+#
+# User settings should be placed above this section in the merged config
+
+[colors.primary]
+background = "{{ colors.base00 }}"
+foreground = "{{ colors.base05 }}"
+bright_foreground = "{{ colors.base07 }}"
+
+[colors.selection]
+text = "{{ colors.base05 }}"
+background = "{{ colors.base02 }}"
+
+[colors.cursor]
+text = "{{ colors.base00 }}"
+cursor = "{{ colors.base05 }}"
+
+[colors.vi_mode_cursor]
+text = "{{ colors.base00 }}"
+cursor = "{{ colors.base0E }}"
+
+[colors.normal]
+black = "{{ colors.base00 }}"
+red = "{{ colors.base08 }}"
+green = "{{ colors.base0B }}"
+yellow = "{{ colors.base0A }}"
+blue = "{{ colors.base0D }}"
+magenta = "{{ colors.base0E }}"
+cyan = "{{ colors.base0C }}"
+white = "{{ colors.base05 }}"
+
+[colors.bright]
+black = "{{ colors.base03 }}"
+red = "{{ colors.base12 }}"
+green = "{{ colors.base14 }}"
+yellow = "{{ colors.base13 }}"
+blue = "{{ colors.base16 }}"
+magenta = "{{ colors.base17 }}"
+cyan = "{{ colors.base15 }}"
+white = "{{ colors.base07 }}"

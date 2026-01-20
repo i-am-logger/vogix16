@@ -5,11 +5,12 @@ use std::process::Command;
 /// Result of reloading applications
 #[derive(Debug)]
 pub struct ReloadResult {
+    /// Number of apps successfully reloaded
     pub success_count: usize,
+    /// Total apps that attempted reload (excludes apps with reload_method = "none")
     pub total_count: usize,
-    pub failed_apps: Vec<(String, String)>, // (app_name, error_message)
-    #[allow(dead_code)] // Available for future verbose output
-    pub skipped_apps: Vec<String>,
+    /// Apps that failed to reload with error messages
+    pub failed_apps: Vec<(String, String)>,
 }
 
 impl ReloadResult {
@@ -28,24 +29,26 @@ impl ReloadDispatcher {
 
     /// Reload all themed applications
     /// Returns a ReloadResult with details about successes and failures.
-    pub fn reload_apps(&self, config: &Config) -> ReloadResult {
+    /// When `quiet` is true, suppresses success messages (errors still go to stderr).
+    pub fn reload_apps(&self, config: &Config, quiet: bool) -> ReloadResult {
         if config.apps.is_empty() {
-            println!("No applications configured");
+            if !quiet {
+                println!("No applications configured");
+            }
             return ReloadResult {
                 success_count: 0,
                 total_count: 0,
                 failed_apps: Vec::new(),
-                skipped_apps: Vec::new(),
             };
         }
 
         let mut failed_apps = Vec::new();
-        let mut skipped_apps = Vec::new();
+        let mut skipped = 0;
 
         for (app_name, app_metadata) in &config.apps {
             // Skip apps that don't need reloading
             if app_metadata.reload_method == "none" {
-                skipped_apps.push(app_name.clone());
+                skipped += 1;
                 continue;
             }
 
@@ -54,19 +57,22 @@ impl ReloadDispatcher {
             }
         }
 
-        let success_count = config.apps.len() - failed_apps.len() - skipped_apps.len();
-        let total_reload = config.apps.len() - skipped_apps.len();
+        let total_count = config.apps.len() - skipped;
+        let success_count = total_count - failed_apps.len();
 
         if failed_apps.is_empty() {
-            if total_reload > 0 {
-                println!("✓ Reloaded {} applications", success_count);
-            } else {
-                println!("No applications needed reloading");
+            if !quiet {
+                if total_count > 0 {
+                    println!("✓ Reloaded {} applications", success_count);
+                } else {
+                    println!("No applications needed reloading");
+                }
             }
         } else {
+            // Always show errors, even in quiet mode
             eprintln!(
                 "⚠ Reloaded {}/{} applications. Failures:",
-                success_count, total_reload
+                success_count, total_count
             );
             for (app_name, error) in &failed_apps {
                 eprintln!("  - {}: {}", app_name, error);
@@ -75,9 +81,8 @@ impl ReloadDispatcher {
 
         ReloadResult {
             success_count,
-            total_count: total_reload,
+            total_count,
             failed_apps,
-            skipped_apps,
         }
     }
 
@@ -86,9 +91,7 @@ impl ReloadDispatcher {
         match metadata.reload_method.as_str() {
             "signal" => {
                 let signal = metadata.reload_signal.as_ref().ok_or_else(|| {
-                    VogixError::ReloadError(
-                        "Signal reload method requires reload_signal".to_string(),
-                    )
+                    VogixError::reload("signal reload method requires reload_signal")
                 })?;
                 let process_name = metadata.process_name.as_deref().unwrap_or(app_name);
                 self.send_signal(process_name, signal)?;
@@ -96,9 +99,7 @@ impl ReloadDispatcher {
             }
             "command" => {
                 let cmd = metadata.reload_command.as_ref().ok_or_else(|| {
-                    VogixError::ReloadError(
-                        "Command reload method requires reload_command".to_string(),
-                    )
+                    VogixError::reload("command reload method requires reload_command")
                 })?;
                 self.run_command(cmd)?;
                 Ok("executed reload command".to_string())
@@ -110,12 +111,14 @@ impl ReloadDispatcher {
                     .arg("-h")
                     .arg(&metadata.config_path)
                     .status()
-                    .map_err(|e| crate::reload::VogixError::ReloadError(e.to_string()))?;
+                    .map_err(|e| {
+                        VogixError::reload_with_source("failed to touch config file", e)
+                    })?;
                 Ok("touched to trigger auto-reload".to_string())
             }
             "none" => Ok("no reload needed (changes take effect on next use)".to_string()),
-            _ => Err(VogixError::ReloadError(format!(
-                "Unknown reload method: {}",
+            _ => Err(VogixError::reload(format!(
+                "unknown reload method: {}",
                 metadata.reload_method
             ))),
         }
@@ -127,11 +130,11 @@ impl ReloadDispatcher {
         let pgrep = Command::new("pgrep")
             .arg(process_name)
             .output()
-            .map_err(|e| VogixError::ReloadError(format!("Failed to run pgrep: {}", e)))?;
+            .map_err(|e| VogixError::reload_with_source("failed to run pgrep", e))?;
 
         if !pgrep.status.success() {
-            return Err(VogixError::ReloadError(format!(
-                "Process '{}' is not running",
+            return Err(VogixError::reload(format!(
+                "process '{}' is not running",
                 process_name
             )));
         }
@@ -142,12 +145,12 @@ impl ReloadDispatcher {
             .arg(signal)
             .arg(process_name)
             .output()
-            .map_err(|e| VogixError::ReloadError(format!("Failed to send signal: {}", e)))?;
+            .map_err(|e| VogixError::reload_with_source("failed to send signal", e))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(VogixError::ReloadError(format!(
-                "Failed to send signal to '{}': {}",
+            return Err(VogixError::reload(format!(
+                "failed to send signal to '{}': {}",
                 process_name, stderr
             )));
         }
@@ -161,14 +164,11 @@ impl ReloadDispatcher {
             .arg("-c")
             .arg(cmd)
             .output()
-            .map_err(|e| VogixError::ReloadError(format!("Failed to run command: {}", e)))?;
+            .map_err(|e| VogixError::reload_with_source("failed to run command", e))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(VogixError::ReloadError(format!(
-                "Command failed: {}",
-                stderr
-            )));
+            return Err(VogixError::reload(format!("command failed: {}", stderr)));
         }
 
         Ok(())
@@ -265,9 +265,11 @@ mod tests {
             default_theme: "test".to_string(),
             default_variant: "dark".to_string(),
             apps,
+            templates: None,
+            theme_sources: None,
         };
 
-        let result = dispatcher.reload_apps(&config);
+        let result = dispatcher.reload_apps(&config, false);
 
         // The result should indicate there was a failure
         assert!(

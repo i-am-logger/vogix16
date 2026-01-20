@@ -178,10 +178,10 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1768738650,
+        "lastModified": 1768815419,
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "43328b8bc4096055622390ee4fc21b5977aab2e3",
+        "rev": "81552494542f06f8eda3da2b1f0b08f3ce79fa60",
         "type": "github"
       },
       "original": {
@@ -201,10 +201,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1764011051,
+        "lastModified": 1768818222,
         "owner": "numtide",
         "repo": "devshell",
-        "rev": "17ed8d9744ebe70424659b0ef74ad6d41fc87071",
+        "rev": "255a2b1725a20d060f566e4755dbf571bbbb5f76",
         "type": "github"
       },
       "original": {
@@ -222,10 +222,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1764011051,
+        "lastModified": 1768818222,
         "owner": "numtide",
         "repo": "devshell",
-        "rev": "17ed8d9744ebe70424659b0ef74ad6d41fc87071",
+        "rev": "255a2b1725a20d060f566e4755dbf571bbbb5f76",
         "type": "github"
       },
       "original": {
@@ -242,10 +242,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1764011051,
+        "lastModified": 1768818222,
         "owner": "numtide",
         "repo": "devshell",
-        "rev": "17ed8d9744ebe70424659b0ef74ad6d41fc87071",
+        "rev": "255a2b1725a20d060f566e4755dbf571bbbb5f76",
         "type": "github"
       },
       "original": {
@@ -746,10 +746,10 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1768661221,
+        "lastModified": 1768783163,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3327b113f2ef698d380df83fbccefad7e83d7769",
+        "rev": "bde09022887110deb780067364a0818e89258968",
         "type": "github"
       },
       "original": {
@@ -759,10 +759,10 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1768661221,
+        "lastModified": 1768783163,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3327b113f2ef698d380df83fbccefad7e83d7769",
+        "rev": "bde09022887110deb780067364a0818e89258968",
         "type": "github"
       },
       "original": {

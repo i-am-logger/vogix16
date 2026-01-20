@@ -3,13 +3,21 @@
 # Tests: Combined flag orders, list command options, invalid inputs
 #
 { pkgs
+, vogix16Themes
 , home-manager
 , self
 ,
 }:
 
 let
-  testLib = import ./lib.nix { inherit pkgs home-manager self; };
+  testLib = import ./lib.nix {
+    inherit
+      pkgs
+      home-manager
+      self
+      vogix16Themes
+      ;
+  };
 in
 testLib.mkTest "cli" ''
   print("=== Test: List Command Functionality ===")
@@ -57,36 +65,38 @@ testLib.mkTest "cli" ''
 
   print("\n=== Test: Combined Flags ===")
   # Test combined -s, -t, -v flags
-  machine.succeed("su - vogix -c 'vogix -t aikido -v light'")
+  # Note: aikido uses 'day' for light polarity and 'night' for dark polarity
+  machine.succeed("su - vogix -c 'vogix -t aikido -v day'")
   combined_status = machine.succeed("su - vogix -c 'vogix status'")
   assert "aikido" in combined_status.lower(), "Theme not set in combined flags!"
-  assert "light" in combined_status.lower(), "Variant not set in combined flags!"
-  print("✓ Combined flags (-t aikido -v light) work")
+  assert "day" in combined_status.lower(), "Variant not set in combined flags!"
+  print("✓ Combined flags (-t aikido -v day) work")
 
-  # Reset back to dark
-  machine.succeed("su - vogix -c 'vogix -v dark'")
+  # Reset back to night (aikido's dark variant)
+  machine.succeed("su - vogix -c 'vogix -v night'")
 
   print("\n=== Test: Combined Flags in Various Orders ===")
+  # Note: vogix16 themes use 'night'/'day' for dark/light polarities
 
   # Reset
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
 
-  # Order 1: -t -v -s
-  machine.succeed("su - vogix -c 'vogix -t nordic -v light -s vogix16'")
+  # Order 1: -t -v -s (using actual variant names)
+  machine.succeed("su - vogix -c 'vogix -t nordic -v day -s vogix16'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "nordic" in status.lower() and "light" in status.lower() and "vogix16" in status.lower()
+  assert "nordic" in status.lower() and "day" in status.lower() and "vogix16" in status.lower()
   print("    ✓ Order -t -v -s works")
 
   # Order 2: -v -s -t
-  machine.succeed("su - vogix -c 'vogix -v dark -s vogix16 -t matrix'")
+  machine.succeed("su - vogix -c 'vogix -v night -s vogix16 -t matrix'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "matrix" in status.lower() and "dark" in status.lower()
+  assert "matrix" in status.lower() and "night" in status.lower()
   print("    ✓ Order -v -s -t works")
 
   # Order 3: -s -t -v
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t desert -v light'")
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t desert -v day'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "desert" in status.lower() and "light" in status.lower()
+  assert "desert" in status.lower() and "day" in status.lower()
   print("    ✓ Order -s -t -v works")
 
   # Single flags should work
@@ -95,9 +105,9 @@ testLib.mkTest "cli" ''
   assert "aikido" in status.lower()
   print("    ✓ Single flag -t works")
 
-  machine.succeed("su - vogix -c 'vogix -v dark'")
+  machine.succeed("su - vogix -c 'vogix -v night'")
   status = machine.succeed("su - vogix -c 'vogix status'")
-  assert "dark" in status.lower()
+  assert "night" in status.lower()
   print("    ✓ Single flag -v works")
 
   print("\n✓ Combined flags work in any order!")
@@ -125,8 +135,8 @@ testLib.mkTest "cli" ''
 
   print("\n✓ Error handling works!")
 
-  # Reset to default
-  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v dark'")
+  # Reset to default (aikido uses 'night' for dark polarity)
+  machine.succeed("su - vogix -c 'vogix -s vogix16 -t aikido -v night'")
 
   print("\n" + "="*60)
   print("CLI TESTS PASSED!")

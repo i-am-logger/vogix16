@@ -27,6 +27,13 @@
       url = "github:i-am-logger/iTerm2-Color-Schemes";
       flake = false;
     };
+
+    # vogix16 design system themes
+    # Directory-based structure: {theme}/{variant}.toml (day/night variants)
+    vogix16-themes = {
+      url = "github:i-am-logger/vogix16-themes";
+      flake = false;
+    };
   };
 
   nixConfig = {
@@ -49,14 +56,17 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
-      # NixOS module
-      nixosModules.default = import ./nix/modules/nixos.nix;
+      # NixOS module (console colors + security wrappers only)
+      nixosModules.default = import ./nix/modules/nixos.nix {
+        vogix16Themes = inputs.vogix16-themes;
+      };
 
       # Home Manager module
       # Pass scheme sources for theme import
-      homeManagerModules.default = import ./nix/modules/home-manager.nix {
+      homeManagerModules.default = import ./nix/modules/home-manager {
         tintedSchemes = inputs.tinted-schemes;
         iterm2Schemes = inputs.iterm2-schemes;
+        vogix16Themes = inputs.vogix16-themes;
       };
 
       # Packages for each system - from devenv outputs
@@ -116,7 +126,10 @@
             inherit system;
             config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];
           };
-          testArgs = { inherit pkgs home-manager self; };
+          testArgs = {
+            inherit pkgs home-manager self;
+            vogix16Themes = inputs.vogix16-themes;
+          };
         in
         {
           # Quick sanity checks (binary, status, list, systemd)
@@ -145,6 +158,9 @@
 
           # Rapid switching tests
           stress = import ./nix/vm/tests/stress.nix testArgs;
+
+          # Template architecture tests
+          templates = import ./nix/vm/tests/templates.nix testArgs;
         }
       );
 

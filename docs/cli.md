@@ -43,6 +43,14 @@ vogix -v light
 
 **Single-variant themes** (like dracula): All navigation commands resolve to the only available variant.
 
+### Refresh
+
+Refresh symlinks to regenerate the current theme configuration:
+
+```bash
+vogix refresh
+```
+
 ### Listing
 
 ```bash
@@ -104,9 +112,16 @@ programs.vogix = {
   defaultTheme = "aikido";
   defaultVariant = "dark";
 };
+```
 
-Runtime configuration is automatically generated at `/run/user/UID/vogix/manifest.toml`.
+### Configuration Paths
 
+| Path | Description |
+|------|-------------|
+| `/etc/vogix/config.toml` | System configuration (managed by NixOS module) |
+| `~/.local/state/vogix/state.toml` | User state (current theme selection) |
+| `~/.local/state/vogix/current-theme` | Symlink to active theme directory |
+| `~/.local/share/vogix/themes/` | All available theme packages |
 
 ## System Integration
 
@@ -128,7 +143,7 @@ The vogix CLI is implemented in Rust and provides:
 - Luminance-based automatic variant ordering
 - Command completion for all major shells
 - Error handling for missing themes or applications
-- Theme discovery from `/run/user/UID/vogix/themes/`
-- State management at `/run/user/UID/vogix/state/`
+- Theme discovery from `~/.local/share/vogix/themes/`
+- State management at `~/.local/state/vogix/`
 
 For details on how applications are reloaded, see [Reload Mechanism](reload.md).

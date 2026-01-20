@@ -1,3 +1,15 @@
+# NixOS module for Vogix
+#
+# Provides system-level integration:
+# - Console colors (TTY) from vogix theme
+# - Security wrappers for console theme switching (chvt, setvtrgb)
+#
+# NOTE: User configuration (config.toml, app configs) is handled by
+# the home-manager module at ~/.local/state/vogix/
+{ vogix16Themes
+,
+}:
+
 { config
 , lib
 , pkgs
@@ -5,13 +17,44 @@
 , ...
 }:
 
-with lib;
-
 let
+  inherit (lib)
+    mkIf
+    mkMerge
+    mkOption
+    mkEnableOption
+    types
+    literalExpression
+    attrNames
+    filterAttrs
+    ;
+
   cfg = config.vogix;
 
+  # Import vogix16 themes for console colors
+  vogix16Import = import ./vogix16-import.nix {
+    inherit lib vogix16Themes;
+  };
+
+  # Find home-manager users with vogix enabled (for auto-detection)
+  homeManagerUsers =
+    if options ? home-manager then
+      attrNames
+        (
+          filterAttrs (_name: userCfg: userCfg.programs.vogix.enable or false) (
+            config.home-manager.users or { }
+          )
+        )
+    else
+      [ ];
+
+  firstVogixUser = if homeManagerUsers != [ ] then builtins.head homeManagerUsers else null;
+
+  # Get vogix config from first user for console colors auto-detection
+  hmVogixCfg =
+    if firstVogixUser != null then config.home-manager.users.${firstVogixUser}.programs.vogix else null;
+
   # Helper: Convert theme colors (base16 format) to console.colors array
-  # Takes a theme colors attrset and returns a list of 16 hex colors (without #)
   mkConsoleColors =
     themeColors:
     map (c: builtins.replaceStrings [ "#" ] [ "" ] c) [
@@ -35,22 +78,22 @@ let
 in
 {
   options.vogix = {
-    enable = mkEnableOption "vogix console colors integration";
+    enable = mkEnableOption "vogix theme management";
 
     autoFromHomeManager = mkOption {
       type = types.bool;
       default = true;
       description = ''
-        Automatically configure console.colors from home-manager vogix configuration.
-        When enabled and no explicit theme/variant is set, will use the theme from the
-        first home-manager user with programs.vogix.enable = true.
+        Automatically configure console colors from home-manager vogix configuration.
+        When enabled, will use the theme from the first home-manager user
+        with programs.vogix.enable = true.
       '';
     };
 
     theme = mkOption {
       type = types.nullOr types.path;
       default = null;
-      description = "Path to theme file for console colors (overrides auto-detection)";
+      description = "Path to theme file for console colors (overrides auto-detection).";
       example = literalExpression "./themes/aikido.nix";
     };
 
@@ -62,7 +105,7 @@ in
         ]
       );
       default = null;
-      description = "Theme variant (dark or light) for console colors (overrides auto-detection)";
+      description = "Theme variant (dark or light) for console colors (overrides auto-detection).";
     };
   };
 
@@ -72,7 +115,6 @@ in
       environment.systemPackages = [ pkgs.vogix ];
 
       # Add security wrappers for console theme switching
-      # This allows users to run these commands without sudo
       security.wrappers = {
         chvt = {
           owner = "root";
@@ -89,65 +131,36 @@ in
       };
     }
 
-    # Auto-detect theme from home-manager if enabled
+    # Auto-detect console colors from home-manager if enabled
     (mkIf (cfg.autoFromHomeManager && cfg.theme == null && cfg.variant == null) {
       console.colors =
         let
-          # Try to find the first user with vogix enabled
-          homeManagerUsers =
-            if options ? home-manager then
-              attrNames
-                (
-                  filterAttrs (_name: userCfg: userCfg.programs.vogix.enable or false) (
-                    config.home-manager.users or { }
-                  )
-                )
-            else
-              [ ];
-
-          firstVogixUser = if homeManagerUsers != [ ] then builtins.head homeManagerUsers else null;
-
-          # Get theme configuration from home-manager user
-          hmVogixCfg =
-            if firstVogixUser != null then config.home-manager.users.${firstVogixUser}.programs.vogix else null;
-
-          # Get themes directory (vogix16 native themes)
-          themesDir = ../../themes/vogix16;
-
-          # Get theme name and variant (polarity)
           selectedThemeName = if hmVogixCfg != null then hmVogixCfg.defaultTheme else null;
           selectedPolarity = if hmVogixCfg != null then hmVogixCfg.defaultVariant else null;
 
-          # Resolve theme path
-          selectedThemePath =
-            if selectedThemeName != null then themesDir + "/${selectedThemeName}.nix" else null;
-
-          # Load theme (new multi-variant format)
           loadedTheme =
-            if selectedThemePath != null && selectedPolarity != null then import selectedThemePath else null;
+            if selectedThemeName != null && vogix16Import.themes ? ${selectedThemeName} then
+              vogix16Import.themes.${selectedThemeName}
+            else
+              null;
 
-          # Get actual variant name from defaults mapping
           selectedVariantName =
             if loadedTheme != null then loadedTheme.defaults.${selectedPolarity} or selectedPolarity else null;
 
-          # Get colors based on variant (new format: variants.<name>.colors)
           themeColors =
             if loadedTheme != null && selectedVariantName != null then
               loadedTheme.variants.${selectedVariantName}.colors or null
             else
               null;
-
         in
         mkIf (themeColors != null) (mkConsoleColors themeColors);
     })
 
-    # Explicit theme/variant configuration
+    # Explicit theme/variant configuration for console
     (mkIf (cfg.theme != null && cfg.variant != null) {
       console.colors =
         let
-          # Load explicit theme (new multi-variant format)
           loadedTheme = import cfg.theme;
-          # Get variant name from defaults mapping
           variantName = loadedTheme.defaults.${cfg.variant} or cfg.variant;
           themeColors = loadedTheme.variants.${variantName}.colors;
         in

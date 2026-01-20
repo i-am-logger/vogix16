@@ -8,34 +8,27 @@
 { pkgs
 , home-manager
 , self
+, vogix16Themes
 ,
 }:
 
 let
+  inherit (pkgs) lib;
+
   # Import the test-vm configuration
   testVMConfig = import ../test-vm.nix;
 
-  # Load vogix16 themes for validation (new multi-scheme structure)
-  vogix16Dir = ../../../themes/vogix16;
-  themeFiles = builtins.readDir vogix16Dir;
+  # Import vogix16 themes using the importer module
+  vogix16Import = import ../../modules/vogix16-import.nix {
+    inherit lib vogix16Themes;
+  };
 
-  # Convert multi-variant format to test-compatible format
-  allThemes = builtins.listToAttrs (
-    builtins.map
-      (
-        filename:
-        let
-          name = builtins.replaceStrings [ ".nix" ] [ "" ] filename;
-          theme = import (vogix16Dir + "/${filename}");
-          variantColors = builtins.mapAttrs (_variantName: variantData: variantData.colors) theme.variants;
-        in
-        {
-          inherit name;
-          value = variantColors;
-        }
-      )
-      (builtins.filter (f: builtins.match ".*\\.nix$" f != null) (builtins.attrNames themeFiles))
-  );
+  # Convert to test-compatible format (theme -> {variant -> colors})
+  allThemes = builtins.mapAttrs
+    (
+      _themeName: theme: builtins.mapAttrs (_variantName: variantData: variantData.colors) theme.variants
+    )
+    vogix16Import.themes;
 
   themesJSON = builtins.toJSON allThemes;
 
@@ -53,10 +46,12 @@ let
       })
     ];
 
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.users.vogix = import ../home.nix;
-    home-manager.sharedModules = [ self.homeManagerModules.default ];
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      users.vogix = import ../home.nix;
+      sharedModules = [ self.homeManagerModules.default ];
+    };
   };
 
   # Common Python preamble for all test scripts
@@ -80,9 +75,15 @@ let
     # Wait for user session to be ready
     time.sleep(2)
 
-    # Get UID for runtime paths
-    uid = machine.succeed("su - vogix -c 'id -u'").strip()
-    vogix_runtime = f"/run/user/{uid}/vogix"
+    # Path definitions for the architecture:
+    # - User config: ~/.local/state/vogix/config.toml (home-manager generated)
+    # - User themes: ~/.local/share/vogix/themes/{theme}-{variant}/ (home-manager)
+    # - User state: ~/.local/state/vogix/ (CLI managed)
+    # - Current theme symlink: ~/.local/state/vogix/current-theme
+    vogix_state = "/home/vogix/.local/state/vogix"
+    vogix_config = vogix_state  # Config is now in state dir, not /etc
+    vogix_themes = "/home/vogix/.local/share/vogix/themes"
+    current_theme = f"{vogix_state}/current-theme"
   '';
 
   # Helper to create a test with common setup
