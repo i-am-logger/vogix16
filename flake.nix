@@ -90,6 +90,11 @@
         }
       );
 
+      # Overlay to make vogix available in pkgs
+      overlays.default = _final: prev: {
+        inherit (self.packages.${prev.system}) vogix;
+      };
+
       # NixOS VM for testing
       nixosConfigurations.vogix-test-vm = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -98,12 +103,8 @@
           self.nixosModules.default
           home-manager.nixosModules.home-manager
           {
-            # Make vogix package available in pkgs
-            nixpkgs.overlays = [
-              (_final: _prev: {
-                inherit (self.packages.x86_64-linux) vogix;
-              })
-            ];
+            # Make vogix package available in pkgs via overlay
+            nixpkgs.overlays = [ self.overlays.default ];
 
             # Allow unfree license for testing
             nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [ "vogix" ];

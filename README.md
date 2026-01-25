@@ -100,9 +100,9 @@ Add to your `flake.nix`:
           # Configure vogix
           programs.vogix = {
             enable = true;
-            defaultScheme = "vogix16";
-            defaultTheme = "aikido";
-            defaultVariant = "dark";
+            scheme = "vogix16";
+            theme = "aikido";
+            variant = "dark";
           };
         }
       ];

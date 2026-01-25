@@ -135,8 +135,8 @@ in
     (mkIf (cfg.autoFromHomeManager && cfg.theme == null && cfg.variant == null) {
       console.colors =
         let
-          selectedThemeName = if hmVogixCfg != null then hmVogixCfg.defaultTheme else null;
-          selectedPolarity = if hmVogixCfg != null then hmVogixCfg.defaultVariant else null;
+          selectedThemeName = if hmVogixCfg != null then hmVogixCfg.theme else null;
+          selectedPolarity = if hmVogixCfg != null then hmVogixCfg.variant else null;
 
           loadedTheme =
             if selectedThemeName != null && vogix16Import.themes ? ${selectedThemeName} then

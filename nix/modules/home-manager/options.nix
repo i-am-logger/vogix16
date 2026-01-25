@@ -33,13 +33,13 @@ let
           theme = mkOption {
             type = types.nullOr types.str;
             default = null;
-            description = "Theme to use for ${appName} (overrides defaultTheme)";
+            description = "Theme to use for ${appName} (overrides global theme)";
           };
 
           variant = mkOption {
             type = types.nullOr types.str;
             default = null;
-            description = "Variant to use for ${appName} (overrides defaultVariant)";
+            description = "Variant to use for ${appName} (overrides global variant)";
           };
         };
       })
@@ -58,16 +58,22 @@ in
       description = "The vogix package to use.";
     };
 
-    defaultTheme = mkOption {
+    scheme = mkOption {
       type = types.str;
-      default = "aikido";
-      description = "Default theme to use.";
+      default = "vogix16";
+      description = "Color scheme to use (vogix16, base16, base24, ansi16).";
     };
 
-    defaultVariant = mkOption {
+    theme = mkOption {
+      type = types.str;
+      default = "aikido";
+      description = "Theme to use.";
+    };
+
+    variant = mkOption {
       type = types.str;
       default = "night";
-      description = "Default variant name (e.g., night, day, dark, light, moon, dawn).";
+      description = "Variant name (e.g., night, day, dark, light, moon, dawn).";
     };
 
     themes = mkOption {

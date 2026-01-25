@@ -20,8 +20,8 @@
     # Enable vogix
     vogix = {
       enable = true;
-      defaultTheme = "aikido";
-      defaultVariant = "dark";
+      theme = "aikido";
+      variant = "dark";
       # Apps are auto-detected from enabled programs (alacritty, btop, bash, console)
       # You can disable individual apps with: alacritty.enable = false; etc.
       enableDaemon = false; # Disabled for tests - daemon requires home-manager/.config watch path

@@ -47,12 +47,11 @@ let
   getVariantName = theme: polarity: theme.defaults.${polarity} or polarity;
 
   # Helper to get theme for each app (with per-app override support)
-  getAppTheme = cfg: app: if cfg.${app}.theme != null then cfg.${app}.theme else cfg.defaultTheme;
+  getAppTheme = cfg: app: if cfg.${app}.theme != null then cfg.${app}.theme else cfg.theme;
 
   # Helper to get variant for each app (with per-app override support)
   # Returns the polarity (dark/light), not the variant name
-  getAppVariant =
-    cfg: app: if cfg.${app}.variant != null then cfg.${app}.variant else cfg.defaultVariant;
+  getAppVariant = cfg: app: if cfg.${app}.variant != null then cfg.${app}.variant else cfg.variant;
 
 in
 {

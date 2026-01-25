@@ -83,9 +83,9 @@ The home-manager module (`programs.vogix`) handles all build-time generation:
   # Configure vogix
   programs.vogix = {
     enable = true;
-    defaultScheme = "vogix16";
-    defaultTheme = "aikido";
-    defaultVariant = "dark";
+    scheme = "vogix16";
+    theme = "aikido";
+    variant = "dark";
   };
 }
 ```
